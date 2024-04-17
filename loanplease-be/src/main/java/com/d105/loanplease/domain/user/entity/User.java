@@ -24,4 +24,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserLoan> userLoanList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "from")
+    private List<Friendship> fromList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "to")
+    private List<Friendship> toList = new ArrayList<>();
 }
