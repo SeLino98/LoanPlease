@@ -1,7 +1,11 @@
 package com.d105.loanplease.domain.loan.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "loan_tb")
 public class Loan {

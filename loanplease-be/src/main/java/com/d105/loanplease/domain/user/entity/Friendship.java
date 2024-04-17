@@ -1,7 +1,11 @@
 package com.d105.loanplease.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "friendship_tb")
 public class Friendship {

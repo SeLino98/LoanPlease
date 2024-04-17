@@ -2,7 +2,11 @@ package com.d105.loanplease.domain.user.entity;
 
 import com.d105.loanplease.domain.item.entity.Item;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "user_item_tb")
 public class UserItem {

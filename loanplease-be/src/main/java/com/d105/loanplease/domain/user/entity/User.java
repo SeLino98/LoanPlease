@@ -1,10 +1,14 @@
 package com.d105.loanplease.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "user_tb")
 public class User {
