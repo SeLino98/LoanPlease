@@ -3,7 +3,6 @@ spring:
     database: mysql
     hibernate.ddl-auto: update
     show-sql: true
-    generate-ddl: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ENC(emHSBcpo4mfefNAf4+N8YaMj5Icc/x7TdMNkHHbWNsnIRqIhWtwPW7ZxhrNlGUq0an0JTQ7tYDq3Xjw1HMNMnez0iI9UwErplIvm8sZUfT/zt/5OAeL60wKwx6CSlRMFKZhSrYQDqZod9yrZWoInaIjHuKnxGgEz)
