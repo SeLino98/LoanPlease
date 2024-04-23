@@ -5,9 +5,11 @@ spring:
     show-sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(emHSBcpo4mfefNAf4+N8YaMj5Icc/x7TdMNkHHbWNsnIRqIhWtwPW7ZxhrNlGUq0an0JTQ7tYDq3Xjw1HMNMnez0iI9UwErplIvm8sZUfT/zt/5OAeL60wKwx6CSlRMFKZhSrYQDqZod9yrZWoInaIjHuKnxGgEz)
+#    url: ENC(emHSBcpo4mfefNAf4+N8YaMj5Icc/x7TdMNkHHbWNsnIRqIhWtwPW7ZxhrNlGUq0an0JTQ7tYDq3Xjw1HMNMnez0iI9UwErplIvm8sZUfT/zt/5OAeL60wKwx6CSlRMFKZhSrYQDqZod9yrZWoInaIjHuKnxGgEz)0
+    url: ENC(tBXqlmZ4kRQXUoa4OR32ghAH5wHcQkuXhdWxbVqeXorh8lM0HpKfcM0C2Uct1DKhTQtY5NiIXE9RqOqRjeK8ENmoXTMXDwbJVw)
     username: ENC(If+lr0Bgn52c/6W9n1fVXw==)
-    password: ENC(u1+wKdcQxgHFhduYG01ySA==)
+    password: ENC(QNafP3XSKlDMepT91l78djeYjVSYmx/9)
+#    password: ENC(u1+wKdcQxgHFhduYG01ySA==)
 #    url: jdbc:mysql://localhost:3306/loanplease_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 #    username: root
 #    password: ssafy
