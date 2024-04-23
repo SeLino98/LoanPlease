@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./Main/Components/Mainpage.jsx";
-import Login from "./Main/Components/Login.jsx"; 
+import Home from "./Main/index.jsx";
+import Login from "./Main/Components/Login.jsx";
 import Game from "./Game/Components/Game.jsx";
 import Shop from "./Shop/Components/Shop.jsx";
 
@@ -15,7 +15,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
