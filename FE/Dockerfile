@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json /app
 
 RUN npm install
-COPY ../../../../Desktop /app
+COPY . /app
 
 EXPOSE 5173
 RUN npm run build
