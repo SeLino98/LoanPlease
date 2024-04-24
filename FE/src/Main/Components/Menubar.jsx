@@ -4,23 +4,23 @@ import { LoginStore, MainStore } from "../Store";
 
 const menubarstyle = {
   width: "100%",
-  height: "100px",
   display: "flex",
+  flexWrap: "wrap",
   justifyContent: "space-around",
   alignItems: "center",
   backgroundColor: "#FFE3BB",
 };
 
 const menutitlestyle = {
-  minWidth: "250px",
+  minWidth: "200px",
   fontFamily: "비트비트체v2",
   fontSize: "60px",
 };
 
 const profilestyle = {
   width: "35%",
+  height: "100px",
   minWidth: "250px",
-  height: "100%",
   display: "flex",
   justifyContent: "space-around",
   alignItems: "center",
@@ -57,7 +57,7 @@ function Menubar() {
         </div>
       </div>
       <div
-        style={{ cursor: "pointer" }}
+        style={{ margin: "10px", cursor: "pointer" }}
         onClick={() => {
           setIsBgm(!isBgm);
         }}

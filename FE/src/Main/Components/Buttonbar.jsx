@@ -17,21 +17,21 @@ function Buttonbar() {
       <img
         width="30%"
         height={90}
-        style={{ cursor: "pointer" }}
+        style={{ maxWidth: "300px", cursor: "pointer" }}
         onClick={() => {}}
         src={rankingbutton}
       />
       <img
         width="30%"
         height={120}
-        style={{ cursor: "pointer" }}
+        style={{ maxWidth: "300px", cursor: "pointer" }}
         onClick={() => {}}
         src={startbutton}
       />
       <img
         width="30%"
         height={90}
-        style={{ cursor: "pointer" }}
+        style={{ maxWidth: "300px", cursor: "pointer" }}
         onClick={() => {}}
         src={mypagebutton}
       />

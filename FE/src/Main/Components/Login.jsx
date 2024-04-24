@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { LoginStore } from "../Store";
 import loginbutton from "./assets/loginbutton.png";
-import background from "./assets/splash.png";
+import background from "./assets/splash_final.jpg";
 
 const mainarea = {
   display: "flex",
@@ -10,6 +11,7 @@ const mainarea = {
   width: "80%",
   height: "80%",
   backgroundColor: "rgba(255, 255, 255, 0.64)",
+  opacity: "0",
 };
 
 const mainstyle = {
@@ -17,7 +19,7 @@ const mainstyle = {
   position: "absolute",
   width: "100%",
   height: "100vh",
-  filter: "blur(1.8px)",
+  filter: "blur(0px)",
 };
 
 const titlestyle = {
@@ -28,6 +30,21 @@ const titlestyle = {
 
 function Login() {
   const setIsLogin = LoginStore((state) => state.setIsLogin);
+  const [bgstyle, setBgStyle] = useState(mainstyle);
+  const [panelstyle, setPanelStyle] = useState(mainarea);
+
+  useEffect(() => {
+    const bgtimer = setTimeout(() => {
+      setBgStyle({ ...bgstyle, filter: "blur(2px)", transition: "all 10s" });
+    }, 1500);
+    const paneltimer = setTimeout(() => {
+      setPanelStyle({ ...panelstyle, opacity: "1", transition: "all 3s" });
+    }, 2000);
+    return () => {
+      clearTimeout(bgtimer);
+      clearTimeout(paneltimer);
+    };
+  }, []);
 
   return (
     <div
@@ -39,9 +56,8 @@ function Login() {
         height: "100vh",
       }}
     >
-      {/* <div style={mainstyle}></div> */}
-      <img style={mainstyle} src={background} />
-      <div style={mainarea}>
+      <img style={bgstyle} src={background} />
+      <div style={panelstyle}>
         <div style={titlestyle}>론플리즈</div>
         <img width={200} src="/loanplease.png" />
         <img
