@@ -1,44 +1,33 @@
-import addSlot from '../Assets/addSlot.png';
-import timeExtension from '../Assets/timeExtension.png';
+import { PropTypes } from "prop-types"; 
+import useStore from "../../Store/ShopStore";
 
 function GameItem({ openModal }) {
+  const { gameItems } = useStore();
+
   return (
-    <div className="flex justify-center gap-4 my-2 text-center">
-      <div className="border-2 bg-white px-6 py-4 rounded-lg">
-        <img src={addSlot} alt="슬롯추가" className="w-32 h-32 my-3" />
-        <p className="font-cusFont1 my-2">슬롯 추가</p>
-        <p className="font-cusFont2 my-2">설명</p>
-        <button 
-          className="font-cusFont1 my-2 bg-orange-400 hover:bg-orange-600 border-2 rounded-lg px-3 py-2"
-          onClick={() => openModal}
-        >
-          가격
-        </button>
-      </div>
-      <div className="border-2 bg-white px-6 py-4 rounded-lg">
-        <img src={timeExtension} alt="시간연장" className="w-32 h-32 my-3" />
-        <p className="font-cusFont1 my-2">시간 연장</p>
-        <p className="font-cusFont2 my-2">설명</p>
-        <button 
-          className="font-cusFont1 my-2 bg-orange-400 hover:bg-orange-600 border-2 rounded-lg px-3 py-2"
-          onClick={() => openModal}
-        >
-          가격
-        </button>
-      </div>
-      <div className="border-2 bg-white px-6 py-4 rounded-lg">
-        <img src={timeExtension} alt="" className="w-32 h-32 my-3" />
-        <p className="font-cusFont1 my-2">아이템</p>
-        <p className="font-cusFont2 my-2">설명</p>
-        <button 
-          className="font-cusFont1 my-2 bg-orange-400 hover:bg-orange-600 border-2 rounded-lg px-3 py-2"
-          onClick={() => openModal}
-        >
-          가격
-        </button>
-      </div>
+    <div className="flex justify-evenly my-4 text-center">
+      {gameItems.map((item, index) => (
+        <div key={index} className="border-2 bg-white px-6 py-6 rounded-lg w-[280px] h-[500px] border-black">
+          <img src={item.icon} alt="슬롯추가" className="w-32 h-32 mx-auto my-5" />
+          <p className="font-cusFont1 py-5 my-5 text-3xl">{item.name}</p>
+          <div className="font-cusFont2 py-2 my-2 mx-3 text-xl h-[90px]">
+            <p>{item.description}</p>
+          </div>
+          <button 
+            className="font-cusFont1 my-7 bg-orange-400 hover:bg-orange-600 border-2 border-b-4 rounded-lg px-3 py-2 text-xl w-[130px] border-black"
+            onClick={() => openModal()}
+          >
+            {item.price}
+          </button>
+        </div>
+      ))}
+      
     </div>
   )
 }
+
+GameItem.propTypes = {
+  openModal: PropTypes.func.isRequired,
+};
 
 export default GameItem;
