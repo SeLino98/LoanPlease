@@ -10,4 +10,9 @@ public class ServerController {
     public String test() {
         return "hi";
     }
+
+    @GetMapping("/test")
+    public String apitest() {
+        return "API hi";
+    }
 }
