@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 public class ServerController {
 
-    @GetMapping("/hi")
+    @GetMapping("/api/hi")
     public String test1() {
         return "hi";
     }
-    @GetMapping("/server")
+    @GetMapping("/api/server")
     public String test() {
         return "secret";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/api/test")
     public String apitest() {
         log.info("test 함수 접속");
         return "API hi";
