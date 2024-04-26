@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServerController {
 
     @GetMapping("/hi")
-    public String test() {
+    public String test1() {
         return "hi";
+    }
+    @GetMapping("/server")
+    public String test() {
+        return "secret";
     }
 
     @GetMapping("/test")
