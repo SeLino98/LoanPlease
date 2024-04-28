@@ -13,9 +13,9 @@
 ##    url: jdbc:mysql://localhost:3306/loanplease_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 ##    username: root
 ##    password: ssafy
-jasypt:
-  encryptor:
-    bean: jasyptStringEncryptor
+#jasypt:
+#  encryptor:
+#    bean: jasyptStringEncryptor
 
 
 spring:
