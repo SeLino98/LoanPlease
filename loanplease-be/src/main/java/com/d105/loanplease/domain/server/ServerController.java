@@ -24,4 +24,6 @@ public class ServerController {
         log.info("test 함수 접속");
         return "API hi";
     }
+
+
 }
