@@ -39,3 +39,14 @@ spring:
         format_sql: true      # 쿼리 로그 포맷 (정렬)
         show_sql: true        # 쿼리 로그 출력
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 967696996371-1p7htgqhu0e91s442del6bol49kjbb3e.apps.googleusercontent.com
+            client-secret: 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
+#            redirect-uri: "https://loanplease.kr/login/oauth2/code/google"
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope: email

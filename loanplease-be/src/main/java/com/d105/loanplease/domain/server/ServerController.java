@@ -25,5 +25,10 @@ public class ServerController {
         return "API hi";
     }
 
+    @GetMapping("/api/login/oauth2/code/google")
+    public void googletest() {
+        log.info("구글로그인 함수 접속");
+    }
+
 
 }

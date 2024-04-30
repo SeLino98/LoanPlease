@@ -29,7 +29,22 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	implementation 'com.h2database:h2'
+	// H2 & JDBC(for H2)
+	runtimeOnly 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// JWT
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.3'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.3'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
+
+	implementation 'org.springframework.security:spring-security-oauth2-client' // 이 버전은 예시이므로 프로젝트에 맞는 최신 버전을 사용하세요
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+
 }
 
 tasks.named('test') {
