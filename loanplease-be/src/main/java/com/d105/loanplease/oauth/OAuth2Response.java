@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.oauth;
+package com.d105.loanplease.oauth;
 
 public interface OAuth2Response {
 
@@ -8,6 +8,6 @@ public interface OAuth2Response {
     String getProviderId();
     //이메일
     String getEmail();
-    //사용자 실명 (설정한 이름)
-    String getName();
+//    //사용자 실명 (설정한 이름)
+//    String getName();
 }

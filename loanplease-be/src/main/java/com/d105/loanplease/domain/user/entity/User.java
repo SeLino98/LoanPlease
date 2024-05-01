@@ -47,7 +47,10 @@ public class User implements UserDetails {
                 "userId=" + userId +
                 ", nickname='" + nickname + '\'' +
                 ", email='" + email + '\'' +
+                ", score=" + score +
+                ", slot=" + slot +
                 ", profileImg='" + profileImg + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 

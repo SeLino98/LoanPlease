@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.server;
+package com.d105.loanplease.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,11 +24,5 @@ public class ServerController {
         log.info("test 함수 접속");
         return "API hi";
     }
-
-    @GetMapping("/api/login/oauth2/code/google")
-    public void googletest() {
-        log.info("구글로그인 함수 접속");
-    }
-
 
 }

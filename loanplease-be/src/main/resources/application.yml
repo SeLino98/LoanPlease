@@ -50,3 +50,6 @@ spring:
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             authorization-grant-type: authorization_code
             scope: email
+
+  jwt:
+    secret: hellomynameisnamhyunchoandiloveyousomuch
