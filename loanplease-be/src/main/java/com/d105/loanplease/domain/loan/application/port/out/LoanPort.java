@@ -1,4 +1,10 @@
 package com.d105.loanplease.domain.loan.application.port.out;
 
-public class LoanPort {
+import com.d105.loanplease.domain.loan.domain.Loan;
+
+import java.util.List;
+
+public interface LoanPort {
+
+    List<Loan> findAll();
 }
