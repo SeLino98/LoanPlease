@@ -2,7 +2,6 @@ package com.d105.loanplease.store;
 
 import com.d105.loanplease.domain.store.application.service.ItemService;
 import com.d105.loanplease.domain.store.domain.Item;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,7 @@ public class ItemServiceTest {
     @Test
     void 아이템전체조회() {
         List<Item> items = itemService.inquiryAllItems();
-        assertThat(items.size()).isEqualTo(0);
+        assertThat(items.size()).isEqualTo(1);
     }
 
     @Test

@@ -33,6 +33,9 @@ dependencies {
 
 	// swagger를 위한 의존성 추가
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	// 테스트 코드 작성을 위한 의존성 추가
+	implementation 'com.google.guava:guava:31.1-jre'
+	testImplementation 'io.rest-assured:rest-assured:5.4.0'
 
 }
 
