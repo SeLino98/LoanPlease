@@ -18,4 +18,10 @@ public class LoanPersistenceAdapter implements LoanPort {
     public List<Loan> findAll() {
         return loanRepository.findAll();
     }
+
+    @Override
+    public Loan findById(final Long id) {
+        return loanRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("대출 상품이 존재하지 않습니다."));
+    }
 }

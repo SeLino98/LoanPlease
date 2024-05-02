@@ -21,4 +21,9 @@ public class LoanService implements LoanUseCase {
     public List<Loan> inquiryAllLoans() {
         return loanPort.findAll();
     }
+
+    @Override
+    public Loan inquiryLoanById(Long id) {
+        return loanPort.findById(id);
+    }
 }

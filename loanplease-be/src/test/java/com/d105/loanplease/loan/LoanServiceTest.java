@@ -20,13 +20,22 @@ public class LoanServiceTest {
     @Test
     void 대출상품전체조회() {
         List<Loan> loanList = loanService.inquiryAllLoans();
-        assertThat(loanList.size()).isEqualTo(0);
+        assertThat(loanList.size()).isEqualTo(2);
     }
 
     @Test
     void 특정대출상품조회() {
-//        final Long loanId = 1L;
-//        Loan loan = loanService.inquiryLoan(loanId);
+        final Long firstLoanId = 1L;
+        Loan firstLoan = loanService.inquiryLoanById(firstLoanId);
+
+        assertThat(firstLoan.getContent()).isEqualTo("이 상품은 첫번째 테스트용 대출 상품입니다");
+        assertThat(firstLoan.getInterest()).isEqualTo(0.1);
+
+        final Long secondLoanId = 2L;
+        Loan secondLoan = loanService.inquiryLoanById(secondLoanId);
+
+        assertThat(secondLoan.getContent()).isEqualTo("이 상품은 두번째 테스트용 대출 상품입니다");
+        assertThat(secondLoan.getInterest()).isEqualTo(0.2);
     }
 
     @Test

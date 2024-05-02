@@ -7,4 +7,5 @@ import java.util.List;
 public interface LoanUseCase {
 
     List<Loan> inquiryAllLoans();
+    Loan inquiryLoanById(Long id);
 }

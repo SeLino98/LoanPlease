@@ -7,4 +7,5 @@ import java.util.List;
 public interface LoanPort {
 
     List<Loan> findAll();
+    Loan findById(Long id);
 }
