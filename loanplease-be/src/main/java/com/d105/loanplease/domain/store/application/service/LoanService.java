@@ -23,7 +23,7 @@ public class LoanService implements LoanUseCase {
     }
 
     @Override
-    public Loan inquiryLoanById(Long id) {
+    public Loan inquiryLoanById(final Long id) {
         return loanPort.findById(id);
     }
 }
