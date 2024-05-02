@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.loan.entity;
+package com.d105.loanplease.domain.loan.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
