@@ -1,8 +1,8 @@
-package com.d105.loanplease.domain.loan.adapter.persistence;
+package com.d105.loanplease.domain.store.adapter.persistence;
 
-import com.d105.loanplease.domain.loan.adapter.out.LoanRepository;
-import com.d105.loanplease.domain.loan.application.port.out.LoanPort;
-import com.d105.loanplease.domain.loan.domain.Loan;
+import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
+import com.d105.loanplease.domain.store.application.port.out.LoanPort;
+import com.d105.loanplease.domain.store.domain.Loan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

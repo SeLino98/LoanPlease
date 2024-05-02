@@ -1,9 +1,9 @@
-package com.d105.loanplease.domain.loan.application.service;
+package com.d105.loanplease.domain.store.application.service;
 
 
-import com.d105.loanplease.domain.loan.application.port.in.LoanUseCase;
-import com.d105.loanplease.domain.loan.application.port.out.LoanPort;
-import com.d105.loanplease.domain.loan.domain.Loan;
+import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
+import com.d105.loanplease.domain.store.application.port.out.LoanPort;
+import com.d105.loanplease.domain.store.domain.Loan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

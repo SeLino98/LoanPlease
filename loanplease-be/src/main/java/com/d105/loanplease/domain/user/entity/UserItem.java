@@ -1,6 +1,6 @@
 package com.d105.loanplease.domain.user.entity;
 
-import com.d105.loanplease.domain.item.entity.Item;
+import com.d105.loanplease.domain.store.domain.Item;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,7 @@
-package com.d105.loanplease.loan;
+package com.d105.loanplease.store;
 
-import com.d105.loanplease.domain.loan.application.service.LoanService;
-import com.d105.loanplease.domain.loan.domain.Loan;
-import org.assertj.core.api.Assertions;
+import com.d105.loanplease.domain.store.application.service.LoanService;
+import com.d105.loanplease.domain.store.domain.Loan;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
