@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
@@ -30,7 +32,18 @@ public class JWTFilter extends OncePerRequestFilter {
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
         Cookie[] cookies = request.getCookies();
-        if(cookies==null) return;   //배포 시 예외처리
+        if(cookies==null) {
+            log.info("cookies가 null입니다.");
+            filterChain.doFilter(request, response);
+            return;   //배포 시 예외처리
+        }
+
+        // 특정 경로 요청은 필터링 없이 진행
+        if (request.getRequestURI().startsWith("/api/server")) {
+            log.info("test uri 입니다.");
+            filterChain.doFilter(request, response);
+            return;
+        }
         for (Cookie cookie : cookies) {
 
             System.out.println(cookie.getName());

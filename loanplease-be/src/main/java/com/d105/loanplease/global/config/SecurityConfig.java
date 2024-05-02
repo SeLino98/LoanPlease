@@ -56,7 +56,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/server").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
+                );
 
         //세션 설정 : STATELESS
         http
