@@ -16,7 +16,7 @@ public class ServerController {
     }
     @GetMapping("/api/server")
     public String test() {
-        log.info("server test 함수 접속");
+        log.info("server controller test 함수 접속");
         return "secret";
     }
 

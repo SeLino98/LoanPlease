@@ -40,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 특정 경로 요청은 필터링 없이 진행
         if (request.getRequestURI().startsWith("/api/server")) {
-            log.info("test uri 입니다.");
+            log.info("JWT Filter test uri 입니다.");
             filterChain.doFilter(request, response);
             return;
         }
