@@ -33,7 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String authorization = null;
         Cookie[] cookies = request.getCookies();
         if(cookies==null) {
-            log.info("cookies가 null입니다.");
+            log.info("현재 cookies가 null입니다.");
             filterChain.doFilter(request, response);
             return;   //배포 시 예외처리
         }
