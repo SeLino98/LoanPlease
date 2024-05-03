@@ -40,9 +40,14 @@ public class LoanService implements LoanUseCase {
 
     @Override
     public void purchaseLoan(final Long loanId, final Long userId) {
+
         Loan loan = loanPort.findById(loanId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+
+        // custom exception 만들기 전 임시 코드
+        if(user.hasLoan(loanId)) throw new IllegalArgumentException("해당 유저는 이미 대출 상품을 가지고 있습니다.");
+
         UserLoan userLoan = new UserLoan(loan, user);
 
         userLoanRepository.save(userLoan);
