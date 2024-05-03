@@ -8,6 +8,7 @@ import com.d105.loanplease.domain.store.domain.Loan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,8 @@ public class StoreController {
     @Autowired
     private ItemUseCase itemUseCase;
 
+    @PostMapping("/choose-loan")
+    public void chooseLoan() {}
 
     @GetMapping("/items")
     public ResponseEntity<InquiryStoreResponse> inquiryStore() {
@@ -41,4 +44,13 @@ public class StoreController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/items/slot")
+    public void purchaseSlot() {}
+
+    @PostMapping("/items/loan")
+    public void purchaseLoan() {}
+
+    @PostMapping("/items/oneoff")
+    public void purchaseItem() {}
 }
