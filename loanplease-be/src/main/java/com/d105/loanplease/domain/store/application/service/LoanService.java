@@ -7,11 +7,13 @@ import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserLoan;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
+import com.d105.loanplease.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +24,9 @@ public class LoanService implements LoanUseCase {
 
     @Autowired
     private UserLoanRepository userLoanRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<Loan> inquiryAllLoans() {
@@ -34,8 +39,10 @@ public class LoanService implements LoanUseCase {
     }
 
     @Override
-    public void purchaseLoan(final Long id, final User user) {
-        Loan loan = loanPort.findById(id);
+    public void purchaseLoan(final Long loanId, final Long userId) {
+        Loan loan = loanPort.findById(loanId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
         UserLoan userLoan = new UserLoan(loan, user);
 
         userLoanRepository.save(userLoan);

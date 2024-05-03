@@ -9,5 +9,5 @@ public interface LoanUseCase {
 
     List<Loan> inquiryAllLoans();
     Loan inquiryLoanById(Long id);
-    void purchaseLoan(Long id, User user);
+    void purchaseLoan(Long loanId, Long userId);
 }

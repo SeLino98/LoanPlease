@@ -1,9 +1,16 @@
 package com.d105.loanplease.store;
 
+import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
+import com.d105.loanplease.domain.store.application.port.out.LoanPort;
 import com.d105.loanplease.domain.store.application.service.LoanService;
 import com.d105.loanplease.domain.store.domain.Loan;
+import com.d105.loanplease.domain.user.entity.User;
+import com.d105.loanplease.domain.user.entity.UserLoan;
+import com.d105.loanplease.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +25,9 @@ public class LoanServiceTest {
 
     @Autowired
     private LoanService loanService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void 대출상품전체조회() {
@@ -42,6 +52,14 @@ public class LoanServiceTest {
 
     @Test
     void 대출상품구매() {
+        final Long loanId = 1L;
+        final Long userId = 1L;
+        loanService.purchaseLoan(loanId, userId);
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("없는 유저입니다."));
+
+        assertThat(user.getUserLoanList().size()).isEqualTo(1);
+        assertThat(user.getUserLoanList().get(0).getLoan().getName()).isEqualTo("테스트용 대출1");
     }
 }
