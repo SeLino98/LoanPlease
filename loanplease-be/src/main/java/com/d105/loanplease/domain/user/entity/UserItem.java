@@ -24,4 +24,5 @@ public class UserItem {
     private Item item;
 
     private Integer count;
+
 }

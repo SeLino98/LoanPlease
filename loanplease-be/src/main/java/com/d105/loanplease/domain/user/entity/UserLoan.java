@@ -22,4 +22,11 @@ public class UserLoan {
     @ManyToOne
     @JoinColumn(name = "loan_id")
     private Loan loan;
+
+    public UserLoan(Loan loan, User user) {
+        this.user = user;
+        this.loan = loan;
+
+        user.getUserLoanList().add(this);
+    }
 }

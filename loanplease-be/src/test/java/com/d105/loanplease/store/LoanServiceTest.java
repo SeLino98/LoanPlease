@@ -3,6 +3,8 @@ package com.d105.loanplease.store;
 import com.d105.loanplease.domain.store.application.service.LoanService;
 import com.d105.loanplease.domain.store.domain.Loan;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -11,6 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class LoanServiceTest {
 
     @Autowired
