@@ -3,6 +3,7 @@ package com.d105.loanplease.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class User {
     private Integer score;
     private Integer slot;
     private String profileImg;
+    private Integer point;
 
     @OneToMany(mappedBy = "user")
     private List<UserItem> userItemList = new ArrayList<>();
@@ -37,12 +39,15 @@ public class User {
     private List<Friendship> toList = new ArrayList<>();
 
     // 유저가 해당 대출 상품을 가지고 있는지 확인
-    public boolean hasLoan(Long loanId) {
-
+    public void hasLoan(Long loanId) {
         for(UserLoan userLoan: userLoanList) {
-            if(userLoan.getLoan().getLoanId()==loanId) return false;
+            Assert.isTrue(userLoan.getLoan().getLoanId()!=loanId, "해당 대출 상품을 이미 가지고 있습니다.");
         }
+    }
 
-        return true;
+    // 상점에서 무언가를 구매
+    public void purchase(Integer price) {
+        Assert.isTrue(point >= price, "구매할 포인트가 부족합니다.");
+        this.point -= price;
     }
 }

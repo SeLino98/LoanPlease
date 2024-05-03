@@ -16,7 +16,6 @@ public class ItemService implements ItemUseCase {
     @Autowired
     private ItemPort itemPort;
 
-
     @Override
     public List<Item> inquiryAllItems() {
         return itemPort.findAll();
