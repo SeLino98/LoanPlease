@@ -1,55 +1,9 @@
-#spring:
-#  jpa:
-#    database: mysql
-#    hibernate.ddl-auto: update
-#    show-sql: true
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-##    url: ENC(emHSBcpo4mfefNAf4+N8YaMj5Icc/x7TdMNkHHbWNsnIRqIhWtwPW7ZxhrNlGUq0an0JTQ7tYDq3Xjw1HMNMnez0iI9UwErplIvm8sZUfT/zt/5OAeL60wKwx6CSlRMFKZhSrYQDqZod9yrZWoInaIjHuKnxGgEz)0
-#    url: ENC(tBXqlmZ4kRQXUoa4OR32ghAH5wHcQkuXhdWxbVqeXorh8lM0HpKfcM0C2Uct1DKhTQtY5NiIXE9RqOqRjeK8ENmoXTMXDwbJVw)
-#    username: ENC(If+lr0Bgn52c/6W9n1fVXw==)
-#    password: ENC(QNafP3XSKlDMepT91l78djeYjVSYmx/9)
-##    password: ENC(u1+wKdcQxgHFhduYG01ySA==)
-##    url: jdbc:mysql://localhost:3306/loanplease_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-##    username: root
-##    password: ssafy
-#jasypt:
-#  encryptor:
-#    bean: jasyptStringEncryptor
-
-
 spring:
-  h2:
-    console:
-      enabled: true
+  profiles:
+    include:
+      - secret
+jasypt:
+  encryptor:
+    bean: jasyptConfigScript
 
-  datasource:
-    url: jdbc:h2:~/loanplease_db;
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true      # 쿼리 로그 포맷 (정렬)
-        show_sql: true        # 쿼리 로그 출력
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 967696996371-1p7htgqhu0e91s442del6bol49kjbb3e.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: "https://loanplease.kr/login/oauth2/code/google"
-#            redirect-uri: http://localhost:8080/login/oauth2/code/google
-            authorization-grant-type: authorization_code
-            scope: email
-
-  jwt:
-    secret: hellomynameisnamhyunchoandiloveyousomuch
+# git ignore test

@@ -1,11 +1,15 @@
 package com.d105.loanplease.domain.auth.oauth;
 
+import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
+import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -23,6 +27,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final TokenProvider tokenProvider;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private static final Long accessExpiredMs = 60*60*60L;
     private static final int accessMaxAge = 60*60;
 
@@ -36,19 +43,20 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
-            CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
-            String email = oauthUser.getName();  // OAuth2 로그인에서 제공받은 이메일
+            CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal(); //구글을 통해 받은 값.
+            String email = oauthUser.getName();  // OAuth2을 통해 제공받은 이메일
             Optional<User> existingUser = userRepository.findByEmail(email);
-
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-                response.sendRedirect("/home");
+                response.sendRedirect("/https://loanplease.kr/");
             } else {
-                // 새 사용자 등록
+                // 새 사용자라면? 등록
+                // 밑에 이 부분이 은행원으로 시작하기 했을 때 DB에 등록되는 코드로 해야된다.
+                //
                 User newUser = new User();
                 newUser.setEmail(email);
-                newUser.setNickname(oauthUser.getName());
-                newUser.setProfileImg(oauthUser.getProfilePictureUrl());
+                newUser.setNickname("당신의 멋진 닉네임");
+                newUser.setProfileImg(oauthUser.getPicture());
                 newUser.setRole("USER");  // 기본 권한 설정
                 userRepository.save(newUser);
 
@@ -57,18 +65,24 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 String refreshToken = tokenProvider.createRefreshJwt(newUser.getEmail());
 
                 // 토큰 저장
-                Token newToken = new Token(newUser.getEmail(), refreshToken, accessToken);
-                tokenRepository.save(newToken);
+                tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
 
                 // 쿠키 설정
-                addCookieToResponse(response, "Authorization", accessToken, accessMaxAge);
-                addCookieToResponse(response, "RefreshToken", refreshToken, refreshMaxAge);
+                //return access Token
+                response.addCookie(createCookie("Authorization", accessToken));
+                //return refresh Token
+                response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
 
-                // 사용자 등록 페이지 또는 환영 페이지로 리다이렉트
-                response.sendRedirect("/welcome");
+                // 사용자 정보 전송
+                // JSON 형태로 응답
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
+
+                // 사용자 등록 페이지 리다이렉트
+                response.sendRedirect("https://loanplease.kr/");
             }
         } catch (Exception e) {
-            logger.error("Authentication Success Handler Error: {}", e.getMessage());
+            logger.error("Authentication Success Handler Error: {}", e );
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

@@ -45,7 +45,6 @@ public class TokenProvider {
     public TokenProvider(AuthenticationManagerBuilder authenticationManagerBuilder,
                          StringRedisTemplate stringRedisTemplate,
                          @Value("${spring.jwt.secret}")  String secret,
-
                          RedisUtility redisUtility,
                          TokenRepository tokenRepository) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
