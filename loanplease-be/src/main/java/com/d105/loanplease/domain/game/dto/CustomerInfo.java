@@ -10,4 +10,5 @@ public class CustomerInfo {
     int age;
     String gender;
     String customerImage;
+    String customerMessage;
 }

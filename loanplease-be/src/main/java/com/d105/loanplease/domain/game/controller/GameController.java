@@ -4,10 +4,7 @@ import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,5 +16,15 @@ public class GameController {
     @GetMapping("/loanrequest")
     public ResponseEntity<GameInfoResponse> getGameInfo(){
         return gameService.getGameInfo();
+    };
+
+    @GetMapping("/score/{mode}")
+    public ResponseEntity<GameInfoResponse> gainScore(@PathVariable int mode){
+        return gameService.gainScore(mode);
+    };
+
+    @PutMapping("/score")
+    public ResponseEntity<GameInfoResponse> saveScore(int score){
+        return gameService.saveScore(score);
     };
 }
