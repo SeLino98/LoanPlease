@@ -2,6 +2,8 @@ package com.d105.loanplease.domain.game.serviceImpl;
 
 import com.d105.loanplease.domain.game.dto.*;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
+import com.d105.loanplease.domain.game.response.ResultResponse;
+import com.d105.loanplease.domain.game.response.ScoreResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public ResponseEntity<GameInfoResponse> gainScore(int mode) {
+    public ResponseEntity<ScoreResponse> gainScore(int mode) {
         switch (mode){
             case 0:
 
@@ -49,7 +51,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public ResponseEntity<GameInfoResponse> saveScore(int score) {
+    public ResponseEntity<ResultResponse> saveScore(int score) {
         return null;
     }
 }
