@@ -1,13 +1,12 @@
 package com.d105.loanplease.global.config;
 
-import com.d105.loanplease.jwt.JWTFilter;
-import com.d105.loanplease.jwt.JWTUtil;
-import com.d105.loanplease.oauth.CustomSuccessHandler;
-import com.d105.loanplease.service.CustomOAuth2UserService;
+import com.d105.loanplease.domain.auth.jwt.JWTFilter;
+import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
+import com.d105.loanplease.domain.auth.service.CustomOAuth2UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,8 +20,8 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
-    private final JWTUtil jwtUtil;
 
+    private final TokenProvider tokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,7 +40,7 @@ public class SecurityConfig {
 
         //JWTFilter 추가
         http
-                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         //oauth2
         http
@@ -55,6 +54,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 public class ServerController {
 
+    //heath_login
     @GetMapping("/api/hi")
     public String test1() {
         return "hi";

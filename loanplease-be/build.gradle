@@ -37,6 +37,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// JWT
+	// jwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.3'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.3'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.3'
@@ -44,6 +45,11 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-oauth2-client' // 이 버전은 예시이므로 프로젝트에 맞는 최신 버전을 사용하세요
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+	//S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
 

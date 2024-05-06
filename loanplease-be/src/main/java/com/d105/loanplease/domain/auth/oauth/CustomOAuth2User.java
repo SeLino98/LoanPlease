@@ -1,4 +1,4 @@
-package com.d105.loanplease.oauth;
+package com.d105.loanplease.domain.auth.oauth;
 
 import com.d105.loanplease.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,8 +39,9 @@ public class CustomOAuth2User implements OAuth2User {
 
         return collection;
     }
-
+    //spring 시큐리티에서 중요하다.
     //여기 getName이 중요!!!
+    //식별자의 역할
     @Override
     public String getName() {
 

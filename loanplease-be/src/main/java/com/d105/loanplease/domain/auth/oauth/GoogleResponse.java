@@ -1,4 +1,4 @@
-package com.d105.loanplease.oauth;
+package com.d105.loanplease.domain.auth.oauth;
 
 import java.util.Map;
 
@@ -29,9 +29,9 @@ public class GoogleResponse implements OAuth2Response{
         return attribute.get("email").toString();
     }
 
-//    @Override
-//    public String getName() {
-//
-//        return attribute.get("name").toString();
-//    }
+    @Override
+    public String getPicture() {
+        return attribute.get("picture").toString();
+    }
+
 }

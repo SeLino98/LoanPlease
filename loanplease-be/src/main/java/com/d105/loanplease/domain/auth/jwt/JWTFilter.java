@@ -1,7 +1,8 @@
-package com.d105.loanplease.jwt;
+package com.d105.loanplease.domain.auth.jwt;
 
 import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.oauth.CustomOAuth2User;
+import com.d105.loanplease.domain.auth.oauth.CustomOAuth2User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,19 +16,43 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
+    private final TokenProvider tokenProvider;
 
-    public JWTFilter(JWTUtil jwtUtil) {
-
-        this.jwtUtil = jwtUtil;
+    public JWTFilter(TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
+    //허용 Uri를 관리하는 메서드
+    private boolean isAllowedPath(String requestUri){
+        List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/swagger-ui/","/api/refresh");
+        return allowedPaths.stream().anyMatch(p -> requestUri.startsWith(p));
+    }
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        try{
+            if (isAllowedPath(request.getRequestURI())){ //허용된 URI인지 확인한다.
+                //특정 경로에 대해 필터링 없이 진행한다.
+                filterChain.doFilter(request,response);
+                return;
+            }
+            //특정 경로가 아니면 Access 토큰을 추출한다.
+//            String accessToken =
+
+
+
+        }catch (ExpiredJwtException e){
+            //401에러
+
+
+        }
 
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
@@ -39,16 +64,19 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         // 특정 경로 요청은 필터링 없이 진행
-        if (request.getRequestURI().startsWith("/api/server")) {
-            log.info("JWT Filter test uri 입니다.");
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (request.getRequestURI().startsWith("/api/server")) {
+//            log.info("JWT Filter test uri 입니다.");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//        if (request.getRequestURI().startsWith("/api/upload")) {
+//            log.info("JWT Filter test uri 입니다.");
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
         for (Cookie cookie : cookies) {
-
             System.out.println(cookie.getName());
             if (cookie.getName().equals("Authorization")) {
-
                 authorization = cookie.getValue();
             }
         }
@@ -67,7 +95,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = authorization;
 
         //토큰 소멸 시간 검증
-        if (jwtUtil.isExpired(token)) {
+        if (tokenProvider.isExpired(token)) {
             System.out.println("token expired");
             filterChain.doFilter(request, response);
 
@@ -76,8 +104,8 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         //토큰에서 email과 role 획득
-        String email = jwtUtil.getEmail(token);
-        String role = jwtUtil.getRole(token);
+        String email = tokenProvider.getEmail(token);
+        String role = tokenProvider.getRole(token);
 
         //userDTO를 생성하여 값 set
         User userDTO = new User();
@@ -94,4 +122,23 @@ public class JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+//    private String updateRefreshToken(String accessToken) {
+//        String newRefreshToken = tokenProvider.
+//                createRefreshJwt(tokenProvider.extractSubject(accessToken));
+//        tokenProvider.updateTokenRepo(tokenProvider.extractSubject(accessToken), newRefreshToken, accessToken);
+//        return newRefreshToken;
+//    }
+
+
+
+    //인가되지 않은 사용자에게 띄어줄 페이지
+    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(message);
+    }
+
+
+
 }
