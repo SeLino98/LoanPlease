@@ -7,5 +7,7 @@ import java.util.List;
 public interface ItemUseCase {
 
     List<Item> inquiryAllItems();
-    Item inquiryItemById(Long id);
+    Item inquiryItemById(Long itemId);
+    void expandSlot(Long userId);
+    void purchaseItem(Long itemId, Long userId);
 }

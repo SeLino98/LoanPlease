@@ -50,4 +50,11 @@ public class User {
         Assert.isTrue(point >= price, "구매할 포인트가 부족합니다.");
         this.point -= price;
     }
+
+    // 유저 슬롯 확장
+    public void expandSlot(Integer price) {
+        Assert.isTrue(this.slot < 5, "슬롯 확장을 더 이상 할 수 없습니다.");
+        this.purchase(price);
+        this.slot++;
+    }
 }

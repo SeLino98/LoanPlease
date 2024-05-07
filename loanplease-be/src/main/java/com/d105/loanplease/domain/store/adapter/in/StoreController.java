@@ -51,11 +51,15 @@ public class StoreController {
 
     @Operation(summary = "슬롯 구매", description = "슬롯 확장 아이템을 구매합니다.")
     @PostMapping("/items/slot")
-    public void purchaseSlot() {}
+    public void purchaseSlot() {
+//        itemUseCase.expandSlot();
+    }
 
     @Operation(summary = "대출 상품 구매", description = "대출 상품을 구매합니다.")
     @PostMapping("/items/loan")
-    public void purchaseLoan() {}
+    public void purchaseLoan() {
+//        loanUseCase.purchaseLoan();
+    }
 
     @Operation(summary = "일회성 아이템 구매", description = "게임 시간 추가, VIP, 1회 방어권 아이템을 구매합니다.")
     @PostMapping("/items/oneoff")
