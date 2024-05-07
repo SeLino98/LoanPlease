@@ -1,5 +1,6 @@
 package com.d105.loanplease.domain.user.entity;
 
+import com.d105.loanplease.domain.store.domain.Slot;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ public class User {
     private String name;
     private String email;
     private Integer score;
-    private Integer slot;
+    private Integer slotNum;
     private String profileImg;
     private Integer point;
 
@@ -40,6 +41,10 @@ public class User {
 
     @OneToMany(mappedBy = "to")
     private List<Friendship> toList = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "slot_id")
+    private Slot slot;
 
     // 유저가 해당 대출 상품을 가지고 있는지 확인
     public void hasLoan(Long loanId) {
@@ -64,8 +69,8 @@ public class User {
 
     // 유저 슬롯 확장
     public void expandSlot(Integer price) {
-        Assert.isTrue(this.slot < 5, "슬롯 확장을 더 이상 할 수 없습니다.");
+        Assert.isTrue(this.slotNum < 5, "슬롯 확장을 더 이상 할 수 없습니다.");
         this.purchase(price);
-        this.slot++;
+        this.slotNum++;
     }
 }
