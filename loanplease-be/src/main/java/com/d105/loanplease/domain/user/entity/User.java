@@ -3,6 +3,8 @@ package com.d105.loanplease.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "user_tb")
