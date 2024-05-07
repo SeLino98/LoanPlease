@@ -54,7 +54,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-                response.sendRedirect("/https://loanplease.kr/");
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:8080/");
+
+                log.info("이미존재쓰<>");
+
             } else {
                 // 새 사용자라면? 등록
                 // 밑에 이 부분이 은행원으로 시작하기 했을 때 DB에 등록되는 코드로 해야된다.
@@ -81,12 +85,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
                 logger.info("DDD");
                 // 사용자 정보 전송
-                // JSON 형태로 응답
+//                 JSON 형태로 응답
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
 
                 // 사용자 등록 페이지 리다이렉트
-                response.sendRedirect("https://loanplease.kr/");
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );

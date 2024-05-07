@@ -4,8 +4,10 @@ import com.d105.loanplease.domain.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "user_item_tb")
