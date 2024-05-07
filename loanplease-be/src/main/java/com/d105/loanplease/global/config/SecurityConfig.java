@@ -3,7 +3,9 @@ package com.d105.loanplease.global.config;
 import com.d105.loanplease.domain.auth.jwt.JWTFilter;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
+import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.auth.service.CustomOAuth2UserService;
+import com.d105.loanplease.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +22,9 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
-
     private final TokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,7 +43,7 @@ public class SecurityConfig {
 
         //JWTFilter 추가
         http
-                .addFilterBefore(new JWTFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository,userRepository), UsernamePasswordAuthenticationFilter.class);
 
         //oauth2
         http

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -48,14 +49,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
+
+
             CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal(); //구글을 통해 받은 값.
             String email = oauthUser.getName();  // OAuth2을 통해 제공받은 이메일
+
+
             logger.info("AAA");
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-                response.sendRedirect("https://loanplease.kr/");
-//                response.sendRedirect("http://localhost:8080/");
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:8080/");
 
                 log.info("이미존재쓰<>");
 
@@ -72,7 +77,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //                userRepository.save(newUser);
                 logger.info("AAA");
                 // 토큰 생성
-                String accessToken = tokenProvider.createAccessJwt(newUser.getEmail(), newUser.getRole());
+
+                String accessToken = tokenProvider.createAccessJwt(authentication);
                 String refreshToken = tokenProvider.createRefreshJwt(newUser.getEmail());
                 logger.info("BBB");
                 // 토큰 저장
@@ -90,8 +96,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
 
                 // 사용자 등록 페이지 리다이렉트
-                response.sendRedirect("https://loanplease.kr/");
-//                response.sendRedirect("http://localhost:5173/");
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );

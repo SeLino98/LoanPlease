@@ -7,20 +7,30 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.text.html.Option;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
@@ -34,7 +44,6 @@ public class TokenProvider {
 
     private final RedisUtility redisUtility;
     private final TokenRepository tokenRepository;
-
     private static final String AUTHORITIES_KEY = "auth";
     private static SecretKey secretKey;
     private static final Long accessExpiredMs = 60*60*60L;
@@ -42,6 +51,10 @@ public class TokenProvider {
     private static final Long refreshExpiredMs = 604800*1000L;
     private static final int refreshMaxAge = 604800; //7일;
 
+    @Value("${spring.jwt.access.header}")
+    private String accessHeader;
+    @Value("${spring.jwt.refresh.header}")
+    private String refreshHeader;
     public TokenProvider(AuthenticationManagerBuilder authenticationManagerBuilder,
                          StringRedisTemplate stringRedisTemplate,
                          @Value("${spring.jwt.secret}")  String secret,
@@ -53,6 +66,29 @@ public class TokenProvider {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.tokenRepository = tokenRepository;
     }
+    public Authentication getAuthentication(String accessToken) {
+        Claims claims = parseClaims(accessToken);
+
+        Collection<? extends GrantedAuthority> authorities = Arrays
+                .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        User principal = new User(claims.getSubject(), "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
+    }
+
+    //토큰을 추출한다.
+    public Optional<String> extractAccessToken(HttpServletRequest request){
+        return Optional.ofNullable(request.getHeader(accessHeader))
+                .map(accessToken -> accessToken.substring(7));
+    }
+    public Optional<String> extractRefreshToken(HttpServletRequest request){
+        return Optional.ofNullable(request.getHeader(refreshHeader))
+                .map(refreshToken -> refreshToken.substring(7));
+    }
+
 
     //토큰에서 사용자 정보 추출
     public String extractSubject(String accessToken){
@@ -79,11 +115,12 @@ public class TokenProvider {
     }
 
     //엑세스 토큰
-    public String createAccessJwt(String email, String role) {
-        //ACCESS TOken
+    public String createAccessJwt(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
         return Jwts.builder()
-                .claim("email", email) //내가 누구인지
-                .claim("role", role)
+                .setSubject(authentication.getName()).claim(AUTHORITIES_KEY,authorities)
                 .issuedAt(new Date(System.currentTimeMillis())) //발행시간
                 .expiration(new Date(System.currentTimeMillis() + accessExpiredMs)) //만료 시간
                 .signWith(secretKey) //비밀키
@@ -125,6 +162,21 @@ public class TokenProvider {
 
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+    }
+
+
+    public void checkRefreshTokenAndReIssueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+        String newAccessToken = createAccessJwt(getAuthentication(extractAccessToken(request).orElse(null)));
+        tokenRepository.findByRefreshToken(refreshToken)
+                .ifPresent(token -> {
+                    String newRefreshToken = updateRefreshToken(newAccessToken);
+//                            tokenProvider.updateTokenRepo(token.getId(), newR efreshToken, tokenProvider.createAccessToken(authentication)
+                    System.out.println("save new Token to TokenRepository ( Redis )");
+                    updateTokenRepo(token.getId(), newRefreshToken, newAccessToken);
+                    System.out.println(tokenRepository.findById(token.getId()));
+                    response.setHeader(accessHeader, newAccessToken);
+                    response.setHeader(refreshHeader, newRefreshToken);
+                });
     }
 
 

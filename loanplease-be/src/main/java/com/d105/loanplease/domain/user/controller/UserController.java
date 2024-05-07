@@ -13,6 +13,9 @@ public class UserController {
 
     private final UserService userService;
 
+    //회원가입
+
+
     // 사용자 정보 조회
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
