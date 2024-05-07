@@ -9,6 +9,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,13 +23,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
+
+@Slf4j
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 //    private final JWTUtil jwtUtil;
 
     private final TokenProvider tokenProvider;
-
+    private final Logger logger = LoggerFactory.getLogger(CustomSuccessHandler.class);
     @Autowired
     private UserRepository userRepository;
 
@@ -45,6 +50,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         try {
             CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal(); //구글을 통해 받은 값.
             String email = oauthUser.getName();  // OAuth2을 통해 제공받은 이메일
+            logger.info("AAA");
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
@@ -53,26 +59,27 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 // 새 사용자라면? 등록
                 // 밑에 이 부분이 은행원으로 시작하기 했을 때 DB에 등록되는 코드로 해야된다.
                 //
+                logger.info("AAA");
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setNickname("당신의 멋진 닉네임");
                 newUser.setProfileImg(oauthUser.getPicture());
                 newUser.setRole("USER");  // 기본 권한 설정
-                userRepository.save(newUser);
-
+//                userRepository.save(newUser);
+                logger.info("AAA");
                 // 토큰 생성
                 String accessToken = tokenProvider.createAccessJwt(newUser.getEmail(), newUser.getRole());
                 String refreshToken = tokenProvider.createRefreshJwt(newUser.getEmail());
-
+                logger.info("BBB");
                 // 토큰 저장
                 tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
-
+                logger.info("CCC");
                 // 쿠키 설정
                 //return access Token
                 response.addCookie(createCookie("Authorization", accessToken));
                 //return refresh Token
                 response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
-
+                logger.info("DDD");
                 // 사용자 정보 전송
                 // JSON 형태로 응답
                 response.setContentType("application/json;charset=UTF-8");
