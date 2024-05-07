@@ -3,6 +3,8 @@ package com.d105.loanplease.domain.game.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class CustomerInfo {
@@ -11,4 +13,5 @@ public class CustomerInfo {
     String gender;
     String customerImage;
     String customerMessage;
+    List<Boolean> customerMaterials;
 }

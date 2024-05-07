@@ -3,11 +3,13 @@ package com.d105.loanplease.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "user_tb")
@@ -22,6 +24,7 @@ public class User {
     private Integer score;
     private Integer slot;
     private String profileImg;
+    private Integer point;
 
     @OneToMany(mappedBy = "user")
     private List<UserItem> userItemList = new ArrayList<>();
