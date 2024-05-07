@@ -96,7 +96,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
 
                 // 사용자 등록 페이지 리다이렉트
-                response.sendRedirect("https://loanplease.kr/login");
+                response.sendRedirect("https://loanplease.kr/");
 //                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
