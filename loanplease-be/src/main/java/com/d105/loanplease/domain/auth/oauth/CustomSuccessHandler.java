@@ -59,8 +59,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:8080/");
+                response.sendRedirect("https://loanplease.kr/");
+//                response.sendRedirect("http://localhost:8080/");
 
                 log.info("이미존재쓰<>");
 
@@ -82,13 +82,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 String refreshToken = tokenProvider.createRefreshJwt(newUser.getEmail());
                 logger.info("BBB");
                 // 토큰 저장
-                tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
+//                tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
                 logger.info("CCC");
                 // 쿠키 설정
                 //return access Token
-                response.addCookie(createCookie("Authorization", accessToken));
-                //return refresh Token
-                response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
+//                response.addCookie(createCookie("Authorization", accessToken));
+//                //return refresh Token
+//                response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
                 logger.info("DDD");
                 // 사용자 정보 전송
 //                 JSON 형태로 응답
@@ -96,8 +96,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
 
                 // 사용자 등록 페이지 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:5173/");
+                response.sendRedirect("https://loanplease.kr/login");
+//                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );
