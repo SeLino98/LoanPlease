@@ -1,7 +1,6 @@
 package com.d105.loanplease.domain.user.entity;
 
-import com.d105.loanplease.domain.loan.entity.Loan;
-import com.d105.loanplease.domain.user.entity.User;
+import com.d105.loanplease.domain.store.domain.Loan;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,4 +22,20 @@ public class UserLoan {
     @ManyToOne
     @JoinColumn(name = "loan_id")
     private Loan loan;
+
+    public UserLoan(Loan loan, User user) {
+        this.user = user;
+        this.loan = loan;
+    }
+
+    // 대출 상품 구매
+    public static UserLoan purchaseLoan(Loan loan, User user) {
+        UserLoan userLoan = new UserLoan(loan, user);
+
+        user.hasLoan(loan.getLoanId()); // 이미 보유한 대출 상품인지 체크
+        user.getUserLoanList().add(userLoan);
+        user.purchase(loan.getPrice()); // 포인트가 부족한지 체크
+
+        return userLoan;
+    }
 }
