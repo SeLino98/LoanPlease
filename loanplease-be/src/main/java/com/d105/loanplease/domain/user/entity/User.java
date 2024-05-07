@@ -45,6 +45,14 @@ public class User {
         }
     }
 
+    // 유저가 해당 아이템을 산 적이 있는지 확인
+    public Long hasItemHistory(Long itemId) {
+        for(UserItem userItem: userItemList) {
+            if(userItem.getItem().getItemId()==itemId) return userItem.getUserItemId();
+        }
+        return null;
+    }
+
     // 상점에서 무언가를 구매
     public void purchase(Integer price) {
         Assert.isTrue(point >= price, "구매할 포인트가 부족합니다.");
