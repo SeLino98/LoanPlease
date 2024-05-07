@@ -54,8 +54,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:8080/");
+                response.sendRedirect("https://loanplease.kr/");
+//                response.sendRedirect("http://localhost:8080/");
 
                 log.info("이미존재쓰<>");
 
@@ -90,8 +90,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
 
                 // 사용자 등록 페이지 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:5173/");
+                response.sendRedirect("https://loanplease.kr/");
+//                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );
