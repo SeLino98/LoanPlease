@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum IncomeType {
     COMMERCIAL("Commercial associate", "상인"),
-    WORKING("Working", "바나나"),
+    WORKING("Working", "근로자"),
     STATE("State servant", "공무원"),
     PENISIONER("Pensioner", "연금 수령"),
     STUDENT("Student", "학생");
