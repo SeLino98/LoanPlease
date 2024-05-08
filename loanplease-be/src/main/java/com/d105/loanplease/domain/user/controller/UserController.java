@@ -20,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @Validated
 @RequestMapping("/api/auth")
@@ -55,8 +57,7 @@ public class UserController {
     @PutMapping("/")
     public ResponseEntity<BaseResponseBody<Void>> updateUser
             (@RequestParam String nickname,
-             @RequestParam("profileImage") MultipartFile profileImage) {
-
+             @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
         userService.updateUserById(nickname, profileImage);
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
     }
@@ -67,12 +68,12 @@ public class UserController {
             @RequestParam("nickname") String nickname) {
         boolean isAvailable = userService.isNicknameAvailable(nickname);
         return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));
-    }
+    }//end
 
     //
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<BaseResponseBody<Void>> deleteUser(@PathVariable Long userId) {
-        userService.deleteUserById(userId);
+    @DeleteMapping("/") //난중에 구현..
+    public ResponseEntity<BaseResponseBody<Void>> deleteUser() {
+//        userService.deleteUserById();
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
     }
 

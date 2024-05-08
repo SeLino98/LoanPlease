@@ -11,6 +11,7 @@ import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import com.d105.loanplease.global.util.S3Image;
+import com.d105.loanplease.global.util.SecurityUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.hibernate.query.sqm.tree.SqmNode.log;
 
@@ -53,6 +55,16 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
+
+    private String saveImage(MultipartFile image, String userEmail) throws IOException {
+        String mainImgUrl = "";
+        if (image!=null){
+            //널이 아니면 저장한다.
+            mainImgUrl = imageSave.saveImageS3(image,"updated"+ userEmail + ".png", "/userProfileImage");
+        }
+        return mainImgUrl;
+    }
+
     //회원 가입 기능
     @Transactional
     public UserSignUpRes signUp(UserSignUpReq userReq, MultipartFile image) throws IOException {
@@ -61,11 +73,8 @@ public class UserService {
             //기존에 회원이 존재한다면?
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-        String mainImgUrl = "";
-        if (image!=null){
-            //널이 아니면 저장한다.
-            mainImgUrl = imageSave.saveImageS3(image,"updated"+ userReq.getEmail() + ".png", "/articleIMG");
-        }
+
+        String mainImgUrl = saveImage(image,userReq.getEmail()); //S3에 저장한다.
 
         User newUser = User.builder()
                 .nickname(userReq.getNickname())
@@ -78,7 +87,6 @@ public class UserService {
 
         //userRepository.save가 성공하면
         //access와 refresh 토큰을 발급하고 저장한다.
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             logger.info(authentication.toString());
@@ -91,7 +99,6 @@ public class UserService {
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(authentication);
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
-
 
         //토큰을 redis에 올린다.
         tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
@@ -134,26 +141,38 @@ public class UserService {
         cookie.setHttpOnly(true);  // JS를 통한 접근 방지
         return cookie;
     }
-    // 회원 탈퇴 기능
+
+
+    // 회원 탈퇴 기능 -> 나중 기능으로 추가
     @Transactional
     public void deleteUserById(Long userId) {
         userRepository.deleteUserById(userId);
     }
 
+
     // 회원 정보 변경 기능
     @Transactional
-    public void updateUserById( String nickname, MultipartFile profileImage) {
-        if (!profileImage.isEmpty()){
+    public void updateUserById( String nickname, MultipartFile image) throws IOException {
+        try{
+            //JWT를 통해 회원 아이디값 가져오기
+//            String userEmail = SecurityUtil.getCurrentUserEmail();
+            User getUserInfo = SecurityUtil.getCurrentUserDetails();
+            String userEmail = getUserInfo.getEmail();
+            Long userId = getUserInfo.getUserId();
             //S3에 사진 저장
-
+            String mainImgUrl = saveImage(image,userEmail);
+            //빌더
+            // 기존 User 정보에 새 데이터 적용
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalStateException("User not found with ID: " + userId));
+            user.setNickname(nickname);
+            user.setProfileImg(mainImgUrl);
+            //save
+            // 변경된 사용자 정보 저장
+            userRepository.save(user);
+        } catch (IllegalStateException e) {
+            // 예외를 호출자에게 전달
+            throw new IllegalStateException("Failed to update user: " + e.getMessage(), e);
         }
-        //JWT를 통해 회원 아이디값 가져오기
-
-        //빌더
-
-        //save
-//        userRepository.updateUserById(nickname, profileImage);
     }
-
-
 }
