@@ -4,6 +4,7 @@ import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.domain.user.response.UserSignUpRes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -49,55 +50,44 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
-
-
             CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal(); //구글을 통해 받은 값.
             String email = oauthUser.getName();  // OAuth2을 통해 제공받은 이메일
-
-
             logger.info("AAA");
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
-                response.sendRedirect("https://loanplease.kr/");
-//                response.sendRedirect("http://localhost:8080/");
-
-                log.info("이미존재쓰<>");
+                //기존 유저이니까 refresh와 access를 둘 다 갱신해서 준다.
+                String accessToken = tokenProvider.createAccessJwt(authentication); // user의 auth 정보에 따른 access 갱신
+                String refreshToken = tokenProvider.createRefreshJwt(accessToken); //user의 이메일정보에 따른 refresh 토큰 갱신
+                logger.info("CCC");
+                // 쿠키 설정
+                //return access Token
+                response.addCookie(createCookie("Authorization", accessToken));
+                //return refresh Token
+                response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:5173/");
+                //END
 
             } else {
                 // 새 사용자라면? 등록
                 // 밑에 이 부분이 은행원으로 시작하기 했을 때 DB에 등록되는 코드로 해야된다.
-                //
                 logger.info("AAA");
-                User newUser = new User();
-                newUser.setEmail(email);
-                newUser.setNickname("당신의 멋진 닉네임");
-                newUser.setProfileImg(oauthUser.getPicture());
-                newUser.setRole("USER");  // 기본 권한 설정
-//                userRepository.save(newUser);
-                logger.info("AAA");
-                // 토큰 생성
+                UserSignUpRes user = UserSignUpRes.builder().email(email).nickname("당신의 이름을 지어주세요!")
+                        .profileImg(oauthUser.getPicture()).build();
 
-                String accessToken = tokenProvider.createAccessJwt(authentication);
-                String refreshToken = tokenProvider.createRefreshJwt(newUser.getEmail());
-                logger.info("BBB");
-                // 토큰 저장
-//                tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
-                logger.info("CCC");
-                // 쿠키 설정
-                //return access Token
-//                response.addCookie(createCookie("Authorization", accessToken));
-//                //return refresh Token
-//                response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
-                logger.info("DDD");
-                // 사용자 정보 전송
+                logger.info("AAA");
 //                 JSON 형태로 응답
+                // GOOGLE의 대한 User의 정보를 담고,
+                // json형태로 준다.
+                // 프론트는 userController에서 /api/register를 이용해서 회원을 등록한다.
+                // 등록하면 그 쪽 코드에서 회원에 대한 cookie 값을 생성해서 준다.
+                //Json형태로 응답.
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(newUser));
-
+                response.getWriter().write(new ObjectMapper().writeValueAsString(user));
                 // 사용자 등록 페이지 리다이렉트
-                response.sendRedirect("https://loanplease.kr/");
-//                response.sendRedirect("http://localhost:5173/");
+//                response.sendRedirect("https://loanplease.kr/");
+                response.sendRedirect("http://localhost:5173/");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );

@@ -1,6 +1,7 @@
 package com.d105.loanplease.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +14,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "user_tb")
 public class User implements UserDetails {
 
@@ -24,9 +25,9 @@ public class User implements UserDetails {
 
     private String nickname;
     private String email;
+    private String profileImg;
     private Integer score;
     private Integer slot;
-    private String profileImg;
     private String role;
 
     @OneToMany(mappedBy = "user")
