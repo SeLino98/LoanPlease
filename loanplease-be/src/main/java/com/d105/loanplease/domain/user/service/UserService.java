@@ -142,7 +142,7 @@ public class UserService {
 
     // 회원 정보 변경 기능
     @Transactional
-    public void updateUserById( String nickname, MultipartFile profileImg) {
+    public void updateUserById( String nickname, MultipartFile profileImage) {
         if (!profileImage.isEmpty()){
             //S3에 사진 저장
 
@@ -151,8 +151,8 @@ public class UserService {
 
         //빌더
 
-
-        userRepository.updateUserById(nickname, profileImg);
+        //save
+//        userRepository.updateUserById(nickname, profileImage);
     }
 
 
