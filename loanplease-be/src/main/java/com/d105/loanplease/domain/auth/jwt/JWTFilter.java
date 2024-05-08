@@ -1,8 +1,6 @@
 package com.d105.loanplease.domain.auth.jwt;
 
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
-import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.domain.auth.oauth.CustomOAuth2User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -53,33 +51,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request,response);
                 return;
             }
-            //특정 경로가 아니면 Access 토큰을 추출한다.
-            //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
-//            String authorization = null;
-//            Cookie[] cookies = request.getCookies();
-//            if(cookies==null) {
-//                log.info("현재 cookies가 null입니다.");
-//                filterChain.doFilter(request, response);
-//                return;   //배포 시 예외처리
-//            }
-//            for (Cookie cookie : cookies) {
-//                System.out.println(cookie.getName());
-//                if (cookie.getName().equals("Authorization")) {
-//                    authorization = cookie.getValue();
-//                }
-//                if(cookie.getName().equals("refreshToken")){
-//                }
-//            }
-//            //Authorization 헤더 검증
-//            if (authorization == null) {
-//
-//                System.out.println("token null");
-//                filterChain.doFilter(request, response);
-//
-//                //조건이 해당되면 메소드 종료 (필수)
-//                return;
-//            }
-//
 //            //토큰
 //            String token = authorization;
             String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
@@ -96,34 +67,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request,response);
             }
-
-//            //토큰 소멸 시간 검증
-//            if (tokenProvider.isExpired(token)) {
-//                System.out.println("token expired");
-//                filterChain.doFilter(request, response);
-//
-//                //조건이 해당되면 메소드 종료 (필수)
-//                return;
-//            }
-//
-//            //토큰에서 email과 role 획득
-//            String email = tokenProvider.getEmail(token);
-//            String role = tokenProvider.getRole(token);
-//
-//            //userDTO를 생성하여 값 set
-//            User userDTO = new User();
-//            userDTO.setEmail(email);
-//            userDTO.setRole(role);
-//
-//            //UserDetails에 회원 정보 객체 담기
-//            CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
-//
-//            //스프링 시큐리티 인증 토큰 생성
-//            Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-//            //세션에 사용자 등록
-//            SecurityContextHolder.getContext().setAuthentication(authToken);
-//            filterChain.doFilter(request, response);
-
         }catch (ExpiredJwtException e){
             //401에러
 

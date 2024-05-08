@@ -67,7 +67,7 @@ public class UserService {
 
     //회원 가입 기능
     @Transactional
-    public UserSignUpRes signUp(UserSignUpReq userReq, MultipartFile image) throws IOException {
+    public UserSignUpRes  signUp(UserSignUpReq userReq, MultipartFile image) throws IOException {
 
         if (userRepository.findByEmail(userReq.getEmail()).isPresent()){
             //기존에 회원이 존재한다면?

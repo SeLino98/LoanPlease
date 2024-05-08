@@ -40,7 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         else {
             return null;
         }
-        User userDTO = User.builder().email(oAuth2Response.getEmail()).role("ROLE_USER").build();
+        User userDTO = User.builder().email(oAuth2Response.getEmail()).profileImg(oAuth2Response.getPicture()).role("ROLE_USER").build();
 
         return new CustomOAuth2User(userDTO);
 

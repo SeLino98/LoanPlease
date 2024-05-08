@@ -42,8 +42,7 @@ public class UserController {
             @RequestParam("email") String email,
             @RequestParam("nickname") String nickname,
             @RequestParam("image") MultipartFile image
-    )
-            throws Exception {
+    ) throws Exception {
         UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).build();
         try {
             UserSignUpRes userSignUpRes = userService.signUp(userReq, image);
