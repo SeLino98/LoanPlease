@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
+                                .requestMatchers("/api/auth/nickname/**").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 );

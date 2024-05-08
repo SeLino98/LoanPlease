@@ -69,7 +69,7 @@ public class UserController {
     //닉네임이 사용 중인지 확인한다.
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(
-            @RequestParam("nickname") String nickname) {
+            @PathVariable("nickname") String nickname) {
         log.info("ASDas");log.info("ASDas");log.info("ASDas");log.info("ASDas");
         boolean isAvailable = userService.isNicknameAvailable(nickname);
         return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));

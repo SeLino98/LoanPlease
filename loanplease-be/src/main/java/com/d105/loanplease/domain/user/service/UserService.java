@@ -45,7 +45,7 @@ public class UserService {
 
     private final TokenProvider tokenProvider;
     private final HttpServletResponse response;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     @Value("${spring.jwt.access.header}")
     private String accessHeader;
     @Value("${spring.jwt.refresh.header}")
