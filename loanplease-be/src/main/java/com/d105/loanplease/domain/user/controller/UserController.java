@@ -12,6 +12,8 @@ import com.d105.loanplease.global.exception.Exceptions;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,9 +26,11 @@ import java.io.IOException;
 
 @RestController
 @Validated
+@Slf4j
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class UserController {
+
 
     //회원가입
     private final UserService userService;
@@ -66,11 +70,12 @@ public class UserController {
     @GetMapping("/nickname/{nickname}")
     public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(
             @RequestParam("nickname") String nickname) {
+        log.info("ASDas");log.info("ASDas");log.info("ASDas");log.info("ASDas");
         boolean isAvailable = userService.isNicknameAvailable(nickname);
         return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));
     }//end
 
-    //
+
     @DeleteMapping("/") //난중에 구현..
     public ResponseEntity<BaseResponseBody<Void>> deleteUser() {
 //        userService.deleteUserById();

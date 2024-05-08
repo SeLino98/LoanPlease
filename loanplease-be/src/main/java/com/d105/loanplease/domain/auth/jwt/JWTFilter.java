@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,12 +32,16 @@ public class JWTFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
-
-
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+//    Ant 스타일 패턴 매칭 사용
+//    Spring에서는 Ant 스타일의 경로 매칭을 지원하여 보다 유연하게 URL 패턴을 처리할 수 있습니다.
+//    PathMatcher와 같은 클래스를 사용하여 Ant 스타일의 패턴을 사용할 수 있습니다.
     //허용 Uri를 관리하는 메서드
     private boolean isAllowedPath(String requestUri){
-        List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/swagger-ui/","/api/refresh","/","/api/auth/register");
-        return allowedPaths.stream().anyMatch(p -> requestUri.startsWith(p));
+        List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/","/api/refresh","/api/auth/register");
+
+//        return allowedPaths.stream().anyMatch(p -> requestUri.startsWith(p));
+        return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
     @Override
     protected void doFilterInternal(
