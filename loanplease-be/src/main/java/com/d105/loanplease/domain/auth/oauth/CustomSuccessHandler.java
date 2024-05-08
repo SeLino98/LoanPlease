@@ -65,8 +65,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.addCookie(createCookie("Authorization", accessToken));
                 //return refresh Token
                 response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:5173/");
+                response.sendRedirect("https://loanplease.kr/"); //서버에 올릴 땐 이걸로
+//                response.sendRedirect("http://localhost:5173/");
                 //END
 
             } else {
@@ -86,8 +86,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(user));
                 // 사용자 등록 페이지 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/");
-                response.sendRedirect("http://localhost:5173/");
+                response.sendRedirect("https://loanplease.kr/signup");
+//                response.sendRedirect("http://localhost:5173/signup");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );

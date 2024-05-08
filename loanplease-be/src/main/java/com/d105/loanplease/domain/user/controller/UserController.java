@@ -36,14 +36,11 @@ public class UserController {
             @RequestParam("email") String email,
             @RequestParam("nickname") String nickname,
             @RequestParam("image") MultipartFile image
-            )
-            throws Exception{
-//        UserSignUpRes memberId = userService.signUp(userReq);
-//        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(0, memberId));
+    )
+            throws Exception {
         UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).build();
-        //new UserSignUpReq(nickname, email);
         try {
-            UserSignUpRes userSignUpRes = userService.signUp(userReq,image);
+            UserSignUpRes userSignUpRes = userService.signUp(userReq, image);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
         } catch (Exceptions e) {
@@ -55,12 +52,21 @@ public class UserController {
         }
     }
 
+    @PutMapping("/")
+    public ResponseEntity<BaseResponseBody<Void>> updateUser
+            (@RequestParam String nickname,
+             @RequestParam("profileImage") MultipartFile profileImage) {
 
-    //신규 유저인지는 구글로부터 정보 받고 거기서 처리한다.
-    @GetMapping("/email/{email}")
-    public ResponseEntity<BaseResponseBody<User>> getUserByEmail(@PathVariable String email) {
-        User user = userService.findUserByEmail(email);
-        return ResponseEntity.ok(BaseResponseBody.of("200", user));
+        userService.updateUserById(nickname, profileImage);
+        return ResponseEntity.ok(BaseResponseBody.of("200", null));
+    }
+
+    //닉네임이 사용 중인지 확인한다.
+    @GetMapping("/nickname/{nickname}")
+    public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(
+            @RequestParam("nickname") String nickname) {
+        boolean isAvailable = userService.isNicknameAvailable(nickname);
+        return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));
     }
 
     //
@@ -70,15 +76,17 @@ public class UserController {
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<BaseResponseBody<Void>> updateUser(@PathVariable Long userId, @RequestParam String nickname, @RequestParam(required = false) String profileImg) {
-        userService.updateUserById(userId, nickname, profileImg);
-        return ResponseEntity.ok(BaseResponseBody.of("200", null));
-    }
-
-    @GetMapping("/nickname/{nickname}")
-    public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(@PathVariable String nickname) {
-        boolean isAvailable = userService.isNicknameAvailable(nickname);
-        return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));
-    }
 }
+
+
+
+
+    //신규 유저인지는 구글로부터 정보 받고 거기서 처리한다.
+//    @GetMapping("/email/{email}")
+//    public ResponseEntity<BaseResponseBody<User>> getUserByEmail(@PathVariable String email) {
+//        User user = userService.findUserByEmail(email);
+//        return ResponseEntity.ok(BaseResponseBody.of("200", user));
+//    }
+
+
+

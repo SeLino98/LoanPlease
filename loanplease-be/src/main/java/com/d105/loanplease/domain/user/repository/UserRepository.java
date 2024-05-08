@@ -20,7 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteUserById(Long userId);
 
     // 사용자 정보 변경 (회원 정보 변경) - ID를 사용
-    @Modifying
-    @Query("UPDATE User u SET u.nickname = :nickname, u.profileImg = :profileImg WHERE u.userId = :userId")
-    void updateUserById(Long userId, String nickname, String profileImg);
+//    @Modifying
+//    @Query("UPDATE User u SET u.nickname = :nickname, u.profileImg = :profileImg WHERE u.userId = :userId")
+//    void updateUserById(String nickname, String profileImg);
+//}
 }

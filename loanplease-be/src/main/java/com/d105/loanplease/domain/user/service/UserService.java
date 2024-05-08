@@ -113,6 +113,12 @@ public class UserService {
                 .build();
 
     }
+
+    // 닉네임 중복 체크 기능
+    public boolean isNicknameAvailable(String nickname) {
+        return userRepository.findByNickname(nickname).isEmpty();
+    }
+
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
@@ -136,13 +142,17 @@ public class UserService {
 
     // 회원 정보 변경 기능
     @Transactional
-    public void updateUserById(Long userId, String nickname, String profileImg) {
-        userRepository.updateUserById(userId, nickname, profileImg);
-    }
+    public void updateUserById( String nickname, MultipartFile profileImg) {
+        if (!profileImage.isEmpty()){
+            //S3에 사진 저장
 
-    // 닉네임 중복 체크 기능
-    public boolean isNicknameAvailable(String nickname) {
-        return userRepository.findByNickname(nickname).isEmpty();
+        }
+        //JWT를 통해 회원 아이디값 가져오기
+
+        //빌더
+
+
+        userRepository.updateUserById(nickname, profileImg);
     }
 
 
