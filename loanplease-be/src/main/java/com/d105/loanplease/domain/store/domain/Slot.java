@@ -25,4 +25,11 @@ public class Slot {
 
     @OneToOne(mappedBy = "slot")
     private User user;
+
+    public static Slot makeSlot(User user) {
+        Slot slot = new Slot();
+        slot.user = user;
+        user.setSlot(slot);
+        return slot;
+    }
 }
