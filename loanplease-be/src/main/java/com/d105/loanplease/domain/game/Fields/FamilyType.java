@@ -9,8 +9,7 @@ public enum FamilyType {
     MARRIED("Married", "기혼"),
     CIVIL("Civil marriage","기혼"),
     SEPERATED("Separated", "별거 중"),
-    SINGLE("Single / not married", "미혼"),
-    WIDOW("Widow", "사별");
+    SINGLE("Single / not married", "미혼");
 
 
     private final String englishName;

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -33,24 +34,52 @@ public class GameServiceImpl implements GameService {
         int min;    // 최소값
         int max;  // 최대값
 
-        // family size : 1.0 ~ 3.0
-        min = 1;
-        max = 3;
-        int familySize = random.nextInt((max-min)+1)+min;
 
-        // child num : 0~7
-        min = 0;
-        max = 7;
-        int childNum = random.nextInt((max - min)+1) + min;
-
+        /**
+         * 가족 유형
+         * */
         // family_type
         FamilyType[] familyTypes = FamilyType.values();
         randomIndex = random.nextInt(familyTypes.length);
         FamilyType familyType = familyTypes[randomIndex];
 
+        // family size : 1.0 ~ 4.0
+        min = 1;
+        max = 4;
+        if(familyType==FamilyType.CIVIL || familyType==FamilyType.MARRIED)
+            min=2;
+
+        int familySize = random.nextInt((max-min)+1)+min;
+
+        // child num : 0~4
+        int childNum = familySize-2;
+        if(familyType==FamilyType.SEPERATED){
+            min = 0; max = childNum;
+            childNum = random.nextInt((max-min)+1)+min;
+        }
+        if(familyType==FamilyType.SINGLE){
+            familySize = 1;
+            childNum = 0;
+        }
+
+
+        /**
+        * 직업 유형
+         * **/
+        // occyp_type
+        OccypType[] occypTypes = OccypType.values();
+        randomIndex = random.nextInt(occypTypes.length);
+        OccypType occypType = occypTypes[randomIndex];
+
         // income total : 27000.0 ~ 1575000
-        min = 30000;
+        min = 300000;
+        if(occypType==OccypType.HIGHSKILL || occypType==OccypType.MEDICINESTAFF || occypType==OccypType.ACCOUNTANTS){
+            min = 1000000;
+        }
+        if(occypType==OccypType.CORESTAFF || occypType==OccypType.MANAGERS) min = 700000;
         max = 1575000;
+        if(occypType==OccypType.LABORERS || occypType==OccypType.LOWSKILL) max = 600000;
+
         int incomeTotal = random.nextInt((max-min)+1)+min;
 
 
@@ -79,15 +108,17 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(eduTypes.length);
         EduType eduType = eduTypes[randomIndex];
 
+        if(incomeType==IncomeType.STUDENT){
+            eduType = EduType.HIGHER;
+            occypType = OccypType.STUDENT;
+        }
+
         // house_type
         HouseType[] houseTypes = HouseType.values();
         randomIndex = random.nextInt(houseTypes.length);
         HouseType houseType = houseTypes[randomIndex];
 
-        // occyp_type
-        OccypType[] occypTypes = OccypType.values();
-        randomIndex = random.nextInt(occypTypes.length);
-        OccypType occypType = occypTypes[randomIndex];
+
 
 
         // YN 여부
@@ -110,8 +141,10 @@ public class GameServiceImpl implements GameService {
 
 
         // 데이터를 보낸다.
-        LoanRequest loanRequest = new LoanRequest(5.5, 3);  // 랜덤 작업 필요
-        String purpose = "부동산 구매 목적";   // 랜덤 작업 필요
+        Purpose[] purposes = Purpose.values();
+        randomIndex = random.nextInt(purposes.length);
+        Purpose purpose = purposes[randomIndex];
+        LoanRequest loanRequest = new LoanRequest(3, 4, purpose.getPurposeKorean());  // 랜덤 작업 필요
 
         int age = daysBirth/360;
         String[] genders = new String[]{"남성", "여성"};
@@ -120,7 +153,15 @@ public class GameServiceImpl implements GameService {
 
         int picNumber = selectPicNumber(age, gender);
 
-        CustomerInfo customerInfo = new CustomerInfo("나싸피", age, gender, picNumber, purpose+"으로 대출해주세요!", new ArrayList<>());
+        List<Boolean> materials = new ArrayList<>();
+        for(int i=0; i<2; i++){
+            int probability = random.nextInt(10);
+            // 10% 확률로 준비물 false
+            if(probability == 0) materials.add(false);
+            else materials.add(true);
+        }
+
+        CustomerInfo customerInfo = new CustomerInfo("나싸피", age, gender, picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
 
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
@@ -129,22 +170,33 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public ResponseEntity<ScoreResponse> gainScore(int mode) {
-        switch (mode){
-            case 0:
-
-
-                break;
-            case 1:
-
-
-                break;
+    public ResponseEntity<ScoreResponse> getAwayCustomer(GameInfo gameInfo) {
+        Score score;
+        // 준비물이 모두 갖춰졌다면 점수 감점
+        if(!gameInfo.getCustomerInfo().getCustomerMaterials().contains(false)){
+            score = new Score(-200, "왜 안해주세요ㅡㅡ", "준비물이 모두 있습니다.");
+        }else{
+            score = new Score(200, "아 맞다", "준비물이 부족합니다.");
         }
 
-        Score score = new Score(500, "감사합니다!", "적합한 대출을 추천했습니다");
         ScoreResponse response = ScoreResponse.createScoreResponse(HttpStatus.OK.value(), "점수를 획득했습니다.", score);
-        BaseResponse<Score> response1 = BaseResponse.createResponse(HttpStatus.OK.value(), "어ㅏㅣㅇ", score);
+        return ResponseEntity.ok(response);
+    }
 
+    @Override
+    public ResponseEntity<ScoreResponse> gainScore(int num, GameInfo gameInfo) {
+        Score score;
+        if(gameInfo.getCustomerInfo().getCustomerMaterials().contains(false)){
+            score = new Score(-200, "아 맞다", "준비물이 부족합니다.");
+        }else{
+
+            score = new Score(-200, "아 맞다", "준비물이 부족합니다.");
+
+        }
+
+
+
+        ScoreResponse response = ScoreResponse.createScoreResponse(HttpStatus.OK.value(), "점수를 획득했습니다.", score);
         return ResponseEntity.ok(response);
     }
 

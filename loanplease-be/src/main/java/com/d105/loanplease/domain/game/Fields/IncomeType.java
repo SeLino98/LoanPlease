@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum IncomeType {
-    COMMERCIAL("Commercial associate", "상인"),
+
+    STUDENT("Student", "학생"),
+    COMMERCIAL("Commercial associate", "사기업"),
     WORKING("Working", "근로자"),
-    STATE("State servant", "공무원"),
-    PENISIONER("Pensioner", "연금 수령"),
-    STUDENT("Student", "학생");
+    STATE("State servant", "공기업");
 
     // 영문명을 반환하는 메서드
     private final String englishName;

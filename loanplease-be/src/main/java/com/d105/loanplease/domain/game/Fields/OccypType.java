@@ -22,6 +22,8 @@ public enum OccypType {
     SECRETARIES("Secretaries", "비서"),
     HR("HR staff", "인사팀"),
     IT("IT staff", "IT 개발자"),
+    GONG("Servant", "공무원"),
+    STUDENT("Student", "학생"),
     LOWSKILL("Low-skill Laborers", "아르바이트"),
     WAITERS("Waiters/barmen staff", "웨이터");
 

@@ -8,4 +8,5 @@ import lombok.Data;
 public class LoanRequest {
     double interest;
     int period;
+    String purpose;
 }
