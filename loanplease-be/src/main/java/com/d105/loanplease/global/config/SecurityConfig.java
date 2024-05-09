@@ -62,7 +62,6 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
                                 .requestMatchers("/api/auth/register/").permitAll()
                                 .requestMatchers("/signup").permitAll()
-                                .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 );

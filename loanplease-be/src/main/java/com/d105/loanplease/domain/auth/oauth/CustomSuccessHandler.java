@@ -76,7 +76,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 //Json형태로 응답.
                 response.addCookie(createCookie("tmpEmail",email));
                 response.addCookie(createCookie("tmpImage",oauthUser.getPicture()));
-                response.addCookie(createCookie("tmpImage",oauthUser.getRole()));
+                response.addCookie(createCookie("userRole",oauthUser.getRole()));
 //                response.setContentType("application/json;charset=UTF-8");
 //                response.getWriter().write(new ObjectMapper().writeValueAsString(user));
                 // 사용자 등록 페이지 리다이렉트
