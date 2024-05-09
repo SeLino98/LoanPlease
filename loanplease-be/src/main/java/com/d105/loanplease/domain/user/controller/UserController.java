@@ -37,15 +37,16 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
+    @CrossOrigin(origins = "https://loanplease.kr/signup")
     @PostMapping("/register")
     public ResponseEntity<BaseResponseBody> registerUser(
             @RequestParam("email") String email,
             @RequestParam("nickname") String nickname,
-            @RequestParam("image") MultipartFile image
+            @RequestParam("profileImage") String profileImage
     ) throws Exception {
-        UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).build();
+        UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).profileImage(profileImage).build();
         try {
-            UserSignUpRes userSignUpRes = userService.signUp(userReq, image);
+            UserSignUpRes userSignUpRes = userService.signUp(userReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
         } catch (Exceptions e) {

@@ -9,4 +9,5 @@ import lombok.Getter;
 public class UserSignUpReq {
     private String nickname;
     private String email;
+    private String profileImage;
 }

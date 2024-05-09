@@ -70,18 +70,16 @@ public class UserService {
 
     //회원 가입 기능
     @Transactional
-    public UserSignUpRes  signUp(UserSignUpReq userReq, MultipartFile image) throws IOException {
-
+    public UserSignUpRes  signUp(UserSignUpReq userReq) throws IOException {
         if (userRepository.findByEmail(userReq.getEmail()).isPresent()){
             //기존에 회원이 존재한다면?
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-
-        String mainImgUrl = saveImage(image,userReq.getEmail()); //S3에 저장한다.
+//        String mainImgUrl = saveImage(userReq.getProfileImage(),userReq.getEmail()); //S3에 저장한다.
         User newUser = User.builder()
                 .nickname(userReq.getNickname())
                 .email(userReq.getEmail())
-                .profileImg(mainImgUrl)
+                .profileImg(userReq.getProfileImage())
                 .score(0)
                 .build();
         Slot slot = Slot.makeSlot(newUser);
