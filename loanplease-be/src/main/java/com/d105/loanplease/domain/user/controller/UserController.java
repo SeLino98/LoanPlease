@@ -27,7 +27,6 @@ import java.io.IOException;
 @RestController
 @Validated
 @Slf4j
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -38,7 +37,7 @@ public class UserController {
     private final TokenRepository tokenRepository;
 
     @CrossOrigin(origins = "https://loanplease.kr:443")
-    @PostMapping("/register")
+    @PostMapping("/api/auth/register")
     public ResponseEntity<BaseResponseBody> registerUser(
             @RequestParam("email") String email,
             @RequestParam("nickname") String nickname,
@@ -58,7 +57,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/")
+    @PutMapping("/api/auth/")
     public ResponseEntity<BaseResponseBody<Void>> updateUser
             (@RequestParam String nickname,
              @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
@@ -67,7 +66,7 @@ public class UserController {
     }
 
     //닉네임이 사용 중인지 확인한다.
-    @GetMapping("/nickname/{nickname}")
+    @GetMapping("/api/auth/nickname/{nickname}")
     public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(
             @PathVariable("nickname") String nickname) {
         log.info("ASDas");log.info("ASDas");log.info("ASDas");log.info("ASDas");
@@ -76,7 +75,7 @@ public class UserController {
     }//end
 
 
-    @DeleteMapping("/") //난중에 구현..
+    @DeleteMapping("/api/auth/") //난중에 구현..
     public ResponseEntity<BaseResponseBody<Void>> deleteUser() {
 //        userService.deleteUserById();
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
