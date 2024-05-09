@@ -28,6 +28,8 @@ public class User implements UserDetails {
     private String profileImg;
     private Integer score;
     private Integer slot;
+
+
     private String role;
 
     @OneToMany(mappedBy = "user")

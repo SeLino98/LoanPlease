@@ -5,6 +5,7 @@ import com.d105.loanplease.domain.friend.service.FriendService;
 import com.d105.loanplease.domain.friend.service.NotificationService;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.util.BaseResponseBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,14 @@ public class FriendRequestController {
         return ResponseEntity.badRequest().body("Invalid sender or receiver ID");
     }
 
+    @PostMapping("/response") //친구 요청에 대한 응답을 한다. true이면 승인, false이면 친구 요청 거절, acceptor 는 요청에 대한 답장받는 사람
+    public ResponseEntity<BaseResponseBody<Boolean>> acceptFriendRequest(@RequestBody boolean isAccept, @RequestBody Long acceptor) {
+
+        return friendService.processFriendRequest(isAccept, acceptor);
+    }
+
+
+}
 //    @PostMapping("/accept/{requestId}")
 //    public ResponseEntity<String> acceptFriendRequest(@PathVariable Long requestId) {
 //        return friendService.processFriendRequest(requestId, true);
@@ -46,5 +55,5 @@ public class FriendRequestController {
 //    public ResponseEntity<String> rejectFriendRequest(@PathVariable Long requestId) {
 //        return friendService.processFriendRequest(requestId, false);
 //    }
-}
+
 

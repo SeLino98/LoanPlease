@@ -18,6 +18,8 @@ public class SecurityUtil {
         }
         throw new IllegalStateException("No authenticated user available");
     }
+
+
     public static Long getCurrentUserId() {
         User userDetails = getCurrentUserDetails();
         if (userDetails != null){

@@ -25,14 +25,10 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         Collection<GrantedAuthority> collection = new ArrayList<>();
-
         collection.add(new GrantedAuthority() {
-
             @Override
             public String getAuthority() {
-
                 return userDTO.getRole();
             }
         });
@@ -44,11 +40,12 @@ public class CustomOAuth2User implements OAuth2User {
     //식별자의 역할
     @Override
     public String getName() {
-
         return userDTO.getEmail();
     }
-
     public String getPicture(){
         return userDTO.getProfileImg();
+    }
+    public String getRole(){
+        return userDTO.getRole();
     }
 }

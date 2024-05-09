@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -59,10 +58,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 response.addCookie(createCookie("Authorization", accessToken));
                 //return refresh Token
                 response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
-                response.sendRedirect("https://loanplease.kr/"); //서버에 올릴 땐 이걸로
+                response.sendRedirect("http://loanplease.kr/"); //서버에 올릴 땐 이걸로
 //                response.sendRedirect("http://localhost:5173/");
                 //END
-
             } else {
                 // 새 사용자라면? 등록
                 // 밑에 이 부분이 은행원으로 시작하기 했을 때 DB에 등록되는 코드로 해야된다.
@@ -78,10 +76,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 //Json형태로 응답.
                 response.addCookie(createCookie("tmpEmail",email));
                 response.addCookie(createCookie("tmpImage",oauthUser.getPicture()));
+                response.addCookie(createCookie("tmpImage",oauthUser.getRole()));
 //                response.setContentType("application/json;charset=UTF-8");
 //                response.getWriter().write(new ObjectMapper().writeValueAsString(user));
                 // 사용자 등록 페이지 리다이렉트
-                response.sendRedirect("https://loanplease.kr/signup");
+                response.sendRedirect("http://loanplease.kr/signup");
 //                response.sendRedirect("http://localhost:5173/signup");
             }
         } catch (Exception e) {

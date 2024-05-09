@@ -19,13 +19,9 @@ public class SseEmitters {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
     public SseEmitter add(SseEmitter emitter, Long id) {
         //특정 id 에 따른 emiiter를 저장한다.
-
         this.emitters.put(id,emitter);
-
         log.info("new emitter added: {}", emitter);
-
         log.info("emitter list size: {}", emitters.size());
-
         emitter.onCompletion(() -> {  
             log.info("onCompletion callback");
             //성공하면 기존에 있는 토큰을 삭제한다.
@@ -42,7 +38,7 @@ public class SseEmitters {
         SseEmitter emitter = emitters.get(receiverId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("friend-request").data(message));
+                emitter.send(SseEmitter.event().name("FRIEND_REQUEST").data(message));
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
