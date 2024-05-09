@@ -37,7 +37,7 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
-    @CrossOrigin(origins = "https://loanplease.kr/signup")
+    @CrossOrigin(origins = "https://loanplease.kr:443")
     @PostMapping("/register")
     public ResponseEntity<BaseResponseBody> registerUser(
             @RequestParam("email") String email,
