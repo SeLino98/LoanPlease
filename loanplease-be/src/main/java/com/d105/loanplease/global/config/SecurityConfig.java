@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
+                                .requestMatchers("/api/auth/register/").permitAll()
+                                .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 );

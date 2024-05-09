@@ -7,6 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityUtil {
 
+    //유저 정보를 가져온다.
+
+
+
     public static User getCurrentUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
