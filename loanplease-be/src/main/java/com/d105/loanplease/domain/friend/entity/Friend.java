@@ -15,19 +15,18 @@ import org.springframework.validation.annotation.Validated;
 public class Friend {
 
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "friendship_id")
     Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) //보낸 사람
-    @JoinColumn(name ="from_id")
-    User fromId;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "user_id", name = "from_user_id")
+    private User fromId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name="to_id") //받는 사람
-    Long toId;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "user_id", name = "to_user_id")
+    private  User toId;
 
     @Column(name = "isAccept")
     boolean isAccept;

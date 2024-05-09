@@ -43,7 +43,7 @@ public class SecurityConfig {
 
         //JWTFilter 추가
         http
-                .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository,userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
 
         //oauth2
         http

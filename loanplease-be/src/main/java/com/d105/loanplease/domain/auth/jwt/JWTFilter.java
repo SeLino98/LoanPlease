@@ -29,7 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
+
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 //    Ant 스타일 패턴 매칭 사용
 //    Spring에서는 Ant 스타일의 경로 매칭을 지원하여 보다 유연하게 URL 패턴을 처리할 수 있습니다.
