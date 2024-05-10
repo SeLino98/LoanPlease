@@ -1,23 +1,17 @@
 package com.d105.loanplease.domain.user.controller;
 
-import com.d105.loanplease.domain.auth.dto.TokenResDto;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
-import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.domain.user.request.UserSignUpReq;
-import com.d105.loanplease.domain.user.response.UserSignUpRes;
+import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
+import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
+import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.domain.user.service.UserService;
-import com.d105.loanplease.global.exception.ErrorCode;
-import com.d105.loanplease.global.exception.Exceptions;
 import com.d105.loanplease.global.util.BaseResponseBody;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,9 +77,11 @@ public class UserController {
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
     }
 
-    @GetMapping("/user-info")
-    public void getUserInfo() {
-
+    @Operation(summary = "유저 정보 조회", description = "유저의 슬롯, 슬롯 수, 보유 아이템, 보유 대출 상품을 조회합니다.")
+    @GetMapping("/api/user-info")
+    public ResponseEntity<BaseResponseBody<UserInfoResponse>> getUserInfo() {
+        UserInfoResponse userInfo = userService.getUserInfo();
+        return ResponseEntity.ok(BaseResponseBody.of("200", userInfo));
     }
 
 }

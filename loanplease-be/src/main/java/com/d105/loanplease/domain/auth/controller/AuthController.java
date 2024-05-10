@@ -5,19 +5,14 @@ import com.d105.loanplease.domain.auth.dto.TokenResDto;
 import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
-import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.domain.user.request.UserSignUpReq;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 

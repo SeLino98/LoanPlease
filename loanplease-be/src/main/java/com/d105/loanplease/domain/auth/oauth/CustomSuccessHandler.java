@@ -1,11 +1,9 @@
 package com.d105.loanplease.domain.auth.oauth;
 
-import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.domain.user.response.UserSignUpRes;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

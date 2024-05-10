@@ -2,16 +2,20 @@ package com.d105.loanplease.domain.user.service;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
+import com.d105.loanplease.domain.user.dto.UserLoanDto;
+import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
 import com.d105.loanplease.domain.user.entity.Slot;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserItem;
+import com.d105.loanplease.domain.user.entity.UserLoan;
 import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.domain.user.request.UserSignUpReq;
-import com.d105.loanplease.domain.user.response.UserSignUpRes;
+import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
+import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
+import com.d105.loanplease.global.util.BaseResponseBody;
 import com.d105.loanplease.global.util.S3Image;
 import com.d105.loanplease.global.util.SecurityUtil;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -177,12 +184,23 @@ public class UserService {
         }
     }
 
-    public void getUserInfo() {
+    public UserInfoResponse getUserInfo() {
         User user = SecurityUtil.getCurrentUserDetails();
         Long userId = user.getUserId();
 
         Integer slotNum = user.getSlotNum();
-        List<UserItem> allByUserUserId = userLoanRepository.findAllByUserUserId(userId);
-        List<UserItem> allByUserUserId1 = userItemRepository.findAllByUserUserId(userId);
+        Slot slot = user.getSlot();
+        List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
+        List<UserLoan> userLoanList = userLoanRepository.findAllByUserUserId(userId);
+
+        UserInfoResponse response = new UserInfoResponse(slotNum, slot);
+        for(UserItem item: userItemList) {
+            response.addItem(item);
+        }
+        for(UserLoan loan: userLoanList) {
+            response.addLoan(loan);
+        }
+
+        return response;
     }
 }

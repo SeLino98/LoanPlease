@@ -20,6 +20,7 @@ public class Loan {
     private Double interest;
     private Integer period;
     private Integer price;
+    private String color;
     private Long limitAmount; // limit이 예약어라 계속 오류남
 
 }

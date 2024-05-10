@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface UserLoanRepository extends JpaRepository<UserLoan, Long> {
 
-    List<UserItem> findAllByUserUserId(Long userId);
+    List<UserLoan> findAllByUserUserId(Long userId);
 }

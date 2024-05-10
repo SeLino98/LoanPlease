@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.user.response;
+package com.d105.loanplease.domain.user.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
