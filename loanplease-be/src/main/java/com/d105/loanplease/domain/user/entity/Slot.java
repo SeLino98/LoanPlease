@@ -1,7 +1,6 @@
-package com.d105.loanplease.domain.store.domain;
+package com.d105.loanplease.domain.user.entity;
 
 
-import com.d105.loanplease.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +27,11 @@ public class Slot {
 
     public static Slot makeSlot(User user) {
         Slot slot = new Slot();
+
+        slot.slot_1 = 1;
+        slot.slot_2 = 2;
+        slot.slot_3 = 3;
+
         slot.user = user;
         user.setSlot(slot);
         return slot;

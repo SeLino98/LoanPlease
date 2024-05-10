@@ -1,22 +1,18 @@
 package com.d105.loanplease.domain.user.entity;
 
-import com.d105.loanplease.domain.store.domain.Slot;
 import com.d105.loanplease.global.util.Constant;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Setter;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
