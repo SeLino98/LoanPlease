@@ -36,7 +36,7 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
-    @CrossOrigin(origins = "https://loanplease.kr:443")
+
     @PostMapping("/api/auth/register")
     public ResponseEntity<BaseResponseBody> registerUser(
             @RequestParam("email") String email,
@@ -46,17 +46,20 @@ public class UserController {
         log.info("ASDFDSAF");
         UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).profileImage(profileImage).build();
         log.info("ASDFDSAF");
-        try {
+//        try {
             UserSignUpRes userSignUpRes = userService.signUp(userReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
-        } catch (Exceptions e) {
-            if (e.getErrorCode() == ErrorCode.EMAIL_EXIST) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.EMAIL_EXIST.getErrorCode(), "Email already exists."));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(), "Invalid request."));
-            }
-        }
+//        } catch (Exceptions e) {
+//
+//            log.error(e.getMessage());
+//
+//            if (e.getErrorCode() == ErrorCode.EMAIL_EXIST) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.EMAIL_EXIST.getErrorCode(), "Email already exists."));
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(), "Invalid request."));
+//            }
+//        }
     }
 
     @PutMapping("/api/auth/")

@@ -43,6 +43,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
             CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal(); //구글을 통해 받은 값.
+            //authentication 인증 객체, 요청 동안만 살아있는 임시 객체. getPrincipal.
             String email = oauthUser.getName();
             String profileImage = oauthUser.getPicture(); // OAuth2을 통해 제공받은 이메일
             logger.info("AAA");

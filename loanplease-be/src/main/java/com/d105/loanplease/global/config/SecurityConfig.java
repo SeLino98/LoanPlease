@@ -6,11 +6,14 @@ import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.auth.service.CustomOAuth2UserService;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.exception.CustomAccessDeniedHandler;
+import com.d105.loanplease.global.exception.CustomAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,7 +34,8 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
-
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -46,6 +50,8 @@ public class SecurityConfig {
         //HTTP Basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
+
+        //순서
 
         //CORS
         http
@@ -62,9 +68,15 @@ public class SecurityConfig {
                     return configuration;
                 })));
 
+        http
+                .headers((headers) -> headers.frameOptions(
+                        HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                ));
+
         //JWTFilter 추가
         http
                 .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+        //7번
 
         //oauth2
         http
@@ -81,16 +93,23 @@ public class SecurityConfig {
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
-                                .requestMatchers("/api/auth/register/").permitAll()
-                                .requestMatchers("/signup").permitAll()
+                                .requestMatchers("/api/auth/register").permitAll()
+//                                .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
-                );
+                ).exceptionHandling(authentication ->        // 7)
+                        authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
+                                .accessDeniedHandler(customAccessDeniedHandler)); //403일 때
+
+
+
 
         //세션 설정 : STATELESS
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
 
         return http.build();
     }
