@@ -50,7 +50,7 @@ public class ItemService implements ItemUseCase {
          */
 //        User user = userRepository.findById(userId)
 //                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
-        user.expandSlot(Constant.SLOT_EXPAND_PRICE.price());
+        user.expandSlot();
     }
 
     @Override
