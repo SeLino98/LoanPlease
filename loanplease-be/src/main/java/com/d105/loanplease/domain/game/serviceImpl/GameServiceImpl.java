@@ -2,6 +2,8 @@ package com.d105.loanplease.domain.game.serviceImpl;
 
 import com.d105.loanplease.domain.game.Fields.*;
 import com.d105.loanplease.domain.game.dto.*;
+import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
+import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.global.util.BaseResponse;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
@@ -23,6 +25,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LoanRepository loanRepository;
 
     @Override
     public ResponseEntity<GameInfoResponse> getGameInfo() {
@@ -187,14 +192,10 @@ public class GameServiceImpl implements GameService {
     public ResponseEntity<ScoreResponse> gainScore(int num, GameInfo gameInfo) {
         Score score;
         if(gameInfo.getCustomerInfo().getCustomerMaterials().contains(false)){
-            score = new Score(-200, "아 맞다", "준비물이 부족합니다.");
+            score = new Score(0, "ㅋ 이걸 해주네", "준비물이 부족합니다.");
         }else{
-
-            score = new Score(-200, "아 맞다", "준비물이 부족합니다.");
-
+            score = calculateScore(num, gameInfo);
         }
-
-
 
         ScoreResponse response = ScoreResponse.createScoreResponse(HttpStatus.OK.value(), "점수를 획득했습니다.", score);
         return ResponseEntity.ok(response);
@@ -259,5 +260,102 @@ public class GameServiceImpl implements GameService {
                 else return womanPictures[8];
         }
         return 1;
+    }
+
+    private Score calculateScore(int num, GameInfo gameInfo){
+        Loan loan = loanRepository.getReferenceById((long)num);
+
+        // 최소 신용 최대 신용과 차이가 적은걸 반영하기.
+        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
+        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
+        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
+
+        int defaultScore = 500 + (-100)*diff;
+
+
+
+        if(num==1 || num==2 || num==3){
+            // 기본 저금리
+            int score = (int)(defaultScore*(1+loan.getInterest()));
+            return new Score(score, "감사합니다!", "적절한 신용도의 대출을 추천했습니다.");
+
+        }else if(num==4){
+            // 히포크라테스 대출
+            int score = (int)(defaultScore*(1+loan.getInterest()));
+            String reason ="";
+            if(gameInfo.getFinancialInfo().getOccypType().equals(OccypType.MEDICINESTAFF.getKoreanName())){
+                score += 200;
+                reason = "의료계 종사자 조건과 일치합니다.";
+            }else reason = "의료계 종사자가 아닙니다.";
+
+            return new Score(score, "감사합니다!!", reason);
+        }else if(num==5){
+            // 녹봉이요 대출
+            int score = (int)(defaultScore*(1+loan.getInterest()));
+            String reason;
+            if(gameInfo.getFinancialInfo().getOccypType().equals(OccypType.GONG.getKoreanName())
+            || gameInfo.getFinancialInfo().getIncomeType().equals(IncomeType.STATE.getKoreanName())){
+                score += 200;
+                reason = "공무 수행 종사자 조건과 일치합니다.";
+            }else reason = "공무 수행 종사자가 아닙니다.";
+
+            return new Score(score, "감사합니다!!", reason);
+        }else if(num==6){
+            // 저세상갓숭 대출
+            int score = (defaultScore-200)*(int)(1+loan.getInterest());
+
+            return new Score(score, "너무 금리가 높은거 아닌가요?! ㅡㅡ", "금리가 너무 높아 화가 나서 감점이 적용되었습니다.");
+
+        }else if(num==7){
+            // 고오-급 대출
+            String reason;
+            int score = defaultScore*(int)(1+loan.getInterest());
+            double incomeTotal = gameInfo.getFinancialInfo().getIncomeTotal();
+            if(incomeTotal >= 100000000){
+                score += (int)(incomeTotal*(0.01));
+                reason = "연봉 1억 이상인 고소득자 조건과 일치합니다.";
+            }else{
+                score += (int)(incomeTotal*(0.005));
+                reason = "연봉 1억 이상인 고소득자 조건과 일치하지 않습니다.";
+            }
+
+            return new Score(score, "감사합니다!", reason);
+
+        }else if(num==8){
+            // 소중한 상생 대출
+            String reason = "소상공인 조건을 만족하지 않았습니다.";
+            int score = defaultScore*(int)(1+loan.getInterest());
+            if(gameInfo.getFinancialInfo().getIncomeTotal() < 100000000
+            && !gameInfo.getFinancialInfo().getIncomeType().equals(IncomeType.STUDENT.getKoreanName())
+            && !gameInfo.getFinancialInfo().getIncomeType().equals(IncomeType.STATE.getKoreanName())){
+                score += 150;
+                reason = "소상공인 조건을 만족했습니다.";
+            }
+
+            return new Score(score, "감사합니다!", reason);
+        }else if(num==9){
+            // 거인의 대출
+            String reason = "저신용자 청년 조건을 충족하지 않았습니다.";
+            int score = defaultScore*(int)(1+loan.getInterest());
+            if(gameInfo.getCustomerInfo().getAge()/10 == 2
+            && gameInfo.getCredit() > 0){
+                score += 150;
+                reason = "저신용자 청년 조건을 충족했습니다.";
+            }
+            return new Score(score, "감사해요~", reason);
+
+
+        }else if(num==10){
+            // 취업하고 싶은 코린이 대출
+            String reason = "취업하고 싶은 코린이 조건을 충족하지 않았습니다.";
+            int score = defaultScore*(int)(1+loan.getInterest());
+            if(gameInfo.getFinancialInfo().getIncomeType().equals(IncomeType.STUDENT.getKoreanName())
+            && gameInfo.getFinancialInfo().getOccypType().equals(OccypType.IT.getKoreanName())
+            && gameInfo.getCustomerInfo().getAge()/10 == 2){
+                score += 2500;
+                reason = "20대 IT직무를 준비하는 학생 조건을 충족했습니다.";
+            }
+            return new Score(score, "감사해요~", reason);
+        }else throw new IllegalArgumentException("상품 정보가 없거나 게임정보가 없습니다.");
     }
 }

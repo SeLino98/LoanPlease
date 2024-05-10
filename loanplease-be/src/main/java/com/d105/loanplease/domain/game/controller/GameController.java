@@ -49,7 +49,7 @@ public class GameController {
             @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",
                     content = @Content(schema = @Schema(implementation = Score.class)))
     })
-    @GetMapping("/score/{num}")
+    @PostMapping("/score/{num}")
     public ResponseEntity<ScoreResponse> gainScore(@PathVariable int num, @RequestBody GameInfo gameInfo){
         return gameService.gainScore(num, gameInfo);
     };
