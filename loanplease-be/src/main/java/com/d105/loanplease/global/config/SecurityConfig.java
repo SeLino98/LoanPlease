@@ -14,6 +14,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +46,21 @@ public class SecurityConfig {
         //HTTP Basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
+
+        //CORS
+        http
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
+
+                    CorsConfiguration configuration = new CorsConfiguration();
+
+                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    configuration.setAllowCredentials(true);
+                    configuration.setAllowedHeaders(Arrays.asList("*"));
+                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                    return configuration;
+                })));
 
         //JWTFilter 추가
         http
@@ -73,4 +94,21 @@ public class SecurityConfig {
 
         return http.build();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.setAllowedOriginPatterns(Arrays.asList("*"));
+        cors.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        cors.setAllowedHeaders(Arrays.asList("*"));
+        cors.addExposedHeader("Authorization");
+        cors.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cors);  // 모든 경로에 대해 CORS 설정 적용
+
+        return source;
+    }
+
+
+
 }

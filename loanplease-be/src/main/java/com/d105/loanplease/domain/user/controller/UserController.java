@@ -43,8 +43,9 @@ public class UserController {
             @RequestParam("nickname") String nickname,
             @RequestParam("profileImage") String profileImage
     ) throws Exception {
+        log.info("ASDFDSAF");
         UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).profileImage(profileImage).build();
-
+        log.info("ASDFDSAF");
         try {
             UserSignUpRes userSignUpRes = userService.signUp(userReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
