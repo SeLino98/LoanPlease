@@ -45,26 +45,26 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
 
-        //oauth2
-        http
-                .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                );
-
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/upload").permitAll()
-                        .requestMatchers("/api/server").permitAll()
-                                .requestMatchers("/api/auth/nickname/**").permitAll()
-                                .requestMatchers("/api/auth/register/").permitAll()
-                                .requestMatchers("/signup").permitAll()
-                        .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
-                );
+//        //oauth2
+//        http
+//                .oauth2Login((oauth2) -> oauth2
+//                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+//                                .userService(customOAuth2UserService))
+//                        .successHandler(customSuccessHandler)
+//                );
+//
+//        //경로별 인가 작업
+//        http
+//                .authorizeHttpRequests((auth) -> auth
+//                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/api/upload").permitAll()
+//                        .requestMatchers("/api/server").permitAll()
+//                                .requestMatchers("/api/auth/nickname/**").permitAll()
+//                                .requestMatchers("/api/auth/register/").permitAll()
+//                                .requestMatchers("/signup").permitAll()
+//                        .anyRequest().authenticated()
+////                                .anyRequest().permitAll()
+//                );
 
         //세션 설정 : STATELESS
         http

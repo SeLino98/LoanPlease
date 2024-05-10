@@ -8,6 +8,7 @@ import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserLoan;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,9 @@ public class LoanService implements LoanUseCase {
     public void purchaseLoan(final Long loanId, final Long userId) {
 
         Loan loan = loanPort.findById(loanId);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+        User user = SecurityUtil.getCurrentUserDetails();
 
         UserLoan userLoan = UserLoan.purchaseLoan(loan, user);
 

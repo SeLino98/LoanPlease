@@ -4,8 +4,12 @@ import com.d105.loanplease.domain.auth.dto.TokenResDto;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
+import com.d105.loanplease.domain.store.application.port.out.ItemPort;
+import com.d105.loanplease.domain.store.application.port.out.LoanPort;
 import com.d105.loanplease.domain.store.domain.Slot;
 import com.d105.loanplease.domain.user.entity.User;
+import com.d105.loanplease.domain.user.repository.UserItemRepository;
+import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.request.UserSignUpReq;
 import com.d105.loanplease.domain.user.response.UserSignUpRes;
@@ -49,6 +53,10 @@ public class UserService {
     private final HttpServletResponse response;
     private final UserRepository userRepository;
     private final SlotRepository slotRepository;
+
+    private final UserItemRepository userItemRepository;
+    private final UserLoanRepository userLoanRepository;
+
     @Value("${spring.jwt.access.header}")
     private String accessHeader;
     @Value("${spring.jwt.refresh.header}")
@@ -178,5 +186,9 @@ public class UserService {
             // 예외를 호출자에게 전달
             throw new IllegalStateException("Failed to update user: " + e.getMessage(), e);
         }
+    }
+
+    public void getUserInfo() {
+
     }
 }

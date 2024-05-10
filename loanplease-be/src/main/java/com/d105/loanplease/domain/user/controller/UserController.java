@@ -81,6 +81,11 @@ public class UserController {
         return ResponseEntity.ok(BaseResponseBody.of("200", null));
     }
 
+    @GetMapping("/user-info")
+    public void getUserInfo() {
+
+    }
+
 }
 
 
