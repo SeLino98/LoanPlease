@@ -39,15 +39,12 @@ public class UserController {
 
     @PostMapping("/api/auth/register")
     public ResponseEntity<BaseResponseBody> registerUser(
-            @RequestParam("email") String email,
-            @RequestParam("nickname") String nickname,
-            @RequestParam("profileImage") String profileImage
+            @RequestBody UserSignUpReq userSignUpReq
     ) throws Exception {
         log.info("ASDFDSAF");
-        UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).profileImage(profileImage).build();
         log.info("ASDFDSAF");
 //        try {
-            UserSignUpRes userSignUpRes = userService.signUp(userReq);
+            UserSignUpRes userSignUpRes = userService.signUp(userSignUpReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
 //        } catch (Exceptions e) {
