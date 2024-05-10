@@ -27,7 +27,6 @@ import java.io.IOException;
 @RestController
 @Validated
 @Slf4j
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -37,27 +36,30 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
 
-    @PostMapping("/register")
+
+    @PostMapping("/api/auth/register")
     public ResponseEntity<BaseResponseBody> registerUser(
-            @RequestParam("email") String email,
-            @RequestParam("nickname") String nickname,
-            @RequestParam("image") MultipartFile image
+            @RequestBody UserSignUpReq userSignUpReq
     ) throws Exception {
-        UserSignUpReq userReq = UserSignUpReq.builder().email(email).nickname(nickname).build();
-        try {
-            UserSignUpRes userSignUpRes = userService.signUp(userReq, image);
+        log.info("ASDFDSAF");
+        log.info("ASDFDSAF");
+//        try {
+            UserSignUpRes userSignUpRes = userService.signUp(userSignUpReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
-        } catch (Exceptions e) {
-            if (e.getErrorCode() == ErrorCode.EMAIL_EXIST) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.EMAIL_EXIST.getErrorCode(), "Email already exists."));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(), "Invalid request."));
-            }
-        }
+//        } catch (Exceptions e) {
+//
+//            log.error(e.getMessage());
+//
+//            if (e.getErrorCode() == ErrorCode.EMAIL_EXIST) {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.EMAIL_EXIST.getErrorCode(), "Email already exists."));
+//            } else {
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(), "Invalid request."));
+//            }
+//        }
     }
 
-    @PutMapping("/")
+    @PutMapping("/api/auth/")
     public ResponseEntity<BaseResponseBody<Void>> updateUser
             (@RequestParam String nickname,
              @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
@@ -66,7 +68,7 @@ public class UserController {
     }
 
     //닉네임이 사용 중인지 확인한다.
-    @GetMapping("/nickname/{nickname}")
+    @GetMapping("/api/auth/nickname/{nickname}")
     public ResponseEntity<BaseResponseBody<Boolean>> checkNicknameAvailability(
             @PathVariable("nickname") String nickname) {
         log.info("ASDas");log.info("ASDas");log.info("ASDas");log.info("ASDas");
@@ -75,7 +77,7 @@ public class UserController {
     }//end
 
 
-    @DeleteMapping("/") //난중에 구현..
+    @DeleteMapping("/api/auth/") //난중에 구현..
     public ResponseEntity<BaseResponseBody<Void>> deleteUser() {
 //        userService.deleteUserById();
         return ResponseEntity.ok(BaseResponseBody.of("200", null));

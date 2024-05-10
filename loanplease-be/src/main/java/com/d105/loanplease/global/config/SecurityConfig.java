@@ -6,14 +6,23 @@ import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.auth.service.CustomOAuth2UserService;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.exception.CustomAccessDeniedHandler;
+import com.d105.loanplease.global.exception.CustomAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +34,8 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
-
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -41,9 +51,32 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+        //순서
+
+        //CORS
+        http
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
+
+                    CorsConfiguration configuration = new CorsConfiguration();
+
+                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    configuration.setAllowCredentials(true);
+                    configuration.setAllowedHeaders(Arrays.asList("*"));
+                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+                    return configuration;
+                })));
+
+        http
+                .headers((headers) -> headers.frameOptions(
+                        HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                ));
+
         //JWTFilter 추가
         http
                 .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+        //7번
 
         //oauth2
         http
@@ -60,17 +93,41 @@ public class SecurityConfig {
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
-                                .requestMatchers("/api/auth/register/").permitAll()
-                                .requestMatchers("/signup").permitAll()
+                                .requestMatchers("/api/auth/register").permitAll()
+//                                .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
-                );
+                ).exceptionHandling(authentication ->        // 7)
+                        authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
+                                .accessDeniedHandler(customAccessDeniedHandler)); //403일 때
+
+
+
 
         //세션 설정 : STATELESS
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+
+
         return http.build();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.setAllowedOriginPatterns(Arrays.asList("*"));
+        cors.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        cors.setAllowedHeaders(Arrays.asList("*"));
+        cors.addExposedHeader("Authorization");
+        cors.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cors);  // 모든 경로에 대해 CORS 설정 적용
+
+        return source;
+    }
+
+
+
 }

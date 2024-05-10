@@ -2,10 +2,7 @@ package com.d105.loanplease.domain.user.entity;
 
 import com.d105.loanplease.domain.store.domain.Slot;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +18,8 @@ import java.util.Objects;
 @Setter
 @Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user_tb")
 public class User implements UserDetails {
 
