@@ -130,4 +130,6 @@ public class User implements UserDetails {
     public void setSlot(Slot slot) {
         this.slot = slot;
     }
+
+    public void setPoint(int score){ this.point = point; }
 }

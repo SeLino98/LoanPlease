@@ -11,6 +11,7 @@ import com.d105.loanplease.domain.game.response.ScoreResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -204,8 +205,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public ResponseEntity<ResultResponse> saveScore(int score) {
         // User의 정보를 불러옵니다.
-        // TODO ::: 접속 중인 USER의 ID를 가져오는 작업 필요.
-        long userId = 1;
+        long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
 
@@ -216,13 +216,12 @@ public class GameServiceImpl implements GameService {
 
         // User의 포인트를 계산합니다.StatisticsErrorHandler.java
         // todo::: 점수와 비례하는 포인트 계산 필요
-        int point = 1000;
+        int point = (int)(score*(0.1));
         user.setPoint(user.getPoint()+point);
 
         userRepository.save(user);
 
         ResultResponse response = ResultResponse.createResultResponse(HttpStatus.OK.value(), "점수를 저장했습니다.", point);
-        BaseResponse<Integer> response2 = BaseResponse.createResponse(HttpStatus.OK.value(), "점수 저장", point);
 
         return ResponseEntity.ok(response);
     }
@@ -266,12 +265,15 @@ public class GameServiceImpl implements GameService {
         Loan loan = loanRepository.getReferenceById((long)num);
 
         // 최소 신용 최대 신용과 차이가 적은걸 반영하기.
-        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
-        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
-        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
+//        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
+//        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
+//        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
+        if(!isContainsCredit(gameInfo.getCredit(), loan.getMinCredit(), loan.getMaxCredit())){
+            return new Score(-500, "후엥", "대출상품에 필요한 신용 등급과 일치하지 않습니다.");
+        }
 
-        int defaultScore = 500 + (-100)*diff;
-
+//        int defaultScore = 500 + (-100)*diff;
+        int defaultScore = 500;
 
 
         if(num==1 || num==2 || num==3){
@@ -357,5 +359,9 @@ public class GameServiceImpl implements GameService {
             }
             return new Score(score, "감사해요~", reason);
         }else throw new IllegalArgumentException("상품 정보가 없거나 게임정보가 없습니다.");
+    }
+    private boolean isContainsCredit(int credit, int minCredit, int maxCredit){
+        if(minCredit <= credit && credit <= maxCredit) return true;
+        return false;
     }
 }
