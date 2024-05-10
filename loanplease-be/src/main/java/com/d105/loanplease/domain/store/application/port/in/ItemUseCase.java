@@ -9,5 +9,5 @@ public interface ItemUseCase {
     List<Item> inquiryAllItems();
     Item inquiryItemById(Long itemId);
     void expandSlot(Long userId);
-    void purchaseItem(Long itemId, Long userId);
+    void purchaseItem(Long itemId, Integer itemCount, Long userId);
 }
