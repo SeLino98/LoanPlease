@@ -1,17 +1,17 @@
 package com.d105.loanplease.domain.user.service;
 
-import com.d105.loanplease.domain.auth.dto.TokenResDto;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
-import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
-import com.d105.loanplease.domain.store.domain.Slot;
+import com.d105.loanplease.domain.user.entity.Slot;
 import com.d105.loanplease.domain.user.entity.User;
+import com.d105.loanplease.domain.user.entity.UserItem;
+import com.d105.loanplease.domain.user.repository.UserItemRepository;
+import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.request.UserSignUpReq;
 import com.d105.loanplease.domain.user.response.UserSignUpRes;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
-import com.d105.loanplease.global.util.BaseResponseBody;
 import com.d105.loanplease.global.util.S3Image;
 import com.d105.loanplease.global.util.SecurityUtil;
 import jakarta.servlet.http.Cookie;
@@ -20,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,9 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
-
-import static org.hibernate.query.sqm.tree.SqmNode.log;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -49,6 +44,10 @@ public class UserService {
     private final HttpServletResponse response;
     private final UserRepository userRepository;
     private final SlotRepository slotRepository;
+
+    private final UserItemRepository userItemRepository;
+    private final UserLoanRepository userLoanRepository;
+
     @Value("${spring.jwt.access.header}")
     private String accessHeader;
     @Value("${spring.jwt.refresh.header}")
@@ -176,5 +175,14 @@ public class UserService {
             // 예외를 호출자에게 전달
             throw new IllegalStateException("Failed to update user: " + e.getMessage(), e);
         }
+    }
+
+    public void getUserInfo() {
+        User user = SecurityUtil.getCurrentUserDetails();
+        Long userId = user.getUserId();
+
+        Integer slotNum = user.getSlotNum();
+        List<UserItem> allByUserUserId = userLoanRepository.findAllByUserUserId(userId);
+        List<UserItem> allByUserUserId1 = userItemRepository.findAllByUserUserId(userId);
     }
 }

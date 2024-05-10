@@ -8,6 +8,7 @@ import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.Constant;
+import com.d105.loanplease.global.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,23 +41,24 @@ public class ItemService implements ItemUseCase {
 
     @Override
     public void expandSlot(final Long userId) {
+        User user = SecurityUtil.getCurrentUserDetails();
         /**
          * 유저의 슬롯 구매
          * 1. 유저의 슬롯 개수 확인
          * 2. 유저의 보유 포인트 확인
          * 3. 유저의 포인트 차감 + 슬롯 확장
          */
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
-
-        user.expandSlot(Constant.SLOT_EXPAND_PRICE.price());
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+        user.expandSlot();
     }
 
     @Override
     public void purchaseItem(final Long itemId, final Integer itemCount, final Long userId) {
         Item item = itemPort.findById(itemId);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+        User user = SecurityUtil.getCurrentUserDetails();
 
         Long userItemId = user.hasItemHistory(itemId);
 
@@ -68,8 +70,5 @@ public class ItemService implements ItemUseCase {
                     .orElseThrow(() -> new IllegalArgumentException("해당 보유 아이템은 없는 아이템입니다."));
             userItem.purchaseItem(item.getPrice(), itemCount, user);
         }
-
     }
-
-
 }

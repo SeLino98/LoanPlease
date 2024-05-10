@@ -101,9 +101,6 @@ public class SecurityConfig {
                         authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
                                 .accessDeniedHandler(customAccessDeniedHandler)); //403일 때
 
-
-
-
         //세션 설정 : STATELESS
         http
                 .sessionManagement((session) -> session

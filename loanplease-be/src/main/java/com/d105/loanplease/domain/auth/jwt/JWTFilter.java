@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +28,9 @@ import java.util.List;
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
+    @Autowired
     private final TokenProvider tokenProvider;
+    @Autowired
     private final TokenRepository tokenRepository;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -38,7 +41,6 @@ public class JWTFilter extends OncePerRequestFilter {
     private boolean isAllowedPath(String requestUri){
         List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/","/api/refresh","/api/auth/register","/signup");
 
-
 //        return allowedPaths.stream().anyMatch(requestUri::startsWith);
         return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
@@ -46,39 +48,40 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        try{
-            if (isAllowedPath(request.getRequestURI())){ //허용된 URI인지 확인한다.
+//        try{
+//            if (isAllowedPath(request.getRequestURI())){ //허용된 URI인지 확인한다.
                 //특정 경로에 대해 필터링 없이 진행한다.
                 filterChain.doFilter(request,response);
                 return;
-            }
-//            //토큰
-//            String token = authorization;
-            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
-
-            logger.info(accessToken+":"+refreshToken);
-
-            if (tokenRepository.findByAccessToken(accessToken).isEmpty()){
-                sendUnauthorizedResponse(response,"Access is Invalid");
-                return;
-            }
-            if (accessToken!=null&& tokenProvider.isTokenValid(accessToken)){
-                Authentication authentication = tokenProvider.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request,response);
-            }
-        }catch (ExpiredJwtException e){
-            //401에러
-
-            sendUnauthorizedResponse(response,"401");
-        }
-        catch (Exception e){
-            SecurityContextHolder.clearContext();
-            logger.error("Authentication ERROR : ", e);
-            sendUnauthorizedResponse(response, "Authentication  error :" + e.getMessage());
-        }
+//            }
+////            //토큰
+////            String token = authorization;
+//            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+//            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
+//
+//            logger.info(accessToken+":"+refreshToken);
+//
+//            if (tokenRepository.findByAccessToken(accessToken).isEmpty()){
+//                sendUnauthorizedResponse(response,"Access is Invalid");
+//                return;
+//            }
+//            if (accessToken!=null&& tokenProvider.isTokenValid(accessToken)){
+//                Authentication authentication = tokenProvider.getAuthentication(accessToken);
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//                filterChain.doFilter(request,response);
+//            }
+//        }catch (ExpiredJwtException e){
+//            //401에러
+//
+//            sendUnauthorizedResponse(response,"401");
+//        }
+//        catch (Exception e){
+//            SecurityContextHolder.clearContext();
+//            logger.error("Authentication ERROR : ", e);
+//            sendUnauthorizedResponse(response, "Authentication  error :" + e.getMessage());
+//        }
     }
+
 
     //인가되지 않은 사용자에게 띄어줄 페이지
     private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
