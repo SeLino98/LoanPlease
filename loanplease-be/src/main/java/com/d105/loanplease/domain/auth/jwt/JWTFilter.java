@@ -44,6 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
 //        return allowedPaths.stream().anyMatch(requestUri::startsWith);
         return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,26 +54,20 @@ public class JWTFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-
             String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
-
-            log.info("accessToken : "+accessToken);
-            log.info("refreshToken : "+ refreshToken);
-            if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
-                Authentication authentication = tokenProvider.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            } else if (refreshToken != null && tokenProvider.isTokenValid(refreshToken)) {
-                // 리프레시 토큰이 유효한 경우 새 엑세스 토큰 발급
-                String newAccessToken = tokenProvider.createAccessJwt(tokenProvider.getAuthentication(refreshToken));
-                response.setHeader("Authorization", "Bearer " + newAccessToken);
-                logger.info("New access token issued.");
-                Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-            } else {
-                sendUnauthorizedResponse(response, "Access is Invalid or Expired");
+            log.info("Access Token: " + accessToken);
+            try {
+                if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
+                    Authentication authentication = tokenProvider.getAuthentication(accessToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("Access Token in ComeIn DoFilter ");
+                    filterChain.doFilter(request, response);
+                } else {
+                    sendUnauthorizedResponse(response, "Access is Invalid or Expired");
+                }
+            } catch (ExpiredJwtException e) {
+                log.info("Expired JWT token: {}", e.getMessage());
+                sendUnauthorizedResponse(response, "401 Unauthorized - Token Expired");
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
@@ -80,6 +75,42 @@ public class JWTFilter extends OncePerRequestFilter {
             sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
         }
     }
+//    @Override
+//    protected void doFilterInternal(
+//            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//        try {
+//            if (isAllowedPath(request.getRequestURI())) {
+//                filterChain.doFilter(request, response);
+//                return;
+//            }
+//
+//            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+//            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
+//
+//            log.info("accessToken : "+accessToken);
+//            log.info("refreshToken : "+ refreshToken);
+//            if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
+//                Authentication authentication = tokenProvider.getAuthentication(accessToken);
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//                filterChain.doFilter(request, response);
+//            } else if (refreshToken != null && tokenProvider.isTokenValid(refreshToken)) {
+//                // 리프레시 토큰이 유효한 경우 새 엑세스 토큰 발급
+//                String newAccessToken = tokenProvider.createAccessJwt(tokenProvider.getAuthentication(refreshToken));
+//                response.setHeader("Authorization", "Bearer " + newAccessToken);
+//                logger.info("New access token issued.");
+//                Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//                filterChain.doFilter(request, response);
+//            } else {
+//                sendUnauthorizedResponse(response, "Access is Invalid or Expired");
+//            }
+//        } catch (Exception e) {
+//            SecurityContextHolder.clearContext();
+//            logger.error("Authentication ERROR : ", e);
+//            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
+//        }
+//    }
 
 //    @Override
 //    protected void doFilterInternal(
