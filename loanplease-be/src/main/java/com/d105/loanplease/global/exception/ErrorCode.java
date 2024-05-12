@@ -22,8 +22,6 @@ public enum ErrorCode {
     // Validation
     NOT_VALID_REQUEST(HttpStatus.BAD_REQUEST, "I-001", "요청변수가 유효하지 않습니다.");
 
-
-
     private HttpStatus httpStatus;
     private String errorCode;
     private String message;

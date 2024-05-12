@@ -1,6 +1,7 @@
 package com.d105.loanplease.domain.friend.controller;
 
-import com.d105.loanplease.domain.friend.request.FriendReq;
+import com.d105.loanplease.domain.friend.dto.request.FriendListReq;
+import com.d105.loanplease.domain.friend.dto.response.FriendListRes;
 import com.d105.loanplease.domain.friend.service.FriendService;
 import com.d105.loanplease.domain.friend.service.NotificationService;
 import com.d105.loanplease.domain.user.entity.User;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,10 +42,21 @@ public class FriendRequestController {
 
     @PostMapping("/response") //친구 요청에 대한 응답을 한다. true이면 승인, false이면 친구 요청 거절, acceptor 는 요청에 대한 답장받는 사람
     public ResponseEntity<BaseResponseBody<Boolean>> acceptFriendRequest(@RequestBody boolean isAccept, @RequestBody Long acceptor) {
-
         return friendService.processFriendRequest(isAccept, acceptor);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponseBody<FriendListRes>> searchFriend(
+            @PathVariable String nickname
+    ){
+        return friendService.searchFriendList(nickname);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<BaseResponseBody<FriendListRes>> searchMyFriend(){
+
+        return friendService.getMyFriendList();
+    }
 
 }
 //    @PostMapping("/accept/{requestId}")

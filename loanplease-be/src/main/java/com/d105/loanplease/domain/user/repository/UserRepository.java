@@ -5,12 +5,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // 닉네임으로 사용자 찾기 (닉네임 중복 체크용)
     Optional<User> findByNickname(String nickname);
+
+
+    //친구 찾기기능에서 해당 이름의 문자를 포함한 친구들의 리스트를 찾아준다.
+// Updated method to use 'nickname' instead of 'username'
+    List<User> findByNicknameContaining(String nickname);
 
     Optional<User> findByEmail(String email);
 

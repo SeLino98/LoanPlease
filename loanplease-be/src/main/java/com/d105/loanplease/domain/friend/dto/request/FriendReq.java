@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.friend.request;
+package com.d105.loanplease.domain.friend.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
