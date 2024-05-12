@@ -70,7 +70,6 @@ public class UserController {
         return ResponseEntity.ok(BaseResponseBody.of("200", isAvailable));
     }//end
 
-
     @DeleteMapping("/api/auth/") //난중에 구현..
     public ResponseEntity<BaseResponseBody<Void>> deleteUser() {
 //        userService.deleteUserById();

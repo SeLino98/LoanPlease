@@ -13,13 +13,11 @@ public class CustomOAuth2User implements OAuth2User {
     private final User userDTO;
 
     public CustomOAuth2User(User userDTO) {
-
         this.userDTO = userDTO;
     }
 
     @Override
     public Map<String, Object> getAttributes() {
-
         return null;
     }
 
