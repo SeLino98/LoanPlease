@@ -56,15 +56,12 @@ public class SecurityConfig {
         //CORS
         http
                 .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
-
                     CorsConfiguration configuration = new CorsConfiguration();
-
                     configuration.setAllowedOriginPatterns(Arrays.asList("*"));
                     configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     configuration.setAllowCredentials(true);
                     configuration.setAllowedHeaders(Arrays.asList("*"));
                     configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
                     return configuration;
                 })));
 

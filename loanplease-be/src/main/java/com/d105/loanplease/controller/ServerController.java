@@ -16,7 +16,7 @@ public class ServerController {
         return "hi";
     }
     @GetMapping("/api/server")
-    public String test() {
+    public String healthCheckForServerReload() {
         log.info("server controller test 함수 접속");
         return "secret";
     }

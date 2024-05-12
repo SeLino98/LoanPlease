@@ -45,6 +45,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             log.error("토큰 외의 인증 에러 입니다. 내용은 다음과 같습니다. \n {}", authException.getMessage());
             filterResponse.error(response, ErrorCode.ANOTHER_AUTH_ERROR);
         } else {
+            log.error("토큰 인증 에러 입니다. 내용은 다음과 같습니다. \n {}", authException.getMessage());
             log.info(request.getPathInfo());
             filterResponse.error(response, ErrorCode.EMPTY_TOKEN);
         }

@@ -25,4 +25,5 @@ public class Friendship {
     private User to;
 
     private Boolean isAccess;
+
 }

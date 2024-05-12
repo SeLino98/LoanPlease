@@ -9,6 +9,7 @@ import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import com.d105.loanplease.global.util.SecurityUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
+@Slf4j
 @AllArgsConstructor
 public class FriendService {
 
@@ -54,13 +57,21 @@ public class FriendService {
     @Transactional
     public ResponseEntity<BaseResponseBody<FriendListRes>> getMyFriendList() {
         Long userId = SecurityUtil.getCurrentUserId(); // 현재 사용자의 ID를 가져옴
+        log.info("userId : "+userId);
+
         List<Friendship> friends = friendRepository.findByFrom_UserId(userId);
+
         List<Friendship> realFriends = new ArrayList<>();
+
         for (Friendship value : friends) { //isAccept가 true인 애들만 list에 새로 담는다.
             if (value.getIsAccess()) {
                 realFriends.add(value);
+                log.info(value.getFrom()+" : "+value.getTo()+" : "+value.getFriendshipId());
+            }else{
+                log.info(value.getFrom()+" : "+value.getTo()+" : "+value.getFriendshipId());
             }
         }
+
         List<FriendDetailDto> friendList = realFriends.stream()
                 .map(friend -> new FriendDetailDto(friend.getTo().getNickname(), friend.getTo().getEmail(), friend.getTo().getProfileImg()))
                 .toList();

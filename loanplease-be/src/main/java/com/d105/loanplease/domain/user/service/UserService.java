@@ -110,15 +110,13 @@ public class UserService {
 
         //토큰을 redis에 올린다.
         tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
-//        response.setHeader(accessHeader, "Bearer " + accessToken);
-//        response.setHeader(refreshHeader, "Bearer " + refreshToken);
-//        response.addCookie(new Cookie());'accessToken', accessToken, { httpOnly: true, secure: true });
-//        response.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
         //토큰을 쿠키로 준다.
         response.addCookie(createCookie("Authorization", accessToken));
         //return refresh Token
         response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
+
+
         return UserSignUpRes.builder()
                 .nickname(newUser.getNickname())
                 .email(newUser.getEmail())

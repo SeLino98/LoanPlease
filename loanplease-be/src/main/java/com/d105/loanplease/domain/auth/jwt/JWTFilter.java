@@ -48,11 +48,48 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        try {
+            if (isAllowedPath(request.getRequestURI())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
+            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
+
+            log.info("accessToken : "+accessToken);
+            log.info("refreshToken : "+ refreshToken);
+            if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
+                Authentication authentication = tokenProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+            } else if (refreshToken != null && tokenProvider.isTokenValid(refreshToken)) {
+                // 리프레시 토큰이 유효한 경우 새 엑세스 토큰 발급
+                String newAccessToken = tokenProvider.createAccessJwt(tokenProvider.getAuthentication(refreshToken));
+                response.setHeader("Authorization", "Bearer " + newAccessToken);
+                logger.info("New access token issued.");
+                Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+            } else {
+                sendUnauthorizedResponse(response, "Access is Invalid or Expired");
+            }
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
+            logger.error("Authentication ERROR : ", e);
+            sendUnauthorizedResponse(response, "Authentication error: " + e.getMessage());
+        }
+    }
+
+//    @Override
+//    protected void doFilterInternal(
+//            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
 //        try{
 //            if (isAllowedPath(request.getRequestURI())){ //허용된 URI인지 확인한다.
-                //특정 경로에 대해 필터링 없이 진행한다.
-                filterChain.doFilter(request,response);
-                return;
+//                // 특정 경로에 대해 필터링 없이 진행한다.
+//                filterChain.doFilter(request,response);
+//                return;
 //            }
 ////            //토큰
 ////            String token = authorization;
@@ -63,11 +100,17 @@ public class JWTFilter extends OncePerRequestFilter {
 //
 //            if (tokenRepository.findByAccessToken(accessToken).isEmpty()){
 //                sendUnauthorizedResponse(response,"Access is Invalid");
+//                logger.info("Access is Invalid");
 //                return;
 //            }
-//            if (accessToken!=null&& tokenProvider.isTokenValid(accessToken)){
+//            //
+//            //filterChain.doFilter(request,response);
+//            //
+//            if (accessToken!=null && tokenProvider.isTokenValid(accessToken)){
 //                Authentication authentication = tokenProvider.getAuthentication(accessToken);
 //                SecurityContextHolder.getContext().setAuthentication(authentication);
+//                logger.info("잘 드왔도다 ");
+//                logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");
 //                filterChain.doFilter(request,response);
 //            }
 //        }catch (ExpiredJwtException e){
@@ -80,16 +123,21 @@ public class JWTFilter extends OncePerRequestFilter {
 //            logger.error("Authentication ERROR : ", e);
 //            sendUnauthorizedResponse(response, "Authentication  error :" + e.getMessage());
 //        }
-    }
+//    }
 
 
     //인가되지 않은 사용자에게 띄어줄 페이지
+//    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+//        response.setContentType("application/json;charset=UTF-8");
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        response.getWriter().write(message);
+//    }
+
     private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write(message);
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
-
 
 
 }
