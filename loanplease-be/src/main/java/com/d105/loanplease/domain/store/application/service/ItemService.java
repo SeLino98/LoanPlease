@@ -9,6 +9,7 @@ import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.Constant;
 import com.d105.loanplease.global.util.SecurityUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 @Transactional(readOnly = true)
 public class ItemService implements ItemUseCase {
-
+    private final SecurityUtil securityUtil;
     @Autowired
     private ItemPort itemPort;
 
@@ -41,7 +43,7 @@ public class ItemService implements ItemUseCase {
 
     @Override
     public void expandSlot(final Long userId) {
-        User user = SecurityUtil.getCurrentUserDetails();
+        User user = securityUtil.getCurrentUserDetails();
         /**
          * 유저의 슬롯 구매
          * 1. 유저의 슬롯 개수 확인
@@ -58,7 +60,7 @@ public class ItemService implements ItemUseCase {
         Item item = itemPort.findById(itemId);
 //        User user = userRepository.findById(userId)
 //                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
-        User user = SecurityUtil.getCurrentUserDetails();
+        User user = securityUtil.getCurrentUserDetails();
 
         Long userItemId = user.hasItemHistory(itemId);
 

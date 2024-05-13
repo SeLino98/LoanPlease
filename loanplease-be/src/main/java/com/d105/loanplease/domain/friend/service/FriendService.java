@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class FriendService {
-
+    private final SecurityUtil securityUtil;
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
@@ -34,7 +34,7 @@ public class FriendService {
     public ResponseEntity<BaseResponseBody<Boolean>> processFriendRequest(boolean accept, Long acceptorId) {
 
 //        User senderNickName = userRepository.findById(requestId);
-        Long userId = SecurityUtil.getCurrentUserId(); // 요청에 대한 답변을 한 사람
+        Long userId = securityUtil.getCurrentUserId(); // 요청에 대한 답변을 한 사람
 
 
         return friendRepository.findById(userId).map(request -> { //요청자의 freind 값을 찾는다.
@@ -56,9 +56,10 @@ public class FriendService {
 
     @Transactional
     public ResponseEntity<BaseResponseBody<FriendListRes>> getMyFriendList() {
-        Long userId = SecurityUtil.getCurrentUserId(); // 현재 사용자의 ID를 가져옴
+        log.info("Friends");
+        Long userId = securityUtil.getCurrentUserId(); // 현재 사용자의 ID를 가져옴
         log.info("userId : "+userId);
-
+        log.info("Friends");
         List<Friendship> friends = friendRepository.findByFrom_UserId(userId);
 
         List<Friendship> realFriends = new ArrayList<>();

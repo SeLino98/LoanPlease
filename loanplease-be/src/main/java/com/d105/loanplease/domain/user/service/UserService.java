@@ -46,7 +46,7 @@ public class UserService {
 
     private final S3Image imageSave; //S3 서비스 저장
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
-
+    private final SecurityUtil securityUtil;
     private final TokenProvider tokenProvider;
     private final HttpServletResponse response;
     private final UserRepository userRepository;
@@ -92,20 +92,18 @@ public class UserService {
 
         slotRepository.save(slot);
         userRepository.save(newUser);
-
+//        Long userId = userRepository.findByEmail(userReq.getEmail());
         //userRepository.save가 성공하면
         //access와 refresh 토큰을 발급하고 저장한다.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.info(authentication.toString());
-
-            throw new Exceptions(ErrorCode.NOT_VALID_REQUEST);
-
-        }
-
-        logger.info(authentication.toString());
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            logger.info(authentication.toString());
+//
+//            throw new Exceptions(ErrorCode.NOT_VALID_REQUEST);
+//        }
+//        logger.info(authentication.toString());
         //엑세스 토큰을 준다.
-        String accessToken = tokenProvider.createAccessJwt(authentication);
+        String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
 
         //토큰을 redis에 올린다.
@@ -162,7 +160,7 @@ public class UserService {
         try{
             //JWT를 통해 회원 아이디값 가져오기
 //            String userEmail = SecurityUtil.getCurrentUserEmail();
-            User getUserInfo = SecurityUtil.getCurrentUserDetails();
+            User getUserInfo = securityUtil.getCurrentUserDetails();
             String userEmail = getUserInfo.getEmail();
             Long userId = getUserInfo.getUserId();
             //S3에 사진 저장
@@ -183,7 +181,7 @@ public class UserService {
     }
 
     public UserInfoResponse getUserInfo() {
-        User user = SecurityUtil.getCurrentUserDetails();
+        User user = securityUtil.getCurrentUserDetails();
         Long userId = user.getUserId();
 
         Integer slotNum = user.getSlotNum();

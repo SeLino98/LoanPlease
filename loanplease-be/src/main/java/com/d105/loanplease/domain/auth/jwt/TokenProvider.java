@@ -2,7 +2,9 @@ package com.d105.loanplease.domain.auth.jwt;
 
 import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.repository.TokenRepository;
+import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.RedisUtility;
+import com.d105.loanplease.global.util.SecurityUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -28,10 +30,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.text.html.Option;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -41,8 +40,9 @@ public class TokenProvider {
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     //유저 레포
-
+    private final SecurityUtil securityUtil;
     private final StringRedisTemplate stringRedisTemplate;
+    private final UserRepository userRepository;
 
     private final RedisUtility redisUtility;
     private final TokenRepository tokenRepository;
@@ -60,41 +60,27 @@ public class TokenProvider {
 
     private final Long tokenValidityInMilliseconds;
 
-    public TokenProvider(AuthenticationManagerBuilder authenticationManagerBuilder,
-                         StringRedisTemplate stringRedisTemplate,
+    public TokenProvider(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
+                         StringRedisTemplate stringRedisTemplate, UserRepository userRepository,
                          @Value("${spring.jwt.secret}")  String secret,
                          @Value("${spring.jwt.token-validity-in-seconds}") Long tokenValidityInMilliseconds,
                          RedisUtility redisUtility,
                          TokenRepository tokenRepository) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.securityUtil = securityUtil;
         this.stringRedisTemplate = stringRedisTemplate;
+        this.userRepository = userRepository;
         this.redisUtility = redisUtility;
         this.tokenValidityInMilliseconds = tokenValidityInMilliseconds * 1000;
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         this.tokenRepository = tokenRepository;
     }
-//    public Authentication getAuthentication(String accessToken) {
-//        Claims claims = parseClaims(accessToken);
-//
-//        Collection<? extends GrantedAuthority> authorities = Arrays
-//                .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
-//
-//        User principal = new User(claims.getSubject(), "", authorities);
-//
-//        return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
-//    }
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); // Ensure this method uses the updated parseClaims
-
-        Collection<? extends GrantedAuthority> authorities = Arrays
-                .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
+        logger.info(claims.getSubject()+"ASDFASDF");
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
         User principal = new User(claims.getSubject(), "", authorities);
-
+//        User principal = userRepository.findByEmail()
         return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
     }
 
@@ -111,7 +97,7 @@ public class TokenProvider {
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
         String headerValue = request.getHeader(refreshHeader);
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
-            return Optional.of(headerValue.substring(7)); // 'Bearer ' 다음부터 시작하는 토큰 추출
+            return Optional.of(headerValue.substring(7)); // 'Bearer' 다음부터 시작하는 토큰 추출
         }
         return Optional.empty(); // 헤더가 null이거나 'Bearer '로 시작하지 않는 경우
     }
@@ -151,14 +137,11 @@ public class TokenProvider {
     }
 
     //엑세스 토큰 만들기
-    public String createAccessJwt(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    public String createAccessJwt(String email) {
         long now = (new Date()).getTime();
         Date accessTokenValidity = new Date(now+tokenValidityInMilliseconds);
         return Jwts.builder()
-                .setSubject(authentication.getName()).claim(AUTHORITIES_KEY,authorities)
+                .setSubject(email) //
                 .issuedAt(new Date(System.currentTimeMillis())) //발행시간
                 .expiration(accessTokenValidity) //만료 시간
                 .signWith(secretKey) //비밀키
@@ -206,7 +189,8 @@ public class TokenProvider {
     }
 
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
-        String newAccessToken = createAccessJwt(getAuthentication(extractAccessToken(request).orElse(null)));
+        String email = request.getHeader("RefreshToken");
+        String newAccessToken = createAccessJwt(email);
         tokenRepository.findByRefreshToken(refreshToken)
                 .ifPresent(token -> {
                     String newRefreshToken = updateRefreshToken(newAccessToken);
@@ -225,7 +209,6 @@ public class TokenProvider {
         updateTokenRepo(extractSubject(accessToken),newRefreshToken,accessToken);
         return newRefreshToken;
     }
-
 
 }
 

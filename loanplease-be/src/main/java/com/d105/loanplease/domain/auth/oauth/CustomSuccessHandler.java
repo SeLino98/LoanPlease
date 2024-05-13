@@ -49,7 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             if (existingUser.isPresent()) {
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
                 //기존 유저이니까 refresh와 access를 둘 다 갱신해서 준다.
-                String accessToken = tokenProvider.createAccessJwt(authentication); // user의 auth 정보에 따른 access 갱신
+                String accessToken = tokenProvider.createAccessJwt(email); // user의 auth 정보에 따른 access 갱신
                 String refreshToken = tokenProvider.createRefreshJwt(accessToken); //user의 이메일정보에 따른 refresh 토큰 갱신
                 logger.info("CCC");
                 // 쿠키 설정

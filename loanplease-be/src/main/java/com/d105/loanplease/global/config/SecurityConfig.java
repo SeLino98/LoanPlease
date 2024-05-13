@@ -91,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
+                                .requestMatchers("/api/friends").permitAll()
 //                                .requestMatchers("/signup").permitAll()
                         .anyRequest().authenticated()
 //                                .anyRequest().permitAll()

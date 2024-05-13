@@ -8,21 +8,23 @@ import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/friends")
 public class FriendRequestController {
 
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    private UserRepository userRepository;
-    private FriendService friendService;
+    private final UserRepository userRepository;
+    private final FriendService friendService;
 
     //파라미터에는 요청자가 누구에게 요청한지 그 누구에 대한 id 값이 담겨있다/
     @PostMapping("/request") //
@@ -52,9 +54,9 @@ public class FriendRequestController {
         return friendService.searchFriendList(nickname);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<BaseResponseBody<FriendListRes>> searchMyFriend(){
-
+        log.info("Friends");
         return friendService.getMyFriendList();
     }
 
