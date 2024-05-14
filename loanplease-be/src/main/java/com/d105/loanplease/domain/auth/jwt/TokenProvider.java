@@ -89,10 +89,6 @@ public class TokenProvider {
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .map(accessToken -> accessToken.substring(7));
     }
-//    public Optional<String> extractRefreshToken(HttpServletRequest request){
-//        return Optional.ofNullable(request.getHeader(refreshHeader))
-//                .map(refreshToken -> refreshToken.substring(7));
-//    }
 
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
         String headerValue = request.getHeader(refreshHeader);
@@ -107,14 +103,6 @@ public class TokenProvider {
         Claims claims = parseClaims(accessToken);
         return claims.getSubject();
     }
-//    private Claims parseClaims(String accessToken){
-//        try{
-//            return Jwts.parser()
-//                    .verifyWith(secretKey).build().parseClaimsJwt(accessToken).getBody();
-//        }catch (ExpiredJwtException e){
-//            return e.getClaims();
-//        }
-//    }
 
     private Claims parseClaims(String accessToken) {
         try {

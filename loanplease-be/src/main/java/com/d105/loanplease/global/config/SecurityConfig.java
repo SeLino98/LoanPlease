@@ -9,6 +9,8 @@ import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.exception.CustomAccessDeniedHandler;
 import com.d105.loanplease.global.exception.CustomAuthenticationEntryPoint;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +29,7 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -53,6 +56,7 @@ public class SecurityConfig {
 
         //순서
 
+        log.info("1");
         //CORS
         http
                 .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
@@ -65,16 +69,21 @@ public class SecurityConfig {
                     return configuration;
                 })));
 
+        log.info("2");
         http
                 .headers((headers) -> headers.frameOptions(
                         HeadersConfigurer.FrameOptionsConfig::sameOrigin
                 ));
 
+
+        log.info("3");
         //JWTFilter 추가
         http
                 .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
         //7번
 
+
+        log.info("4");
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
@@ -83,6 +92,8 @@ public class SecurityConfig {
                         .successHandler(customSuccessHandler)
                 );
 
+
+        log.info("5");
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
@@ -90,6 +101,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
+                                .requestMatchers("/swagger-ui/index.html").permitAll()
+                                .requestMatchers("swagger-ui/index.html#/").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
                                 .requestMatchers("/api/friends").permitAll()
 //                                .requestMatchers("/signup").permitAll()
@@ -99,13 +112,14 @@ public class SecurityConfig {
                         authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
                                 .accessDeniedHandler(customAccessDeniedHandler)); //403일 때
 
+        log.info("6");
         //세션 설정 : STATELESS
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
-
+        log.info("7");
         return http.build();
     }
     @Bean
