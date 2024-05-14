@@ -38,7 +38,7 @@ public class UserController {
         log.info("ASDFDSAF");
         log.info("ASDFDSAF");
 //        try {
-            UserSignUpRes userSignUpRes = userService.signUp(userSignUpReq);
+        UserInfoResponse userSignUpRes = userService.signUp(userSignUpReq);
             // 여기서 헤더 설정은 이미 서비스에서 처리됨
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
 //        } catch (Exceptions e) {

@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,8 +76,9 @@ public class UserService {
     }
 
     //회원 가입 기능
+//    UserInfoResponse
     @Transactional
-    public UserSignUpRes  signUp(UserSignUpReq userReq) throws IOException {
+    public UserInfoResponse  signUp(UserSignUpReq userReq) throws IOException {
         if (userRepository.findByEmail(userReq.getEmail()).isPresent()){
             //기존에 회원이 존재한다면?
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
@@ -88,20 +90,10 @@ public class UserService {
                 .profileImg(userReq.getProfileImage())
                 .score(0)
                 .build();
-        Slot slot = Slot.makeSlot(newUser);
+        Slot slot = Slot.builder().slot_1(1).slot_2(2).slot_3(3).build();//Slot.makeSlot();
 
         slotRepository.save(slot);
         userRepository.save(newUser);
-//        Long userId = userRepository.findByEmail(userReq.getEmail());
-        //userRepository.save가 성공하면
-        //access와 refresh 토큰을 발급하고 저장한다.
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            logger.info(authentication.toString());
-//
-//            throw new Exceptions(ErrorCode.NOT_VALID_REQUEST);
-//        }
-//        logger.info(authentication.toString());
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
@@ -115,13 +107,16 @@ public class UserService {
         response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
 
 
-        return UserSignUpRes.builder()
-                .nickname(newUser.getNickname())
-                .email(newUser.getEmail())
-                .profileImg(newUser.getProfileImg())
-                .score(newUser.getScore())
-                .slotNum(newUser.getSlotNum())
-                .build();
+        return UserInfoResponse.builder().nickname(newUser.getNickname()).profileImage(newUser.getProfileImg()).
+                email(newUser.getEmail())
+                .slot(slot).slotNum(3).userItemList(new ArrayList<>()).userLoanList(new ArrayList<>()).build();
+//        return UserSignUpRes.builder()
+//                .nickname(newUser.getNickname())
+//                .email(newUser.getEmail())
+//                .profileImg(newUser.getProfileImg())
+//                .score(newUser.getScore())
+//                .slotNum(newUser.getSlotNum())
+//                .build();
 
     }
 
@@ -183,19 +178,25 @@ public class UserService {
     public UserInfoResponse getUserInfo() {
         User user = securityUtil.getCurrentUserDetails();
         Long userId = user.getUserId();
+        log.info("GETUSERINFO"+userId.toString());
+        User userDetail = userRepository.getReferenceById(userId);
+        log.info(userDetail.toString());
+        Integer slotNum = userDetail.getSlotNum();
+        Slot slot = userDetail.getSlot();
+        String nickname = userDetail.getNickname();
+        String email = userDetail.getEmail();
+        String profileImage = userDetail.getProfileImg();
 
-        Integer slotNum = user.getSlotNum();
-        Slot slot = user.getSlot();
         List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
         List<UserLoan> userLoanList = userLoanRepository.findAllByUserUserId(userId);
 
-        UserInfoResponse response = new UserInfoResponse(slotNum, slot);
-        for(UserItem item: userItemList) {
-            response.addItem(item);
-        }
-        for(UserLoan loan: userLoanList) {
-            response.addLoan(loan);
-        }
+        UserInfoResponse response = new UserInfoResponse(nickname,email,profileImage,slotNum, slot,userLoanList,userItemList);
+//        for(UserItem item: userItemList) {
+//            response.addItem(item);
+//        }
+//        for(UserLoan loan: userLoanList) {
+//            response.addLoan(loan);
+//        }
 
         return response;
     }

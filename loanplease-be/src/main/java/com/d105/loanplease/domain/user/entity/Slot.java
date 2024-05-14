@@ -3,13 +3,15 @@ package com.d105.loanplease.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "slot_tb")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Slot {
 
     @Id @GeneratedValue
@@ -22,18 +24,18 @@ public class Slot {
     private Integer slot_4;
     private Integer slot_5;
 
-    @OneToOne(mappedBy = "slot")
-    private User user;
+//    @OneToOne(mappedBy = "user_id")
+//    private User user_id;
 
-    public static Slot makeSlot(User user) {
-        Slot slot = new Slot();
-
-        slot.slot_1 = 1;
-        slot.slot_2 = 2;
-        slot.slot_3 = 3;
-
-        slot.user = user;
-        user.setSlot(slot);
-        return slot;
-    }
+//    public static Slot makeSlot(User user) {
+//        Slot slot = new Slot();
+//
+//        slot.slot_1 = 1;
+//        slot.slot_2 = 2;
+//        slot.slot_3 = 3;
+//
+//        slot.user = user;
+//        user.setSlot(slot);
+//        return slot;
+//    }
 }

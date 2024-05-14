@@ -17,7 +17,7 @@ import java.util.List;
         info=@Info(title = "LoanPlease",
                 description = "대출의 프로세스와 이해를 게임을 통해 경험하는 프로젝트 \n " +
                         "   싸피 10기 자율 프로젝트 D105팀 ",
-                version ="v6"))
+                version ="v3"))
 @Configuration
 public class SwaggerConfig {
 
