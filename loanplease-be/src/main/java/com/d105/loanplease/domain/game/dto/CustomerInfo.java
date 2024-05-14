@@ -11,7 +11,7 @@ public class CustomerInfo {
     String name;
     int age;
     String gender;
-    String customerImage;
+    int customerImage;
     String customerMessage;
     List<Boolean> customerMaterials;
 }

@@ -1,5 +1,6 @@
 package com.d105.loanplease.domain.game.controller;
 
+import com.d105.loanplease.domain.game.dto.GameInfo;
 import com.d105.loanplease.domain.game.dto.Score;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
@@ -31,14 +32,26 @@ public class GameController {
         return gameService.getGameInfo();
     };
 
+
+    @Operation(summary = "고객 돌려보내기", description = "고객을 돌려보내고 적절한 점수를 리턴합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",
+                    content = @Content(schema = @Schema(implementation = Score.class)))
+    })
+    @GetMapping("/getaway")
+    public ResponseEntity<ScoreResponse> getAwayCustomer(@RequestBody GameInfo gameInfo){
+        return gameService.getAwayCustomer(gameInfo);
+    };
+
+
     @Operation(summary = "점수 획득하기", description = "적절한 점수를 리턴합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",
                     content = @Content(schema = @Schema(implementation = Score.class)))
     })
-    @GetMapping("/score/{mode}")
-    public ResponseEntity<ScoreResponse> gainScore(@PathVariable int mode){
-        return gameService.gainScore(mode);
+    @PostMapping("/score/{num}")
+    public ResponseEntity<ScoreResponse> gainScore(@PathVariable int num, @RequestBody GameInfo gameInfo){
+        return gameService.gainScore(num, gameInfo);
     };
 
     @Operation(summary = "점수 저장하기", description = "유저의 최고 기록보다 점수가 높으면 점수가 갱신됩니다.")

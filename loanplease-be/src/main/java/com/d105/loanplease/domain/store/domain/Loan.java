@@ -22,5 +22,9 @@ public class Loan {
     private Integer price;
     private String color;
     private Long limitAmount; // limit이 예약어라 계속 오류남
+    @Column(name = "min_credit")
+    private Integer minCredit;
+    @Column(name = "max_credit")
+    private Integer maxCredit;
 
 }

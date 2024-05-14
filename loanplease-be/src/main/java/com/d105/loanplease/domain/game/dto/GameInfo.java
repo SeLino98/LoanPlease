@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class GameInfo {
-    Loan loan;
+    LoanRequest loan;
     CustomerInfo customerInfo;
     FinancialInfo financialInfo;
     NonFinancialInfo nonFinancialInfo;
