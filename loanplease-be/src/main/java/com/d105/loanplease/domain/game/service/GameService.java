@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 public interface GameService {
     ResponseEntity<GameInfoResponse> getGameInfo();
 
-    ResponseEntity<ScoreResponse> gainScore(int mode);
+    ResponseEntity<ScoreResponse> getAwayCustomer(GameInfo gameInfo);
+    ResponseEntity<ScoreResponse> gainScore(int num, GameInfo gameInfo);
 
     ResponseEntity<ResultResponse> saveScore(int score);
 }

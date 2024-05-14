@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Loan {
+public class LoanRequest {
     double interest;
     int period;
     String purpose;
