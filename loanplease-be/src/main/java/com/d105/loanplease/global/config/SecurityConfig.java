@@ -101,7 +101,7 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
-                                .requestMatchers("/api/auth/nickname/**").permitAll()
+                                .requestMatchers("/api/auth/nickname/**", "/error").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-resources/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
