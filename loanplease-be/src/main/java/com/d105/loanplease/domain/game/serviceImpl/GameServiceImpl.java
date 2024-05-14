@@ -30,6 +30,8 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private LoanRepository loanRepository;
 
+    @Autowired
+    private SecurityUtil securityUtil;
     @Override
     public ResponseEntity<GameInfoResponse> getGameInfo() {
 
@@ -220,7 +222,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public ResponseEntity<ResultResponse> saveScore(int score) {
         // User의 정보를 불러옵니다.
-        long userId = SecurityUtil.getCurrentUserId();
+        long userId = securityUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
 
