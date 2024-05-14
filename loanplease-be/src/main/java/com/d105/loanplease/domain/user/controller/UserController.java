@@ -6,8 +6,10 @@ import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
 import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.domain.user.service.UserService;
+import com.d105.loanplease.global.service.RedisService;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,30 +31,21 @@ public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
     private final TokenRepository tokenRepository;
+    private final RedisService redisService;
 
 
     @PostMapping("/api/auth/register")
     public ResponseEntity<BaseResponseBody> registerUser(
             @RequestBody UserSignUpReq userSignUpReq
     ) throws Exception {
-        log.info("ASDFDSAF");
-        log.info("ASDFDSAF");
-//        try {
         UserInfoResponse userSignUpRes = userService.signUp(userSignUpReq);
-            // 여기서 헤더 설정은 이미 서비스에서 처리됨
-            return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
-//        } catch (Exceptions e) {
-//
-//            log.error(e.getMessage());
-//
-//            if (e.getErrorCode() == ErrorCode.EMAIL_EXIST) {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.EMAIL_EXIST.getErrorCode(), "Email already exists."));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(), "Invalid request."));
-//            }
-//        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", userSignUpRes));
     }
-
+    @GetMapping("/api/auth/logout")
+    public ResponseEntity<BaseResponseBody<Boolean>> userLogout(HttpServletRequest request){
+        redisService.delValues(request.getHeader("RefreshToken"));
+        return ResponseEntity.ok(BaseResponseBody.of("200",true));
+    }
     @PutMapping("/api/auth/")
     public ResponseEntity<BaseResponseBody<Void>> updateUser
             (@RequestParam String nickname,
