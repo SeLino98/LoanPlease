@@ -157,6 +157,21 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(genders.length);
         String gender = genders[randomIndex];
 
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우"};
+        randomIndex = random.nextInt(lastNames.length);
+        String name = lastNames[randomIndex];
+
+        if(gender.equals("남성")){
+            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성"};
+            randomIndex = random.nextInt(firstNames.length);
+            name += firstNames[randomIndex];
+        }else{
+            String[] firstNames = new String[]{"재희", "설연", "수진", "채연", "규리", "예인", "지수", "수연", "유리"};
+            randomIndex = random.nextInt(firstNames.length);
+            name += firstNames[randomIndex];
+        }
+
+
         int picNumber = selectPicNumber(age, gender);
 
         List<Boolean> materials = new ArrayList<>();
@@ -167,7 +182,7 @@ public class GameServiceImpl implements GameService {
             else materials.add(true);
         }
 
-        CustomerInfo customerInfo = new CustomerInfo("나싸피", age, gender, picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
+        CustomerInfo customerInfo = new CustomerInfo(name, age, gender, picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
 
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
@@ -343,6 +358,12 @@ public class GameServiceImpl implements GameService {
             && gameInfo.getCredit() > 0){
                 score += 150;
                 reason = "저신용자 청년 조건을 충족했습니다.";
+
+                if(gameInfo.getCustomerInfo().getName().equals("이중원")){
+                    score -=150;
+                    score+=30000;
+                    reason = "히든 케이스 충족!!! 보너스 3만점입니다!!!";
+                }
             }
             return new Score(score, "감사해요~", reason);
 
