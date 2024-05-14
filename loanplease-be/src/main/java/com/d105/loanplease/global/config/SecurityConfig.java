@@ -104,6 +104,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/nickname/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-resources/**").permitAll()
+                                .requestMatchers("/swagger-ui.html").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
 //                                .requestMatchers("/swagger-ui/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
