@@ -25,6 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -130,6 +131,8 @@ public class SecurityConfig {
         cors.setAllowedOriginPatterns(Arrays.asList("*"));
         cors.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         cors.setAllowedHeaders(Arrays.asList("*"));
+        cors.setAllowedOriginPatterns(
+                List.of("https://loanplease.kr"));
         cors.addExposedHeader("Authorization");
         cors.setAllowCredentials(true);
 
