@@ -2,7 +2,8 @@ package com.d105.loanplease.domain.user.service;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
-import com.d105.loanplease.domain.user.dto.UserLoanDto;
+import com.d105.loanplease.domain.user.dto.UserItemResDto;
+import com.d105.loanplease.domain.user.dto.UserLoanResDto;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
 import com.d105.loanplease.domain.user.entity.Slot;
 import com.d105.loanplease.domain.user.entity.User;
@@ -12,11 +13,9 @@ import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
-import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
 import com.d105.loanplease.global.service.RedisService;
-import com.d105.loanplease.global.util.BaseResponseBody;
 import com.d105.loanplease.global.util.S3Image;
 import com.d105.loanplease.global.util.SecurityUtil;
 import jakarta.servlet.http.Cookie;
@@ -26,11 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,21 +76,28 @@ public class UserService {
 //    UserInfoResponse
     @Transactional
     public UserInfoResponse signUp(UserSignUpReq userReq) throws IOException {
+
         if (userRepository.findByEmail(userReq.getEmail()).isPresent()){
             //기존에 회원이 존재한다면?
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-//        String mainImgUrl = saveImage(userReq.getProfileImage(),userReq.getEmail()); //S3에 저장한다.
+
         User newUser = User.builder()
                 .nickname(userReq.getNickname())
                 .email(userReq.getEmail())
                 .profileImg(userReq.getProfileImage())
                 .score(0)
+                .slotNum(3)
+                .point(0)
+                .role(" ")
+                .userItemList(new ArrayList<>())
+                .userLoanList(new ArrayList<>())
                 .build();
-        Slot slot = Slot.builder().slot_1(1).slot_2(2).slot_3(3).build();//Slot.makeSlot();
+        Slot slot = Slot.makeSlot(newUser);//Slot.makeSlot();
 
         slotRepository.save(slot);
         userRepository.save(newUser);
+
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
@@ -110,10 +111,14 @@ public class UserService {
         //return refresh Token
         response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
 
-
         return UserInfoResponse.builder().nickname(newUser.getNickname()).profileImage(newUser.getProfileImg()).
                 email(newUser.getEmail())
-                .slot(slot).slotNum(3).userItemList(new ArrayList<>()).userLoanList(new ArrayList<>()).build();
+                .slot_1(slot.getSlot_1())
+                .slot_2(slot.getSlot_2())
+                .slot_3(slot.getSlot_3())
+                .slot_4(slot.getSlot_4())
+                .slot_5(slot.getSlot_5())
+                .slotNum(3).build();
 //        return UserSignUpRes.builder()
 //                .nickname(newUser.getNickname())
 //                .email(newUser.getEmail())
@@ -191,17 +196,30 @@ public class UserService {
         String email = userDetail.getEmail();
         String profileImage = userDetail.getProfileImg();
 
+
+
         List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
         List<UserLoan> userLoanList = userLoanRepository.findAllByUserUserId(userId);
 
-        UserInfoResponse response = new UserInfoResponse(nickname,email,profileImage,slotNum, slot,userLoanList,userItemList);
-//        for(UserItem item: userItemList) {
-//            response.addItem(item);
-//        }
-//        for(UserLoan loan: userLoanList) {
-//            response.addLoan(loan);
-//        }
+        List<UserItemResDto> userItemDto = new ArrayList<>();
+        List<UserLoanResDto> userLoanDto = new ArrayList<>();
 
-        return response;
+        for(UserItem token : userItemList){
+            userItemDto.add(UserItemResDto.builder().userItemId(token.getUserItemId()).item(token.getItem()).count(token.getCount()).build());
+        }
+        for (UserLoan token : userLoanList) {
+            userLoanDto.add(UserLoanResDto.builder().build());
+        }
+        return UserInfoResponse.builder().nickname(nickname).profileImage(profileImage).
+                 email(email)
+                .slotNum(slotNum)
+                .slot_1(slot.getSlot_1())
+                .slot_2(slot.getSlot_2())
+                .slot_3(slot.getSlot_3())
+                .slot_4(slot.getSlot_4())
+                .slot_5(slot.getSlot_5())
+                .userItemList(userItemList)
+                .userLoanList(userLoanList)
+                .slotNum(slotNum).build();
     }
 }
