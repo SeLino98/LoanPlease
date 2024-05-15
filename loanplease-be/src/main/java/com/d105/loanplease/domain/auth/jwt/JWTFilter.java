@@ -31,8 +31,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Autowired
     private final TokenProvider tokenProvider;
-    @Autowired
-    private final TokenRepository tokenRepository;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 //    Ant 스타일 패턴 매칭 사용
@@ -41,12 +39,10 @@ public class JWTFilter extends OncePerRequestFilter {
     //허용 Uri를 관리하는 메서드
     private boolean isAllowedPath(String requestUri){
         List<String> allowedPaths = Arrays.asList("/api/friends","/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/**","/swagger-resources/**",
-                "/v3/api-docs/**","/api/auth/refresh","/api/auth/register","/signup","/swagger-ui/docs","/swagger-ui.html");
-//        return allowedPaths.stream().anyMatch(requestUri::startsWith);
-        //,"/swagger-ui/index.html","/swagger-ui/index.html" //
-//        return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
-        return allowedPaths.stream().anyMatch(path -> requestUri.startsWith(path));
+                "/v3/api-docs/**","/api/refresh","/api/auth/register","/signup");
+        return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -58,24 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
             log.info("DASF");
             String accessToken = tokenProvider.extractAccessToken(request).orElse(null);
-
-//            String refreshToken = tokenProvider.extractRefreshToken(request).orElse(null);
-//
-//            logger.info(accessToken+" ACCESSTOKEN" +
-//                    "\n"+refreshToken + " RefreshToken");
-//
-//            if (tokenRepository.findByAccessToken(accessToken).isEmpty()){
-//                sendUnauthorizedResponse(response,"Access is Invalid");
-//                logger.info("Access is Invalid");
-//                return;
-//            }
-//            if (accessToken!=null && tokenProvider.isTokenValid(accessToken)){
-//                Authentication authentication = tokenProvider.getAuthentication(accessToken);
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//                logger.info("잘 드왔도다 ");
-//                logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");logger.info("잘 드왔도다 ");
-//                filterChain.doFilter(request,response);
-//            }
+            log.info("Access Token: " + accessToken);
             try {
                 if (accessToken != null && tokenProvider.isTokenValid(accessToken)) {
                     Authentication authentication = tokenProvider.getAuthentication(accessToken);
@@ -175,7 +154,15 @@ public class JWTFilter extends OncePerRequestFilter {
 //            sendUnauthorizedResponse(response, "Authentication  error :" + e.getMessage());
 //        }
 //    }
+
+
     //인가되지 않은 사용자에게 띄어줄 페이지
+//    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+//        response.setContentType("application/json;charset=UTF-8");
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//        response.getWriter().write(message);
+//    }
+
     private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

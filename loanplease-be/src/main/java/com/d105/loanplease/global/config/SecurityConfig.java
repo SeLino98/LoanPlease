@@ -37,8 +37,6 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final TokenProvider tokenProvider;
-    private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
 
@@ -93,7 +91,7 @@ public class SecurityConfig {
         log.info("3");
         //JWTFilter 추가
         http
-                .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         //7번
 
 
