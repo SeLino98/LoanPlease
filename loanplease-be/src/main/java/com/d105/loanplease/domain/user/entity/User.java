@@ -1,6 +1,7 @@
 package com.d105.loanplease.domain.user.entity;
 
 import com.d105.loanplease.global.util.Constant;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Builder;
@@ -16,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,6 +49,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "to")
     private List<Friendship> toList = new ArrayList<>();
 
+    //DTO s
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "slot_id")
     private Slot slot;
@@ -73,24 +76,16 @@ public class User implements UserDetails {
         this.point -= price;
     }
 
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
+
     // 유저 슬롯 확장
     public void expandSlot() {
         Assert.isTrue(this.slotNum < 5, "슬롯 확장을 더 이상 할 수 없습니다.");
         if(this.slotNum==3) this.purchase(Constant.FIRST_SLOT_EXPAND_PRICE.price());
         else if(this.slotNum==4) this.purchase(Constant.SECOND_SLOT_EXPAND_PRICE.price());
         this.slotNum++;
-    }
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", nickname='" + nickname + '\'' +
-                ", email='" + email + '\'' +
-                ", score=" + score +
-                ", slot=" + slot +
-                ", profileImg='" + profileImg + '\'' +
-                ", role='" + role + '\'' +
-                '}';
     }
 
     @Override
@@ -128,9 +123,4 @@ public class User implements UserDetails {
         return false;
     }
 
-    public void setSlot(Slot slot) {
-        this.slot = slot;
-    }
-
-    public void setPoint(int score){ this.point = point; }
 }

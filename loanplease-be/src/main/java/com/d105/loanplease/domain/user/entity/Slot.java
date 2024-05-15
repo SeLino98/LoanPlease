@@ -1,17 +1,17 @@
 package com.d105.loanplease.domain.user.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @Table(name = "slot_tb")
 @Getter
 @Builder
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Slot {
 
     @Id @GeneratedValue
@@ -24,18 +24,14 @@ public class Slot {
     private Integer slot_4;
     private Integer slot_5;
 
-//    @OneToOne(mappedBy = "user_id")
-//    private User user_id;
+    @OneToOne(mappedBy = "slot")
+    @JsonManagedReference
+    private User user;
 
-//    public static Slot makeSlot(User user) {
-//        Slot slot = new Slot();
-//
-//        slot.slot_1 = 1;
-//        slot.slot_2 = 2;
-//        slot.slot_3 = 3;
-//
-//        slot.user = user;
-//        user.setSlot(slot);
-//        return slot;
-//    }
+    public static Slot makeSlot(User user) {
+        Slot slot = Slot.builder().slot_1(1).slot_2(2).slot_3(3).slot_4(0).slot_5(0).build();
+        slot.user = user;
+        user.setSlot(slot);
+        return slot;
+    }
 }
