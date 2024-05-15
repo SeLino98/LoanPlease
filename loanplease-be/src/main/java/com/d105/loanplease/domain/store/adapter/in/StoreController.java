@@ -4,9 +4,8 @@ import com.d105.loanplease.domain.store.application.port.in.ItemUseCase;
 import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
 import com.d105.loanplease.domain.store.application.service.request.ChooseLoanRequest;
 import com.d105.loanplease.domain.store.application.service.request.PurchaseItemRequest;
-import com.d105.loanplease.domain.store.application.service.response.ChooseLoanResponse;
-import com.d105.loanplease.domain.store.application.service.response.InquiryStoreResponse;
-import com.d105.loanplease.domain.store.application.service.response.PurchaseSlotResponse;
+import com.d105.loanplease.domain.store.application.service.request.PurchaseLoanRequest;
+import com.d105.loanplease.domain.store.application.service.response.*;
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.store.domain.Loan;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,13 +62,13 @@ public class StoreController {
 
     @Operation(summary = "대출 상품 구매", description = "대출 상품을 구매합니다.")
     @PostMapping("/items/loan")
-    public void purchaseLoan() {
-//        loanUseCase.purchaseLoan();
+    public ResponseEntity<PurchaseLoanResponse> purchaseLoan(@RequestBody PurchaseLoanRequest request) {
+        return loanUseCase.purchaseLoan(request.getLoanId());
     }
 
     @Operation(summary = "일회성 아이템 구매", description = "게임 시간 추가, VIP, 1회 방어권 아이템을 구매합니다.")
     @PostMapping("/items/oneoff")
-    public void purchaseItem(@RequestBody PurchaseItemRequest request) {
-        itemUseCase.purchaseItem(request.getItemId(), request.getItemCount());
+    public ResponseEntity<PurchaseItemResponse> purchaseItem(@RequestBody PurchaseItemRequest request) {
+        return itemUseCase.purchaseItem(request.getItemId(), request.getItemCount());
     }
 }

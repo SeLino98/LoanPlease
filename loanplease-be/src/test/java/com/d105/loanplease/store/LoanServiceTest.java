@@ -54,7 +54,7 @@ public class LoanServiceTest {
     void 대출상품구매() {
         final Long loanId = 1L;
         final Long userId = 1L;
-        loanService.purchaseLoan(loanId, userId);
+        loanService.purchaseLoan(loanId);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("없는 유저입니다."));

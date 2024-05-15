@@ -4,6 +4,7 @@ package com.d105.loanplease.domain.store.application.service;
 import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
 import com.d105.loanplease.domain.store.application.port.out.LoanPort;
 import com.d105.loanplease.domain.store.application.service.response.ChooseLoanResponse;
+import com.d105.loanplease.domain.store.application.service.response.PurchaseLoanResponse;
 import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.entity.Slot;
 import com.d105.loanplease.domain.user.entity.User;
@@ -45,16 +46,16 @@ public class LoanService implements LoanUseCase {
 
     @Override
     @Transactional
-    public void purchaseLoan(final Long loanId, final Long userId) {
+    public ResponseEntity<PurchaseLoanResponse> purchaseLoan(final Long loanId) {
 
         Loan loan = loanPort.findById(loanId);
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
         User user = securityUtil.getCurrentUserDetails();
 
         UserLoan userLoan = UserLoan.purchaseLoan(loan, user);
-
         userLoanRepository.save(userLoan);
+
+        PurchaseLoanResponse response = new PurchaseLoanResponse(user.getPoint(), user.getUserLoanList());
+        return ResponseEntity.ok(response);
     }
 
     @Override
