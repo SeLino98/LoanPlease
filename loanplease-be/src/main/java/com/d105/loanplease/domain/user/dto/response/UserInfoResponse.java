@@ -1,5 +1,7 @@
 package com.d105.loanplease.domain.user.dto.response;
 
+import com.d105.loanplease.domain.user.dto.UserItemResDto;
+import com.d105.loanplease.domain.user.dto.UserLoanResDto;
 import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.entity.UserLoan;
 import lombok.AllArgsConstructor;
@@ -29,7 +31,7 @@ public class UserInfoResponse {
     private Integer slot_5;
 
 
-    private List<UserLoan> userLoanList;
-    private List<UserItem> userItemList;
+    private List<UserLoanResDto> userLoanList;
+    private List<UserItemResDto> userItemList;
 
 }

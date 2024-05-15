@@ -205,10 +205,10 @@ public class UserService {
         List<UserLoanResDto> userLoanDto = new ArrayList<>();
 
         for(UserItem token : userItemList){
-            userItemDto.add(UserItemResDto.builder().userItemId(token.getUserItemId()).item(token.getItem()).count(token.getCount()).build());
+            userItemDto.add(new UserItemResDto(token));
         }
         for (UserLoan token : userLoanList) {
-            userLoanDto.add(UserLoanResDto.builder().build());
+            userLoanDto.add(new UserLoanResDto(token));
         }
         return UserInfoResponse.builder().nickname(nickname).profileImage(profileImage).
                  email(email)
@@ -218,8 +218,8 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
-                .userItemList(userItemList)
-                .userLoanList(userLoanList)
+                .userItemList(userItemDto)
+                .userLoanList(userLoanDto)
                 .slotNum(slotNum).build();
     }
 }

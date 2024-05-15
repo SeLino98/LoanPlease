@@ -3,6 +3,7 @@ package com.d105.loanplease.domain.store.adapter.in;
 import com.d105.loanplease.domain.store.application.port.in.ItemUseCase;
 import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
 import com.d105.loanplease.domain.store.application.service.request.ChooseLoanRequest;
+import com.d105.loanplease.domain.store.application.service.request.PurchaseItemRequest;
 import com.d105.loanplease.domain.store.application.service.response.ChooseLoanResponse;
 import com.d105.loanplease.domain.store.application.service.response.InquiryStoreResponse;
 import com.d105.loanplease.domain.store.application.service.response.PurchaseSlotResponse;
@@ -57,8 +58,7 @@ public class StoreController {
     @Operation(summary = "슬롯 구매", description = "슬롯 확장 아이템을 구매합니다.")
     @PostMapping("/items/slot")
     public ResponseEntity<PurchaseSlotResponse> purchaseSlot() {
-
-        itemUseCase.expandSlot();
+        return itemUseCase.expandSlot();
     }
 
     @Operation(summary = "대출 상품 구매", description = "대출 상품을 구매합니다.")
@@ -69,7 +69,7 @@ public class StoreController {
 
     @Operation(summary = "일회성 아이템 구매", description = "게임 시간 추가, VIP, 1회 방어권 아이템을 구매합니다.")
     @PostMapping("/items/oneoff")
-    public void purchaseItem() {
-
+    public void purchaseItem(@RequestBody PurchaseItemRequest request) {
+        itemUseCase.purchaseItem(request.getItemId(), request.getItemCount());
     }
 }

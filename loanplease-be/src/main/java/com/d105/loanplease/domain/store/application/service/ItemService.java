@@ -2,6 +2,7 @@ package com.d105.loanplease.domain.store.application.service;
 
 import com.d105.loanplease.domain.store.application.port.in.ItemUseCase;
 import com.d105.loanplease.domain.store.application.port.out.ItemPort;
+import com.d105.loanplease.domain.store.application.service.response.PurchaseItemResponse;
 import com.d105.loanplease.domain.store.application.service.response.PurchaseSlotResponse;
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.user.entity.User;
@@ -45,7 +46,7 @@ public class ItemService implements ItemUseCase {
 
     @Override
     @Transactional
-    public ResponseEntity<PurchaseSlotResponse> expandSlot(final Long userId) {
+    public ResponseEntity<PurchaseSlotResponse> expandSlot() {
         User user = securityUtil.getCurrentUserDetails();
         /**
          * 유저의 슬롯 구매
@@ -61,10 +62,8 @@ public class ItemService implements ItemUseCase {
 
     @Override
     @Transactional
-    public void purchaseItem(final Long itemId, final Integer itemCount, final Long userId) {
+    public ResponseEntity<PurchaseItemResponse> purchaseItem(final Long itemId, final Integer itemCount) {
         Item item = itemPort.findById(itemId);
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
         User user = securityUtil.getCurrentUserDetails();
 
         Long userItemId = user.hasItemHistory(itemId);
@@ -77,5 +76,10 @@ public class ItemService implements ItemUseCase {
                     .orElseThrow(() -> new IllegalArgumentException("해당 보유 아이템은 없는 아이템입니다."));
             userItem.purchaseItem(item.getPrice(), itemCount, user);
         }
+
+        List<UserItem> userItemList = user.getUserItemList();
+        PurchaseItemResponse response = new PurchaseItemResponse(user.getPoint(), userItemList);
+
+        return ResponseEntity.ok(response);
     }
 }
