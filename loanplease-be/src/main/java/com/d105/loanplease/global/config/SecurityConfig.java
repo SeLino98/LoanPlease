@@ -117,7 +117,6 @@ public class SecurityConfig {
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/swagger-ui/docs").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/friends").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
                 ).exceptionHandling(authentication ->        // 7)

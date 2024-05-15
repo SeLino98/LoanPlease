@@ -38,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 //    PathMatcher와 같은 클래스를 사용하여 Ant 스타일의 패턴을 사용할 수 있습니다.
     //허용 Uri를 관리하는 메서드
     private boolean isAllowedPath(String requestUri){
-        List<String> allowedPaths = Arrays.asList("/api/friends","/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/**","/swagger-resources/**",
+        List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/**","/swagger-resources/**",
                 "/v3/api-docs/**","/api/refresh","/api/auth/register","/signup");
         return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
