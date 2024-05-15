@@ -26,6 +26,7 @@ public class FriendRequestController {
     private final UserRepository userRepository;
     private final FriendService friendService;
 
+
     //파라미터에는 요청자가 누구에게 요청한지 그 누구에 대한 id 값이 담겨있다/
     @PostMapping("/request") //
     public ResponseEntity<String> sendFriendRequest(@RequestBody Long receiverId) {

@@ -2,6 +2,7 @@ package com.d105.loanplease.domain.friend.controller;
 
 import com.d105.loanplease.domain.friend.service.NotificationService;
 import com.d105.loanplease.domain.friend.service.SseEmitters;
+import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.global.util.SecurityUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -23,8 +24,8 @@ public class SSEController {
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect() {
         SseEmitter emitter = new SseEmitter(); //에미터 생성
-
-        Long userId = securityUtil.getCurrentUserId();
+        User user = securityUtil.getCurrentUserDetails();
+        Long userId = user.getUserId();
         sseEmitters.add(emitter, userId); // sseEmitter에 해당 유저에 대한 에미터 추가
 
         try {

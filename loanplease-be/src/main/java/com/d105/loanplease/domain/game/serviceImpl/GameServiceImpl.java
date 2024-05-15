@@ -222,9 +222,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public ResponseEntity<ResultResponse> saveScore(int score) {
         // User의 정보를 불러옵니다.
-        long userId = securityUtil.getCurrentUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
+        User user = securityUtil.getCurrentUserDetails();
 
         // 점수가 최고 점수라면 갱신합니다.
         if(user.getScore() > score){

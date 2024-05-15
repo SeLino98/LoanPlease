@@ -32,21 +32,22 @@ public class SecurityUtil {
         throw new IllegalStateException("No authenticated user available");
     }
 
-    public Long getCurrentUserId() {
-        User userDetails = getCurrentUserDetails();
-        if (userDetails != null){
-            return userDetails.getUserId();
-        }
-        throw new IllegalStateException("UserDetails does not contain user ID information");
-    }
-    public String getCurrentUserEmail(){
-        User userDetails = getCurrentUserDetails();
-//        if (User instanceof User) {  //
-//            return ((User) userDetails).getEmail();
+//    public Long getCurrentUserId() {
+//        User userDetails = getCurrentUserDetails();
+//        log.info(userDetails.toString());
+//        if (userDetails != null){
+//            return userDetails.getUserId();
 //        }
-        if (userDetails != null){
-            return userDetails.getEmail();
-        }
-        throw new IllegalStateException("UserDetails does not contain user ID information");
-    }
+//        throw new IllegalStateException("UserDetails does not contain user ID information");
+//    }
+//    public String getCurrentUserEmail(){
+//        User userDetails = getCurrentUserDetails();
+////        if (User instanceof User) {  //
+////            return ((User) userDetails).getEmail();
+////        }
+//        if (userDetails != null){
+//            return userDetails.getEmail();
+//        }
+//        throw new IllegalStateException("UserDetails does not contain user ID information");
+//    }
 }

@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -38,19 +40,29 @@ public class SecurityConfig {
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+
+        return new BCryptPasswordEncoder();
+    }
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         //csrf disable
+        //JWT는 세션관리를 stateless로 관리하기 때문에 csrf를 disable로 설정한다.
+
         http
                 .csrf((auth) -> auth.disable());
 
-        //From 로그인 방식 disable
+        // JWT : From 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
 
-        //HTTP Basic 인증 방식 disable
+        //JWT : HTTP Basic 인증 방식 disable
         http
                 .httpBasic((auth) -> auth.disable());
 
@@ -59,15 +71,17 @@ public class SecurityConfig {
         log.info("1");
         //CORS
         http
-                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
-                    CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-                    configuration.setAllowCredentials(true);
-                    configuration.setAllowedHeaders(Arrays.asList("*"));
-                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-                    return configuration;
-                })));
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+//        http
+//                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
+//                    CorsConfiguration configuration = new CorsConfiguration();
+//                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+//                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//                    configuration.setAllowCredentials(true);
+//                    configuration.setAllowedHeaders(Arrays.asList("*"));
+//                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+//                    return configuration;
+//                })));
 
         log.info("2");
         http
@@ -98,23 +112,24 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
-                                .requestMatchers("/api/auth/nickname/**").permitAll()
+                                .requestMatchers("/api/auth/nickname/**", "/error").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/swagger-resources/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui/docs").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
                                 .requestMatchers("/api/friends").permitAll()
-//                                .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
                 ).exceptionHandling(authentication ->        // 7)
                         authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
                                 .accessDeniedHandler(customAccessDeniedHandler)); //403일 때
 
+
+
         log.info("6");
-        //세션 설정 : STATELESS
+        //세션 설정 : STATELESS로 설정해야 JWT가 적용이 된다.
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -129,6 +144,8 @@ public class SecurityConfig {
         cors.setAllowedOriginPatterns(Arrays.asList("*"));
         cors.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         cors.setAllowedHeaders(Arrays.asList("*"));
+        cors.setAllowedOriginPatterns(
+                List.of("https://loanplease.kr"));
         cors.addExposedHeader("Authorization");
         cors.setAllowCredentials(true);
 
