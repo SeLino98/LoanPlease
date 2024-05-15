@@ -10,4 +10,5 @@ public interface LoanUseCase {
     List<Loan> inquiryAllLoans();
     Loan inquiryLoanById(Long id);
     void purchaseLoan(Long loanId, Long userId);
+    void changeSlot();
 }

@@ -52,4 +52,9 @@ public class LoanService implements LoanUseCase {
 
         userLoanRepository.save(userLoan);
     }
+
+    @Override
+    public void changeSlot() {
+
+    }
 }

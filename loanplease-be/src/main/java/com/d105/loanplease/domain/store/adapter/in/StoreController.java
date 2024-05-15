@@ -25,10 +25,11 @@ public class StoreController {
     @Autowired
     private ItemUseCase itemUseCase;
 
-
     @Operation(summary = "게임 대출 상품 선택", description = "게임에서 사용할 대출 상품을 선택합니다.")
     @PostMapping("/choose-loan")
-    public void chooseLoan() {}
+    public void chooseLoan() {
+
+    }
 
     @Operation(summary = "상점 목록 조회", description = "상점의 슬롯 확장, 일회성 아이템, 대출 상품 목록을 조회합니다.")
     @GetMapping("/items")
