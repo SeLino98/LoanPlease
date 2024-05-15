@@ -42,6 +42,7 @@ public class ItemService implements ItemUseCase {
     }
 
     @Override
+    @Transactional
     public void expandSlot(final Long userId) {
         User user = securityUtil.getCurrentUserDetails();
         /**
@@ -56,6 +57,7 @@ public class ItemService implements ItemUseCase {
     }
 
     @Override
+    @Transactional
     public void purchaseItem(final Long itemId, final Integer itemCount, final Long userId) {
         Item item = itemPort.findById(itemId);
 //        User user = userRepository.findById(userId)

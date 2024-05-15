@@ -1,6 +1,5 @@
 package com.d105.loanplease.domain.user.dto.response;
 
-import com.d105.loanplease.domain.user.dto.UserItemDto;
 import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.entity.UserLoan;
 import lombok.AllArgsConstructor;
