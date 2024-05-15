@@ -2,6 +2,7 @@ package com.d105.loanplease.domain.store.application.service;
 
 import com.d105.loanplease.domain.store.application.port.in.ItemUseCase;
 import com.d105.loanplease.domain.store.application.port.out.ItemPort;
+import com.d105.loanplease.domain.store.application.service.response.PurchaseSlotResponse;
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserItem;
@@ -11,6 +12,7 @@ import com.d105.loanplease.global.util.Constant;
 import com.d105.loanplease.global.util.SecurityUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +45,7 @@ public class ItemService implements ItemUseCase {
 
     @Override
     @Transactional
-    public void expandSlot(final Long userId) {
+    public ResponseEntity<PurchaseSlotResponse> expandSlot(final Long userId) {
         User user = securityUtil.getCurrentUserDetails();
         /**
          * 유저의 슬롯 구매
@@ -51,9 +53,10 @@ public class ItemService implements ItemUseCase {
          * 2. 유저의 보유 포인트 확인
          * 3. 유저의 포인트 차감 + 슬롯 확장
          */
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("없는 회원입니다."));
         user.expandSlot();
+        PurchaseSlotResponse response = new PurchaseSlotResponse(user.getSlotNum(), user.getPoint());
+
+        return ResponseEntity.ok(response);
     }
 
     @Override

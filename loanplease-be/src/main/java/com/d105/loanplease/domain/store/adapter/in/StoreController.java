@@ -5,6 +5,7 @@ import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
 import com.d105.loanplease.domain.store.application.service.request.ChooseLoanRequest;
 import com.d105.loanplease.domain.store.application.service.response.ChooseLoanResponse;
 import com.d105.loanplease.domain.store.application.service.response.InquiryStoreResponse;
+import com.d105.loanplease.domain.store.application.service.response.PurchaseSlotResponse;
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.store.domain.Loan;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,9 +56,9 @@ public class StoreController {
 
     @Operation(summary = "슬롯 구매", description = "슬롯 확장 아이템을 구매합니다.")
     @PostMapping("/items/slot")
-    public void purchaseSlot() {
+    public ResponseEntity<PurchaseSlotResponse> purchaseSlot() {
 
-//        itemUseCase.expandSlot();
+        itemUseCase.expandSlot();
     }
 
     @Operation(summary = "대출 상품 구매", description = "대출 상품을 구매합니다.")
