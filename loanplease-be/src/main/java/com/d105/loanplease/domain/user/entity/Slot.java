@@ -4,7 +4,6 @@ package com.d105.loanplease.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @Table(name = "slot_tb")
@@ -33,5 +32,13 @@ public class Slot {
         slot.user = user;
         user.setSlot(slot);
         return slot;
+    }
+
+    public void changeSlot(int slot_1, int slot_2, int slot_3, int slot_4, int slot_5) {
+        this.slot_1 = slot_1;
+        this.slot_2 = slot_2;
+        this.slot_3 = slot_3;
+        this.slot_4 = slot_4;
+        this.slot_5 = slot_5;
     }
 }
