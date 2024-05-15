@@ -8,10 +8,10 @@ import lombok.Getter;
 @Builder
 public class UserLoanResDto {
 
+    private String img;
     private String loanName;
     private String content;
     private Double interest;
     private Integer period;
     private Long limitAmount;
-    private String img;
 }

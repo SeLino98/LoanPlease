@@ -108,8 +108,9 @@ public class UserService {
         log.info("REDIS:RefreshToken : " + tmpString.toString());
         //토큰을 쿠키로 준다.
         response.addCookie(createCookie("Authorization", accessToken));
-        //return refresh Token
         response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
+
+
 
         return UserInfoResponse.builder().nickname(newUser.getNickname()).profileImage(newUser.getProfileImg()).
                 email(newUser.getEmail())
@@ -118,6 +119,8 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
+                .userItemList(new ArrayList<>())
+                .userLoanList(new ArrayList<>())
                 .slotNum(3).build();
 //        return UserSignUpRes.builder()
 //                .nickname(newUser.getNickname())
@@ -195,20 +198,16 @@ public class UserService {
         String nickname = userDetail.getNickname();
         String email = userDetail.getEmail();
         String profileImage = userDetail.getProfileImg();
-
-
-
         List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
         List<UserLoan> userLoanList = userLoanRepository.findAllByUserUserId(userId);
-
-        List<UserItemResDto> userItemDto = new ArrayList<>();
-        List<UserLoanResDto> userLoanDto = new ArrayList<>();
-
+        List<UserItemResDto> userItemDtoList = new ArrayList<>();
+        List<UserLoanResDto> userLoanDtoList = new ArrayList<>();
         for(UserItem token : userItemList){
-            userItemDto.add(UserItemResDto.builder().userItemId(token.getUserItemId()).item(token.getItem()).count(token.getCount()).build());
+            userItemDtoList.add(UserItemResDto.builder().userItemId(token.getUserItemId()).item(token.getItem()).count(token.getCount()).build());
         }
         for (UserLoan token : userLoanList) {
-            userLoanDto.add(UserLoanResDto.builder().build());
+            userLoanDtoList.add(UserLoanResDto.builder().img(token.getLoan().getColor()).period(token.getLoan().getPeriod()).loanName(token.getLoan().getName())
+                    .content(token.getLoan().getContent()).interest(token.getLoan().getInterest()).limitAmount(token.getLoan().getLimitAmount()).build());
         }
         return UserInfoResponse.builder().nickname(nickname).profileImage(profileImage).
                  email(email)
@@ -218,8 +217,8 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
-                .userItemList(userItemList)
-                .userLoanList(userLoanList)
+                .userItemList(userItemDtoList)
+                .userLoanList(userLoanDtoList)
                 .slotNum(slotNum).build();
     }
 }
