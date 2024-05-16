@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,7 +17,6 @@ import java.util.List;
 
 @Getter
 @Entity
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -76,10 +74,6 @@ public class User implements UserDetails {
         this.point -= price;
     }
 
-    public void setSlot(Slot slot) {
-        this.slot = slot;
-    }
-
     // 유저 슬롯 확장
     public void expandSlot() {
         Assert.isTrue(this.slotNum < 5, "슬롯 확장을 더 이상 할 수 없습니다.");
@@ -87,6 +81,7 @@ public class User implements UserDetails {
         else if(this.slotNum==4) this.purchase(Constant.SECOND_SLOT_EXPAND_PRICE.price());
         this.slotNum++;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -123,4 +118,13 @@ public class User implements UserDetails {
         return false;
     }
 
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
+
+    public void setPoint(int point){ this.point = point; }
+    public void setScore(int score){ this.score = score; }
+
+    public void setNickname(String nickname) { this.nickname = nickname; }
+    public void setProfileImg(String profileImg) { this.profileImg = profileImg; }
 }
