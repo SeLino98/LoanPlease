@@ -36,4 +36,10 @@ public class GameErrorHandler {
                 .headers(JSON_HEADERS)
                 .body(stringToGson(HttpStatus.NOT_FOUND.value(), e.getMessage()));
     }
+    @ExceptionHandler(AIException.class)
+    public ResponseEntity<String> handleUserInfoUnavailableException(AIException e) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .headers(JSON_HEADERS)
+                .body(stringToGson(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage()));
+    }
 }

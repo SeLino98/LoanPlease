@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @AllArgsConstructor
@@ -132,5 +131,9 @@ public class User implements UserDetails {
         this.slot = slot;
     }
 
-    public void setPoint(int score){ this.point = point; }
+    public void setPoint(int point){ this.point = point; }
+    public void setScore(int score){ this.score = score; }
+
+    public void setNickname(String nickname) { this.nickname = nickname; }
+    public void setProfileImg(String profileImg) { this.profileImg = profileImg; }
 }
