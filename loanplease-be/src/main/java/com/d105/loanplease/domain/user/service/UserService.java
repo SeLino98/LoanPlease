@@ -1,7 +1,9 @@
 package com.d105.loanplease.domain.user.service;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
+import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.dto.UserItemResDto;
 import com.d105.loanplease.domain.user.dto.UserLoanResDto;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
@@ -48,6 +50,7 @@ public class UserService {
     private final HttpServletResponse response;
     private final UserRepository userRepository;
     private final SlotRepository slotRepository;
+    private final LoanRepository loanRepository;
     private final RedisService redisService;
 
     private final UserItemRepository userItemRepository;
@@ -97,6 +100,7 @@ public class UserService {
 
         slotRepository.save(slot);
         userRepository.save(newUser);
+        initLoanSetting(newUser);
 
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
@@ -131,6 +135,26 @@ public class UserService {
 //                .slotNum(newUser.getSlotNum())
 //                .build();
 
+    }
+
+    @Transactional
+    public void initLoanSetting(User user) {
+        Loan loan1 = loanRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("1번 대출 상품 어디??"));
+
+        Loan loan2 = loanRepository.findById(2L)
+                .orElseThrow(() -> new IllegalArgumentException("2번 대출 상품 어디??"));
+
+        Loan loan3 = loanRepository.findById(3L)
+                .orElseThrow(() -> new IllegalArgumentException("3번 대출 상품 어디??"));
+
+        UserLoan userLoan1 = new UserLoan(loan1, user);
+        UserLoan userLoan2 = new UserLoan(loan2, user);
+        UserLoan userLoan3 = new UserLoan(loan3, user);
+
+        userLoanRepository.save(userLoan1);
+        userLoanRepository.save(userLoan2);
+        userLoanRepository.save(userLoan3);
     }
 
     // 닉네임 중복 체크 기능

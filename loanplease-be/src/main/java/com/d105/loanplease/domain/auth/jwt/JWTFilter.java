@@ -39,7 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
     //허용 Uri를 관리하는 메서드
     private boolean isAllowedPath(String requestUri){
         List<String> allowedPaths = Arrays.asList("/api/server", "/api/upload", "/api/auth/nickname/**" ,"/swagger-ui/**","/swagger-resources/**",
-                "/v3/api-docs/**","/api/refresh","/api/auth/register","/signup");
+                "/v3/api-docs/**","/api/auth/refresh","/api/auth/register","/signup");
         return allowedPaths.stream().anyMatch(p -> pathMatcher.match(p, requestUri));
     }
 
