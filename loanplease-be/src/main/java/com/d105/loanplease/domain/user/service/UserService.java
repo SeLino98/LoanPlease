@@ -199,7 +199,7 @@ public class UserService {
         String nickname = userDetail.getNickname();
         String email = userDetail.getEmail();
         String profileImage = userDetail.getProfileImg();
-
+        Integer point = userDetail.getPoint();
 
 
         List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
@@ -222,6 +222,7 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
+                .point(point)
                 .userItemList(userItemDto)
                 .userLoanList(userLoanDto)
                 .slotNum(slotNum).build();

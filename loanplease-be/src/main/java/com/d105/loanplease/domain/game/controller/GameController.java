@@ -63,4 +63,6 @@ public class GameController {
     public ResponseEntity<ResultResponse> saveScore(int score){
         return gameService.saveScore(score);
     };
+
+//    @PostMapping("/")
 }

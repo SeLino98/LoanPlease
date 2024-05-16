@@ -21,6 +21,7 @@ public class UserInfoResponse {
     private String nickname;
     private String email;
     private String profileImage;
+    private Integer point;
 
     // Slot, UserLoan, UserItem 등 Entity는 꼭!!! Dto로 변환하고 response에 담아 보내자
     private Integer slotNum;
