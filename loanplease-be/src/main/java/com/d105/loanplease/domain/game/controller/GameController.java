@@ -38,7 +38,7 @@ public class GameController {
             @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",
                     content = @Content(schema = @Schema(implementation = Score.class)))
     })
-    @GetMapping("/getaway")
+    @PostMapping("/getaway")
     public ResponseEntity<ScoreResponse> getAwayCustomer(@RequestBody GameInfo gameInfo){
         return gameService.getAwayCustomer(gameInfo);
     };

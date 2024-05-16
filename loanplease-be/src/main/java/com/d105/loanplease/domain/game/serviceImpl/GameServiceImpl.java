@@ -2,6 +2,7 @@ package com.d105.loanplease.domain.game.serviceImpl;
 
 import com.d105.loanplease.domain.game.Fields.*;
 import com.d105.loanplease.domain.game.dto.*;
+import com.d105.loanplease.domain.game.exception.AIException;
 import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
 import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.global.util.BaseResponse;
@@ -12,10 +13,14 @@ import com.d105.loanplease.domain.game.service.GameService;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.SecurityUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +66,7 @@ public class GameServiceImpl implements GameService {
 
         // child num : 0~4
         int childNum = familySize-2;
-        if(familyType==FamilyType.SEPERATED){
+        if(familyType==FamilyType.SEPERATED && childNum>0){
             min = 0; max = childNum;
             childNum = random.nextInt((max-min)+1)+min;
         }
@@ -139,14 +144,6 @@ public class GameServiceImpl implements GameService {
         FinancialInfo financialInfo = new FinancialInfo(incomeTotal/100, incomeType.getKoreanName(), occypType.getKoreanName());
         NonFinancialInfo nonFinancialInfo = new NonFinancialInfo(car.getKoreanName(), reality.getKoreanName(), childNum, eduType.getKoreanName(), familyType.getKoreanName(), houseType.getKoreanName(), daysEmployed, familySize);
 
-        // 영문명을 활용하여
-        // Fast API에 결과를 전송한다.
-        int credit = 1;
-
-
-        // 에러 처리
-
-
 
         // 데이터를 보낸다.
         Purpose[] purposes = Purpose.values();
@@ -155,26 +152,26 @@ public class GameServiceImpl implements GameService {
         LoanRequest loanRequest = new LoanRequest(3, 4, purpose.getPurposeKorean());  // 랜덤 작업 필요
 
         int age = daysBirth/360;
-        String[] genders = new String[]{"남성", "여성"};
+        GenderType[] genders = GenderType.values();
         randomIndex = random.nextInt(genders.length);
-        String gender = genders[randomIndex];
+        GenderType gender = genders[randomIndex];
 
-        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우"};
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한"};
         randomIndex = random.nextInt(lastNames.length);
         String name = lastNames[randomIndex];
 
-        if(gender.equals("남성")){
-            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성"};
+        if(gender.getKoreanName().equals("남성")){
+            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직"};
             randomIndex = random.nextInt(firstNames.length);
             name += firstNames[randomIndex];
         }else{
-            String[] firstNames = new String[]{"재희", "설연", "수진", "채연", "규리", "예인", "지수", "수연", "유리"};
+            String[] firstNames = new String[]{"재희", "설연", "수진", "채연", "규리", "예인", "지수", "수연", "유리", "소현", "세림"};
             randomIndex = random.nextInt(firstNames.length);
             name += firstNames[randomIndex];
         }
 
 
-        int picNumber = selectPicNumber(age, gender);
+        int picNumber = selectPicNumber(age, gender.getKoreanName());
 
         List<Boolean> materials = new ArrayList<>();
         for(int i=0; i<2; i++){
@@ -184,8 +181,24 @@ public class GameServiceImpl implements GameService {
             else materials.add(true);
         }
 
-        CustomerInfo customerInfo = new CustomerInfo(name, age, gender, picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
+        CustomerInfo customerInfo = new CustomerInfo(name, age, gender.getKoreanName(), picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
 
+
+        // 영문명을 활용하여
+        // Fast API에 결과를 전송한다.
+        GameModel gmaeModel = new GameModel(gender.getEnglishName(), car.getEnglishName(), reality.getEnglishName(),
+                childNum, incomeTotal, incomeType.getEnglishName(), eduType.getEnglishName(), familyType.getEnglishName(),
+                houseType.getEnglishName(), daysBirth, daysEmployed, occypType.getEnglishName(), familySize, beginMonth);
+
+        int credit;
+
+        try{
+            credit = getCreditFromAI(gmaeModel);
+        }catch(Exception e){
+            throw new AIException("AI 오류입니다");
+        }
+
+        // 에러 처리
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
 
@@ -220,21 +233,19 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<ResultResponse> saveScore(int score) {
         // User의 정보를 불러옵니다.
         User user = securityUtil.getCurrentUserDetails();
 
         // 점수가 최고 점수라면 갱신합니다.
-        if(user.getScore() > score){
+        if(user.getScore() < score){
             user.setScore(score);
         }
-
-        // User의 포인트를 계산합니다.StatisticsErrorHandler.java
-        // todo::: 점수와 비례하는 포인트 계산 필요
         int point = (int)(score*(0.1));
+        if(point<0) point=0;
         user.setPoint(user.getPoint()+point);
 
-        userRepository.save(user);
 
         ResultResponse response = ResultResponse.createResultResponse(HttpStatus.OK.value(), "점수를 저장했습니다.", point);
 
@@ -299,7 +310,7 @@ public class GameServiceImpl implements GameService {
         }else if(num==4){
             // 히포크라테스 대출
             int score = (int)(defaultScore*(1+loan.getInterest()));
-            String reason ="";
+            String reason;
             if(gameInfo.getFinancialInfo().getOccypType().equals(OccypType.MEDICINESTAFF.getKoreanName())){
                 score += 200;
                 reason = "의료계 종사자 조건과 일치합니다.";
@@ -384,5 +395,26 @@ public class GameServiceImpl implements GameService {
     private boolean isContainsCredit(int credit, int minCredit, int maxCredit){
         if(minCredit <= credit && credit <= maxCredit) return true;
         return false;
+    }
+
+    private int getCreditFromAI(GameModel gameModel) throws JsonProcessingException {
+        System.out.println("AI 불렸음");
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://loanplease.kr:8000/model";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(gameModel);
+
+        HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+        JsonNode root = mapper.readTree(response.getBody());
+        int credit = root.path("credit").asInt();
+
+        return credit;
     }
 }
