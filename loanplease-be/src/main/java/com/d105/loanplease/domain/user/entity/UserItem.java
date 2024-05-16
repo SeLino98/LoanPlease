@@ -32,6 +32,7 @@ public class UserItem {
     public UserItem(Item item, Integer itemCount, User user) {
         this.user = user;
         this.item = item;
+        user.getUserItemList().add(this);
         this.count = itemCount;
     }
 
