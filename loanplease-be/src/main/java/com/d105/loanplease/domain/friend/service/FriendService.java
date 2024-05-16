@@ -98,11 +98,15 @@ public class FriendService {
         for (User potentialFriend : potentialFriends) {
             Optional<User> findTmpUserInfo = userRepository.findByEmail(potentialFriend.getEmail());
             if (findTmpUserInfo.isPresent()){//나와 친구인지 확인한다.
-                User tmpUser = findTmpUserInfo.get();
+                User tmpUser = findTmpUserInfo.get(); //검색된 유저들의 정보들을 받는다.
                 Long tmpUserId = tmpUser.getUserId(); //잠재 친구의 아이디 값을 가져온다.
+                log.info(tmpUserId.toString()+"TOUSERID");
                 boolean flag = false;
-                for(Friendship friendship : friends){
-                    if (friendship.getTo().equals(tmpUserId)){
+                for(Friendship friendship : friends){ //검색을 시도한 유저의 친구들의 목록을 가져온다.
+                    log.info(friendship.getTo()+" _ My Friend");
+                    Long tmpToUser = friendship.getTo().getUserId();
+                    if (tmpToUser.equals(tmpUserId)){
+                        log.info("WeAreAFriends");
                         searchFriendList.add(new FriendDetailDto(tmpUser.getNickname(), tmpUser.getNickname(), tmpUser.getProfileImg(), friendship.getIsAccess() )); //친구 추가
                         flag = true;
                         break;
