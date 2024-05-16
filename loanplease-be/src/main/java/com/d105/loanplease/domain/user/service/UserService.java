@@ -106,6 +106,20 @@ public class UserService {
         initLoanSetting(newUser);
         initItemSetting(newUser);
 
+        List<UserItemResDto> userItemResDtoList = new ArrayList<>();
+        List<UserLoanResDto> userLoanResDtoList = new ArrayList<>();
+
+        List<UserItem> userItemList = newUser.getUserItemList();
+        List<UserLoan> userLoanList = newUser.getUserLoanList();
+
+        for(UserItem userItem: userItemList) {
+            userItemResDtoList.add(new UserItemResDto(userItem));
+        }
+
+        for(UserLoan userLoan: userLoanList) {
+            userLoanResDtoList.add(new UserLoanResDto(userLoan));
+        }
+
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
@@ -128,8 +142,8 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
-                .userItemList(new ArrayList<>())
-                .userLoanList(new ArrayList<>())
+                .userItemList(userItemResDtoList)
+                .userLoanList(userLoanResDtoList)
                 .slotNum(3).build();
 //        return UserSignUpRes.builder()
 //                .nickname(newUser.getNickname())

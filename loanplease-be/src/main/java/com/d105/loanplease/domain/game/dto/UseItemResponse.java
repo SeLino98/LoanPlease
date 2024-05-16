@@ -11,8 +11,4 @@ import java.util.List;
 @Builder
 public class UseItemResponse {
     private List<UserItemResDto> userItemResDtoList = new ArrayList<>();
-
-    public UseItemResponse() {
-
-    }
 }
