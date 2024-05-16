@@ -1,5 +1,4 @@
 package com.d105.loanplease.global.config;
-
 import com.d105.loanplease.domain.auth.jwt.JWTFilter;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
@@ -27,32 +26,26 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 @Slf4j
 public class SecurityConfig {
-
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final TokenProvider tokenProvider;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
-
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
         return new BCryptPasswordEncoder();
     }
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         //csrf disable
         //JWT는 세션관리를 stateless로 관리하기 때문에 csrf를 disable로 설정한다.
-
         http
                 .csrf((auth) -> auth.disable());
 
@@ -70,16 +63,6 @@ public class SecurityConfig {
         //CORS
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-//        http
-//                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
-//                    CorsConfiguration configuration = new CorsConfiguration();
-//                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-//                    configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//                    configuration.setAllowCredentials(true);
-//                    configuration.setAllowedHeaders(Arrays.asList("*"));
-//                    configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-//                    return configuration;
-//                })));
 
         log.info("2");
         http
@@ -151,7 +134,6 @@ public class SecurityConfig {
 
         return source;
     }
-
 
 
 }
