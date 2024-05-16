@@ -48,7 +48,7 @@ public class FriendRequestController {
         return friendService.processFriendRequest(isAccept, acceptor);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/{nickname}")
     public ResponseEntity<BaseResponseBody<FriendListRes>> searchFriend(
             @PathVariable String nickname
     ){
