@@ -36,9 +36,6 @@ import java.util.Random;
 public class GameServiceImpl implements GameService {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private LoanRepository loanRepository;
 
     @Autowired
@@ -172,12 +169,14 @@ public class GameServiceImpl implements GameService {
         if(gender.getKoreanName().equals("남성")){
             String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직"};
             randomIndex = random.nextInt(firstNames.length);
+            if(firstNames[randomIndex].equals("중원")) name = "이";    // 이중원의 요청 ^_^
             name += firstNames[randomIndex];
         }else{
             String[] firstNames = new String[]{"재희", "설연", "수진", "채연", "규리", "예인", "지수", "수연", "유리", "소현", "세림"};
             randomIndex = random.nextInt(firstNames.length);
             name += firstNames[randomIndex];
         }
+
 
 
         int picNumber = selectPicNumber(age, gender.getKoreanName());
@@ -189,6 +188,7 @@ public class GameServiceImpl implements GameService {
             if(probability == 0) materials.add(false);
             else materials.add(true);
         }
+
 
         CustomerInfo customerInfo = new CustomerInfo(name, age, gender.getKoreanName(), picNumber, purpose.getPurposeKorean()+"목적으로 대출해주세요!", materials);
 
