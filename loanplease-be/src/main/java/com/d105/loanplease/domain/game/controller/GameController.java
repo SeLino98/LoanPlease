@@ -2,6 +2,8 @@ package com.d105.loanplease.domain.game.controller;
 
 import com.d105.loanplease.domain.game.dto.GameInfo;
 import com.d105.loanplease.domain.game.dto.Score;
+import com.d105.loanplease.domain.game.dto.UseItemRequest;
+import com.d105.loanplease.domain.game.dto.UseItemResponse;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
 import com.d105.loanplease.domain.game.response.ScoreResponse;
@@ -64,8 +66,13 @@ public class GameController {
         return gameService.saveScore(score);
     };
 
-//    @PostMapping("/")
-//    public void useItem(@RequestBody  ) {
-//
-//    }
+    @Operation(summary = "아이템 사용", description = "게임 중 아이템을 사용합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",
+                    content = @Content(schema = @Schema(implementation = ResultResponse.class)))
+    })
+    @PostMapping("/use-item")
+    public ResponseEntity<UseItemResponse> useItem(@RequestBody UseItemRequest request) {
+        return gameService.useItem(request.getUserItemId());
+    }
 }

@@ -68,14 +68,9 @@ public class ItemService implements ItemUseCase {
 
         Long userItemId = user.hasItemHistory(itemId);
 
-        if(userItemId==null) { // 해당 아이템에 대한 구매 내역이 없을 때 -> DB에 새로 추가
-            UserItem userItem = UserItem.purchaseItem(item, itemCount, user);
-            userItemRepository.save(userItem);
-        } else { // 해당 아이템을 구매한 내역이 있을 경우 -> 구매 내역을 가져와 아이템 개수 +1
-            UserItem userItem = userItemRepository.findById(userItemId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 보유 아이템은 없는 아이템입니다."));
-            userItem.purchaseItem(item.getPrice(), itemCount, user);
-        }
+        UserItem userItem = userItemRepository.findById(userItemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보유 아이템은 없는 아이템입니다."));
+        userItem.purchaseItem(item.getPrice(), itemCount, user);
 
         List<UserItem> userItemList = user.getUserItemList();
         PurchaseItemResponse response = new PurchaseItemResponse(user.getPoint(), userItemList);
