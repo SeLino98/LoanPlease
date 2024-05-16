@@ -2,7 +2,6 @@ package com.d105.loanplease.global.config;
 import com.d105.loanplease.domain.auth.jwt.JWTFilter;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.auth.oauth.CustomSuccessHandler;
-import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.auth.service.CustomOAuth2UserService;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.exception.CustomAccessDeniedHandler;
@@ -128,10 +127,8 @@ public class SecurityConfig {
                 List.of("https://loanplease.kr"));
         cors.addExposedHeader("Authorization");
         cors.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cors);  // 모든 경로에 대해 CORS 설정 적용
-
         return source;
     }
 

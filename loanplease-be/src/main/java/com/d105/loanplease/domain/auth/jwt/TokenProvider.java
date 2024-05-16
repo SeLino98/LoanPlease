@@ -1,15 +1,11 @@
 package com.d105.loanplease.domain.auth.jwt;
 
-import com.d105.loanplease.domain.auth.entity.Token;
-import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.service.RedisService;
-import com.d105.loanplease.global.util.RedisUtility;
 import com.d105.loanplease.global.util.SecurityUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,16 +19,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.swing.text.html.Option;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
@@ -142,7 +135,7 @@ public class TokenProvider {
         long now = (new Date()).getTime();
         Date refreshTokenValidity = new Date(now + tokenValidityInMilliseconds *21);
         return  Jwts.builder()
-                .claim("accessToken",accessToken) //리프레시 토큰 주체의 식별 정보
+                .claim("email",accessToken) //리프레시 토큰 주체의 식별 정보
                 .issuedAt(new Date(System.currentTimeMillis()))//토큰 발행 시간.
                 .expiration(refreshTokenValidity) //토큰 만료 시간.
                 .signWith(secretKey)
@@ -173,7 +166,8 @@ public class TokenProvider {
 
     //리프레쉬 토큰을 REdis에 업데이트한다.
     public String updateTokenRepo(String email, String accessToken){
-        String newRefreshToken = createRefreshJwt(extractSubject(accessToken));
+//        String newRefreshToken = createRefreshJwt(extractSubject(accessToken));
+        String newRefreshToken = createRefreshJwt(accessToken);
         redisService.setValues(email,newRefreshToken);
         return newRefreshToken;
     }

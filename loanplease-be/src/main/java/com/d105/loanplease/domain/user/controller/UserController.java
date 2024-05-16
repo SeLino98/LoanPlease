@@ -1,7 +1,6 @@
 package com.d105.loanplease.domain.user.controller;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
-import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
 import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
@@ -30,7 +29,6 @@ public class UserController {
     //회원가입
     private final UserService userService;
     private final TokenProvider tokenProvider;
-    private final TokenRepository tokenRepository;
     private final RedisService redisService;
 
 
