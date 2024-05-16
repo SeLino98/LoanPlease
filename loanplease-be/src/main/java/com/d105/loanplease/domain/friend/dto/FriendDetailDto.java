@@ -17,5 +17,7 @@ public class FriendDetailDto {
     private String nickname;
     private String email;
     private String profileImg;
+    private Boolean isFriend;
+
 
 }

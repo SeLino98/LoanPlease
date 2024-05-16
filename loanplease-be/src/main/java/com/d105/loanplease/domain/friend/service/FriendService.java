@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -78,9 +79,8 @@ public class FriendService {
                 log.info(value.getFrom()+" : "+value.getTo()+" : "+value.getFriendshipId());
             }
         }
-
         List<FriendDetailDto> friendList = realFriends.stream()
-                .map(friend -> new FriendDetailDto(friend.getTo().getNickname(), friend.getTo().getEmail(), friend.getTo().getProfileImg()))
+                .map(friend -> new FriendDetailDto(friend.getTo().getNickname(), friend.getTo().getEmail(), friend.getTo().getProfileImg(),true))
                 .toList();
         FriendListRes friendListRes = FriendListRes.builder().friends(friendList).build();
         return ResponseEntity.ok(BaseResponseBody.of("200", friendListRes));
@@ -89,12 +89,37 @@ public class FriendService {
     @Transactional
     public ResponseEntity<BaseResponseBody<FriendListRes>> searchFriendList(String friendName) {
         List<User> potentialFriends = userRepository.findByNicknameContaining(friendName);
-        List<FriendDetailDto> friendList = potentialFriends.stream()
-                .map(user ->new FriendDetailDto(user.getNickname(), user.getNickname(), user.getProfileImg()))
-                .toList();
-        FriendListRes friendListRes = FriendListRes.builder().friends(friendList.stream().toList()).build();
+        //먼저 뽑고
+        Long userId = securityUtil.getCurrentUserId();
+        List<Friendship> friends = friendRepository.findByFrom_UserId(userId);
+        List<FriendDetailDto> searchFriendList = new ArrayList<>();
+
+        //돌면서 확인해
+        for (User potentialFriend : potentialFriends) {
+            Optional<User> findTmpUserInfo = userRepository.findByEmail(potentialFriend.getEmail());
+            if (findTmpUserInfo.isPresent()){//나와 친구인지 확인한다.
+                User tmpUser = findTmpUserInfo.get();
+                Long tmpUserId = tmpUser.getUserId(); //잠재 친구의 아이디 값을 가져온다.
+                boolean flag = false;
+                for(Friendship friendship : friends){
+                    if (friendship.getTo().equals(tmpUserId)){
+                        searchFriendList.add(new FriendDetailDto(tmpUser.getNickname(), tmpUser.getNickname(), tmpUser.getProfileImg(), friendship.getIsAccess() )); //친구 추가
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag)  searchFriendList.add(new FriendDetailDto(tmpUser.getNickname(), tmpUser.getNickname(), tmpUser.getProfileImg(), false )); //친구 추가
+            }
+        }
+//        log.info(searchFriendList.size().toString);
+        FriendListRes friendListRes = FriendListRes.builder().friends(searchFriendList.stream().toList()).build();
         return ResponseEntity.ok(BaseResponseBody.of("200",friendListRes));
     }
 
-
 }
+
+
+
+//List<FriendDetailDto> friendList = potentialFriends.stream()
+//        .map(user ->new FriendDetailDto(user.getNickname(), user.getNickname(), user.getProfileImg()))
+//        .toList();
