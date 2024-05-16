@@ -4,7 +4,6 @@ package com.d105.loanplease.domain.auth.controller;
 import com.d105.loanplease.domain.auth.dto.TokenResDto;
 import com.d105.loanplease.domain.auth.entity.Token;
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
-import com.d105.loanplease.domain.auth.repository.TokenRepository;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.exception.ErrorCode;

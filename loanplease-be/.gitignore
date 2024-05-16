@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 appication-secret.yml
+apllication-seceret-local.yml
 ### STS ###
 .apt_generated
 .classpath
