@@ -55,7 +55,7 @@ public class ItemService implements ItemUseCase {
          * 3. 유저의 포인트 차감 + 슬롯 확장
          */
         user.expandSlot();
-        PurchaseSlotResponse response = new PurchaseSlotResponse(user.getSlotNum(), user.getPoint());
+        PurchaseSlotResponse response = new PurchaseSlotResponse(user.getPoint(), user.getSlotNum());
 
         return ResponseEntity.ok(response);
     }
