@@ -61,10 +61,6 @@ public class SecurityConfig {
         log.info("1");
         //CORS
 //        http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-//        http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
-//        http
 //                .cors((corsCustomizer -> corsCustomizer.configurationSource(request -> {
 //                    CorsConfiguration configuration = new CorsConfiguration();
 //                    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
@@ -131,23 +127,4 @@ public class SecurityConfig {
         log.info("7");
         return http.build();
     }
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration cors = new CorsConfiguration();
-//        cors.setAllowedOriginPatterns(Arrays.asList("*"));
-//        cors.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//        cors.setAllowedHeaders(Arrays.asList("*"));
-//        cors.setAllowedOriginPatterns(
-//                List.of("https://loanplease.kr"));
-//        cors.addExposedHeader("Authorization");
-//        cors.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", cors);  // 모든 경로에 대해 CORS 설정 적용
-//
-//        return source;
-//    }
-
-
-
 }
