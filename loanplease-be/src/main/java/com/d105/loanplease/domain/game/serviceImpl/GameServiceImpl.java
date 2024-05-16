@@ -5,6 +5,9 @@ import com.d105.loanplease.domain.game.dto.*;
 import com.d105.loanplease.domain.game.exception.AIException;
 import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
 import com.d105.loanplease.domain.store.domain.Loan;
+import com.d105.loanplease.domain.user.dto.UserItemResDto;
+import com.d105.loanplease.domain.user.entity.UserItem;
+import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.global.util.BaseResponse;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
@@ -12,6 +15,8 @@ import com.d105.loanplease.domain.game.response.ScoreResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
+import com.d105.loanplease.global.util.CookieUtils;
+import com.d105.loanplease.global.util.CryptoUtil;
 import com.d105.loanplease.global.util.SecurityUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -34,6 +40,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private LoanRepository loanRepository;
+
+    @Autowired
+    private UserItemRepository userItemRepository;
 
     @Autowired
     private SecurityUtil securityUtil;
@@ -416,5 +425,28 @@ public class GameServiceImpl implements GameService {
         int credit = root.path("credit").asInt();
 
         return credit;
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<UseItemResponse> useItem(Long userItemId) {
+        User user = securityUtil.getCurrentUserDetails();
+        UserItem userItem = userItemRepository.findById(userItemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 아이템이 없습니다."));
+
+        userItem.useItem(); // 아이템 사용
+
+        List<UserItemResDto> userItemResDtoList = new ArrayList<>();
+        List<UserItem> userItemList = user.getUserItemList();
+
+        for(UserItem uItem: userItemList) {
+            userItemResDtoList.add(new UserItemResDto(uItem));
+        }
+
+        UseItemResponse response = UseItemResponse.builder()
+                .userItemResDtoList(userItemResDtoList)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }
