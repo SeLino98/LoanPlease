@@ -13,19 +13,19 @@ public class LoanpleaseApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LoanpleaseApplication.class, args);
 	}
-//
-//	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**")
-//						.allowedOriginPatterns("*")
-//						.allowedMethods("GET", "POST", "PUT", "DELETE")
-//						.allowedHeaders("*")
-//						.allowCredentials(true)
-//						.maxAge(3000);
-//			}
-//		};
-//	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOriginPatterns("*")
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*")
+						.allowCredentials(true)
+						.maxAge(3000);
+			}
+		};
+	}
 }
