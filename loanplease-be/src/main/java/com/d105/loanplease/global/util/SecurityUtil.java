@@ -23,9 +23,7 @@ public class SecurityUtil {
     public User getCurrentUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info(authentication.toString());
-
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
-//            return userRepository.findByEmail(((UserDetails) authentication.getPrincipal()).getUsername())
+        if (authentication.isAuthenticated()) {
             return userRepository.findByEmail(authentication.getName())
                     .orElseThrow(() -> new Exceptions(ErrorCode.MEMBER_NOT_EXIST)) ;
         }

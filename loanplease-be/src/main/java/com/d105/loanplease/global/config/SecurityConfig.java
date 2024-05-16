@@ -26,7 +26,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,10 +36,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final TokenProvider tokenProvider;
-    private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint   authenticationEntryPoint;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -93,7 +90,7 @@ public class SecurityConfig {
         log.info("3");
         //JWTFilter 추가
         http
-                .addFilterBefore(new JWTFilter(tokenProvider, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         //7번
 
 
@@ -112,6 +109,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/upload").permitAll()
                         .requestMatchers("/api/server").permitAll()
                                 .requestMatchers("/api/auth/nickname/**", "/error").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
@@ -119,9 +117,9 @@ public class SecurityConfig {
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/swagger-ui/docs").permitAll()
                                 .requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/friends").permitAll()
                         .requestMatchers("/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 ).exceptionHandling(authentication ->        // 7)
                         authentication.authenticationEntryPoint(authenticationEntryPoint) //401일 때
                                 .accessDeniedHandler(customAccessDeniedHandler)); //403일 때

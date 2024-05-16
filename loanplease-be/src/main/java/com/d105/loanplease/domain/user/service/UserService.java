@@ -2,7 +2,8 @@ package com.d105.loanplease.domain.user.service;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
-import com.d105.loanplease.domain.user.dto.UserLoanDto;
+import com.d105.loanplease.domain.user.dto.UserItemResDto;
+import com.d105.loanplease.domain.user.dto.UserLoanResDto;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
 import com.d105.loanplease.domain.user.entity.Slot;
 import com.d105.loanplease.domain.user.entity.User;
@@ -12,10 +13,9 @@ import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
-import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
-import com.d105.loanplease.global.util.BaseResponseBody;
+import com.d105.loanplease.global.service.RedisService;
 import com.d105.loanplease.global.util.S3Image;
 import com.d105.loanplease.global.util.SecurityUtil;
 import jakarta.servlet.http.Cookie;
@@ -25,18 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -51,6 +48,7 @@ public class UserService {
     private final HttpServletResponse response;
     private final UserRepository userRepository;
     private final SlotRepository slotRepository;
+    private final RedisService redisService;
 
     private final UserItemRepository userItemRepository;
     private final UserLoanRepository userLoanRepository;
@@ -75,53 +73,63 @@ public class UserService {
     }
 
     //회원 가입 기능
+//    UserInfoResponse
     @Transactional
-    public UserSignUpRes  signUp(UserSignUpReq userReq) throws IOException {
+    public UserInfoResponse signUp(UserSignUpReq userReq) throws IOException {
+
         if (userRepository.findByEmail(userReq.getEmail()).isPresent()){
             //기존에 회원이 존재한다면?
             throw new Exceptions(ErrorCode.EMAIL_EXIST);
         }
-//        String mainImgUrl = saveImage(userReq.getProfileImage(),userReq.getEmail()); //S3에 저장한다.
+
         User newUser = User.builder()
                 .nickname(userReq.getNickname())
                 .email(userReq.getEmail())
                 .profileImg(userReq.getProfileImage())
                 .score(0)
+                .slotNum(3)
+                .point(0)
+                .role(" ")
+                .userItemList(new ArrayList<>())
+                .userLoanList(new ArrayList<>())
                 .build();
-        Slot slot = Slot.makeSlot(newUser);
+        Slot slot = Slot.makeSlot(newUser);//Slot.makeSlot();
 
         slotRepository.save(slot);
         userRepository.save(newUser);
-//        Long userId = userRepository.findByEmail(userReq.getEmail());
-        //userRepository.save가 성공하면
-        //access와 refresh 토큰을 발급하고 저장한다.
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null || !authentication.isAuthenticated()) {
-//            logger.info(authentication.toString());
-//
-//            throw new Exceptions(ErrorCode.NOT_VALID_REQUEST);
-//        }
-//        logger.info(authentication.toString());
+
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
         String refreshToken = tokenProvider.createRefreshJwt(accessToken);
-
+        redisService.setValues(refreshToken, userReq.getEmail()); //refresh로 저장한다.
         //토큰을 redis에 올린다.
-        tokenProvider.updateTokenRepo(newUser.getEmail(), refreshToken, accessToken);
-
+//        tokenProvider.updateTokenRepo(newUser.getEmail(), accessToken);
+        Optional<String> tmpString= tokenProvider.extractEmail(refreshToken);
+        log.info("REDIS:RefreshToken : " + tmpString.toString());
         //토큰을 쿠키로 준다.
         response.addCookie(createCookie("Authorization", accessToken));
         //return refresh Token
         response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
 
 
-        return UserSignUpRes.builder()
-                .nickname(newUser.getNickname())
-                .email(newUser.getEmail())
-                .profileImg(newUser.getProfileImg())
-                .score(newUser.getScore())
-                .slotNum(newUser.getSlotNum())
-                .build();
+
+        return UserInfoResponse.builder().nickname(newUser.getNickname()).profileImage(newUser.getProfileImg()).
+                email(newUser.getEmail())
+                .slot_1(slot.getSlot_1())
+                .slot_2(slot.getSlot_2())
+                .slot_3(slot.getSlot_3())
+                .slot_4(slot.getSlot_4())
+                .slot_5(slot.getSlot_5())
+                .userItemList(new ArrayList<>())
+                .userLoanList(new ArrayList<>())
+                .slotNum(3).build();
+//        return UserSignUpRes.builder()
+//                .nickname(newUser.getNickname())
+//                .email(newUser.getEmail())
+//                .profileImg(newUser.getProfileImg())
+//                .score(newUser.getScore())
+//                .slotNum(newUser.getSlotNum())
+//                .build();
 
     }
 
@@ -183,20 +191,40 @@ public class UserService {
     public UserInfoResponse getUserInfo() {
         User user = securityUtil.getCurrentUserDetails();
         Long userId = user.getUserId();
+        log.info("GETUSERINFO"+userId.toString());
+        User userDetail = userRepository.getReferenceById(userId);
+        log.info(userDetail.toString());
+        Integer slotNum = userDetail.getSlotNum();
+        Slot slot = userDetail.getSlot();
+        String nickname = userDetail.getNickname();
+        String email = userDetail.getEmail();
+        String profileImage = userDetail.getProfileImg();
+        Integer point = userDetail.getPoint();
 
-        Integer slotNum = user.getSlotNum();
-        Slot slot = user.getSlot();
+
         List<UserItem> userItemList = userItemRepository.findAllByUserUserId(userId);
         List<UserLoan> userLoanList = userLoanRepository.findAllByUserUserId(userId);
 
-        UserInfoResponse response = new UserInfoResponse(slotNum, slot);
-        for(UserItem item: userItemList) {
-            response.addItem(item);
-        }
-        for(UserLoan loan: userLoanList) {
-            response.addLoan(loan);
-        }
+        List<UserItemResDto> userItemDto = new ArrayList<>();
+        List<UserLoanResDto> userLoanDto = new ArrayList<>();
 
-        return response;
+        for(UserItem token : userItemList){
+            userItemDto.add(new UserItemResDto(token));
+        }
+        for (UserLoan token : userLoanList) {
+            userLoanDto.add(new UserLoanResDto(token));
+        }
+        return UserInfoResponse.builder().nickname(nickname).profileImage(profileImage).
+                 email(email)
+                .slotNum(slotNum)
+                .slot_1(slot.getSlot_1())
+                .slot_2(slot.getSlot_2())
+                .slot_3(slot.getSlot_3())
+                .slot_4(slot.getSlot_4())
+                .slot_5(slot.getSlot_5())
+                .point(point)
+                .userItemList(userItemDto)
+                .userLoanList(userLoanDto)
+                .slotNum(slotNum).build();
     }
 }

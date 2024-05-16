@@ -4,6 +4,7 @@ import com.d105.loanplease.domain.auth.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
+import com.d105.loanplease.global.service.RedisService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,11 +32,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final UserRepository userRepository;
 
-    private static final Long accessExpiredMs = 60*60*60L;
-    private static final int accessMaxAge = 60*60;
+    private final RedisService redisService;
 
-    private static final Long refreshExpiredMs = 604800*1000L;
-    private static final int refreshMaxAge = 604800; //7일;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -51,14 +49,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 //기존 유저이니까 refresh와 access를 둘 다 갱신해서 준다.
                 String accessToken = tokenProvider.createAccessJwt(email); // user의 auth 정보에 따른 access 갱신
                 String refreshToken = tokenProvider.createRefreshJwt(accessToken); //user의 이메일정보에 따른 refresh 토큰 갱신
-                logger.info("CCC");
+                //해당 토큰 값에 대해 키밸류 값으로 redis에 저장
+                //RefreshToken만 저장한다.
+                redisService.setValues(refreshToken,email);
+
                 // 쿠키 설정
                 //return access Token
                 response.addCookie(createCookie("Authorization", accessToken));
                 //return refresh Token
                 response.addCookie(createHttpOnlyCookie("RefreshToken",refreshToken));
-//                response.sendRedirect("https://loanplease.kr/"); //서버에 올릴 땐 이걸로
-                response.sendRedirect("http://localhost:5173/");
+
+                response.sendRedirect("https://loanplease.kr/"); //서버에 올릴 땐 이걸로
+//                response.sendRedirect("http://localhost:5173/");
                 //END
             } else {
                 // 새 사용자라면? 등록
@@ -79,8 +81,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //                response.setContentType("application/json;charset=UTF-8");
 //                response.getWriter().write(new ObjectMapper().writeValueAsString(user));
                 // 사용자 등록 페이지 리다이렉트
-//                response.sendRedirect("https://loanplease.kr/signup");
-                response.sendRedirect("http://localhost:5173/signup");
+                response.sendRedirect("https://loanplease.kr/signup");
+//                response.sendRedirect("http://localhost:5173/signup");
             }
         } catch (Exception e) {
             logger.error("Authentication Success Handler Error: {}", e );

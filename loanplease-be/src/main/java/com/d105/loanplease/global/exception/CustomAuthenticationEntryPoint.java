@@ -26,6 +26,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         // 오류 확인
         String exception = String.valueOf(request.getAttribute("exception"));
 
+        log.info(request.getRequestURI());
+
         // 에러 반환
         if (!exception.equals("null")) {
             // 1. 토큰이 인증에 불충분한 경우

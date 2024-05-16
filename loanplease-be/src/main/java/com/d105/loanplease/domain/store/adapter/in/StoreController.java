@@ -2,16 +2,16 @@ package com.d105.loanplease.domain.store.adapter.in;
 
 import com.d105.loanplease.domain.store.application.port.in.ItemUseCase;
 import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
-import com.d105.loanplease.domain.store.application.service.response.InquiryStoreResponse;
+import com.d105.loanplease.domain.store.application.service.request.ChooseLoanRequest;
+import com.d105.loanplease.domain.store.application.service.request.PurchaseItemRequest;
+import com.d105.loanplease.domain.store.application.service.request.PurchaseLoanRequest;
+import com.d105.loanplease.domain.store.application.service.response.*;
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.store.domain.Loan;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,10 +25,15 @@ public class StoreController {
     @Autowired
     private ItemUseCase itemUseCase;
 
-
     @Operation(summary = "게임 대출 상품 선택", description = "게임에서 사용할 대출 상품을 선택합니다.")
     @PostMapping("/choose-loan")
-    public void chooseLoan() {}
+    public ResponseEntity<ChooseLoanResponse> chooseLoan(@RequestBody ChooseLoanRequest request) {
+        return loanUseCase.changeSlot(request.getSlot_1(),
+                request.getSlot_2(),
+                request.getSlot_3(),
+                request.getSlot_4(),
+                request.getSlot_5());
+    }
 
     @Operation(summary = "상점 목록 조회", description = "상점의 슬롯 확장, 일회성 아이템, 대출 상품 목록을 조회합니다.")
     @GetMapping("/items")
@@ -51,17 +56,19 @@ public class StoreController {
 
     @Operation(summary = "슬롯 구매", description = "슬롯 확장 아이템을 구매합니다.")
     @PostMapping("/items/slot")
-    public void purchaseSlot() {
-//        itemUseCase.expandSlot();
+    public ResponseEntity<PurchaseSlotResponse> purchaseSlot() {
+        return itemUseCase.expandSlot();
     }
 
     @Operation(summary = "대출 상품 구매", description = "대출 상품을 구매합니다.")
     @PostMapping("/items/loan")
-    public void purchaseLoan() {
-//        loanUseCase.purchaseLoan();
+    public ResponseEntity<PurchaseLoanResponse> purchaseLoan(@RequestBody PurchaseLoanRequest request) {
+        return loanUseCase.purchaseLoan(request.getLoanId());
     }
 
     @Operation(summary = "일회성 아이템 구매", description = "게임 시간 추가, VIP, 1회 방어권 아이템을 구매합니다.")
     @PostMapping("/items/oneoff")
-    public void purchaseItem() {}
+    public ResponseEntity<PurchaseItemResponse> purchaseItem(@RequestBody PurchaseItemRequest request) {
+        return itemUseCase.purchaseItem(request.getItemId(), request.getItemCount());
+    }
 }
