@@ -52,6 +52,7 @@ public class FriendRequestController {
     public ResponseEntity<BaseResponseBody<FriendListRes>> searchFriend(
             @PathVariable String nickname
     ){
+        log.info(nickname);
         return friendService.searchFriendList(nickname);
     }
 
