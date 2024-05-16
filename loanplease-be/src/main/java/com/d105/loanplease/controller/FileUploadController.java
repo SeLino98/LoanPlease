@@ -20,7 +20,6 @@ import java.util.Queue;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class FileUploadController {
 
     private final AmazonS3Client amazonS3Client;

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@CrossOrigin("*")
 @RequiredArgsConstructor
 @RequestMapping("api/rank")
 public class RankController {
