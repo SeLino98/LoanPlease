@@ -2,6 +2,7 @@ package com.d105.loanplease.domain.user.entity;
 
 import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.store.domain.Loan;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class UserItem {
     public UserItem(Item item, Integer itemCount, User user) {
         this.user = user;
         this.item = item;
+        user.getUserItemList().add(this);
         this.count = itemCount;
     }
 
@@ -48,5 +50,11 @@ public class UserItem {
     public void purchaseItem(Integer price, Integer itemCount, User user) {
         user.purchase(price);
         this.count+=itemCount;
+    }
+
+    // 아이템 사용
+    public void useItem() {
+        Assert.isTrue(count>0, "보유한 아이템이 없습니다.");
+        this.count--;
     }
 }

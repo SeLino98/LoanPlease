@@ -29,6 +29,7 @@ public class UserLoan {
 
     public UserLoan(Loan loan, User user) {
         this.user = user;
+        user.getUserLoanList().add(this);
         this.loan = loan;
     }
 

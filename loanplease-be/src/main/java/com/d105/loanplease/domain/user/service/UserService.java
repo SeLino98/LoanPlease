@@ -1,8 +1,10 @@
 package com.d105.loanplease.domain.user.service;
 
 import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.domain.store.adapter.out.ItemRepository;
 import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
+import com.d105.loanplease.domain.store.domain.Item;
 import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.dto.UserItemResDto;
 import com.d105.loanplease.domain.user.dto.UserLoanResDto;
@@ -51,6 +53,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final SlotRepository slotRepository;
     private final LoanRepository loanRepository;
+    private final ItemRepository itemRepository;
     private final RedisService redisService;
 
     private final UserItemRepository userItemRepository;
@@ -101,6 +104,21 @@ public class UserService {
         slotRepository.save(slot);
         userRepository.save(newUser);
         initLoanSetting(newUser);
+        initItemSetting(newUser);
+
+        List<UserItemResDto> userItemResDtoList = new ArrayList<>();
+        List<UserLoanResDto> userLoanResDtoList = new ArrayList<>();
+
+        List<UserItem> userItemList = newUser.getUserItemList();
+        List<UserLoan> userLoanList = newUser.getUserLoanList();
+
+        for(UserItem userItem: userItemList) {
+            userItemResDtoList.add(new UserItemResDto(userItem));
+        }
+
+        for(UserLoan userLoan: userLoanList) {
+            userLoanResDtoList.add(new UserLoanResDto(userLoan));
+        }
 
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
@@ -124,8 +142,8 @@ public class UserService {
                 .slot_3(slot.getSlot_3())
                 .slot_4(slot.getSlot_4())
                 .slot_5(slot.getSlot_5())
-                .userItemList(new ArrayList<>())
-                .userLoanList(new ArrayList<>())
+                .userItemList(userItemResDtoList)
+                .userLoanList(userLoanResDtoList)
                 .slotNum(3).build();
 //        return UserSignUpRes.builder()
 //                .nickname(newUser.getNickname())
@@ -156,6 +174,17 @@ public class UserService {
         userLoanRepository.save(userLoan2);
         userLoanRepository.save(userLoan3);
     }
+
+    @Transactional
+    public void initItemSetting(User user) {
+        List<Item> itemList = itemRepository.findAll();
+
+        for(Item item: itemList) {
+            UserItem userItem = new UserItem(item, 0, user);
+            userItemRepository.save(userItem);
+        }
+    }
+
 
     // 닉네임 중복 체크 기능
     public boolean isNicknameAvailable(String nickname) {
