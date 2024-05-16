@@ -17,5 +17,5 @@ public class Item {
     private String name;
     private String content;
     private Integer price;
-    private String type;
+    private String img;
 }

@@ -137,6 +137,7 @@ public class UserService {
 
         return UserInfoResponse.builder().nickname(newUser.getNickname()).profileImage(newUser.getProfileImg()).
                 email(newUser.getEmail())
+                .point(newUser.getPoint())
                 .slot_1(slot.getSlot_1())
                 .slot_2(slot.getSlot_2())
                 .slot_3(slot.getSlot_3())
