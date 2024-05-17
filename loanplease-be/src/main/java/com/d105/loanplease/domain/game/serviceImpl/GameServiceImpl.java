@@ -140,8 +140,6 @@ public class GameServiceImpl implements GameService {
         HouseType houseType = houseTypes[randomIndex];
 
 
-
-
         // YN 여부
         YN[] yns = YN.values();
         randomIndex = random.nextInt(yns.length);
@@ -164,7 +162,7 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(genders.length);
         GenderType gender = genders[randomIndex];
 
-        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한"};
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오"};
         randomIndex = random.nextInt(lastNames.length);
         String name = lastNames[randomIndex];
 
@@ -209,11 +207,13 @@ public class GameServiceImpl implements GameService {
             throw new AIException("AI 오류입니다");
         }
 
-        if(incomeTotal/100 > 8000 || incomeType.getKoreanName().equals("공기업")) credit--;
-        if(occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
-        || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
-        || occypType.getKoreanName().equals("부동산 중개인")) credit--;
+        if(incomeTotal/100 > 8000 || reality.getKoreanName().equals("Y")) credit--;
 
+        if(incomeType.getKoreanName().equals("공기업") || occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
+        || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
+        || occypType.getKoreanName().equals("부동산 중개인") || occypType.getKoreanName().equals("공무원")) credit--;
+
+        if(credit<0) credit = 0;
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
 
@@ -305,16 +305,18 @@ public class GameServiceImpl implements GameService {
     private Score calculateScore(int num, GameInfo gameInfo){
         Loan loan = loanRepository.getReferenceById((long)num);
 
-        // 최소 신용 최대 신용과 차이가 적은걸 반영하기.
-//        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
-//        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
-//        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
-        if(!isContainsCredit(gameInfo.getCredit(), loan.getMinCredit(), loan.getMaxCredit())){
-            return new Score(-500, "후엥", "대출상품에 필요한 신용 등급과 일치하지 않습니다.");
-        }
+//         최소 신용 최대 신용과 차이가 적은걸 반영하기.
+        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
+        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
 
-//        int defaultScore = 500 + (-100)*diff;
-        int defaultScore = 500;
+        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
+
+//        if(!isContainsCredit(gameInfo.getCredit(), loan.getMinCredit(), loan.getMaxCredit())){
+//            return new Score(-500, "후엥", "대출상품에 필요한 신용 등급과 일치하지 않습니다.");
+//        }
+
+        int defaultScore = 500 + (-100)*diff;
+//        int defaultScore = 500;
 
 
         if(num==1 || num==2 || num==3){
