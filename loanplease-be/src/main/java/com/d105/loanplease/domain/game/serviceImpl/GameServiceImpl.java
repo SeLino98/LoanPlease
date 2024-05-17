@@ -238,7 +238,7 @@ public class GameServiceImpl implements GameService {
     public ResponseEntity<ScoreResponse> gainScore(int num, GameInfo gameInfo) {
         Score score;
         if(gameInfo.getCustomerInfo().getCustomerMaterials().contains(false)){
-            score = new Score(0, "ㅋ 이걸 해주네", "준비물이 부족합니다.");
+            score = new Score(-200, "ㅋ 이걸 해주네", "준비물이 부족합니다.");
         }else{
             score = calculateScore(num, gameInfo);
         }
@@ -258,7 +258,7 @@ public class GameServiceImpl implements GameService {
             user.setScore(score);
         }
         int point = (int)(score*(0.1));
-        if(point<0) point=0;
+        if(score<5000) point=500;   // 기본 포인트
         user.setPoint(user.getPoint()+point);
 
 
