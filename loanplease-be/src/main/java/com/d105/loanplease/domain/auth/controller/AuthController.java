@@ -2,15 +2,13 @@ package com.d105.loanplease.domain.auth.controller;
 
 
 import com.d105.loanplease.domain.auth.dto.TokenResDto;
-import com.d105.loanplease.domain.auth.entity.Token;
-import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.global.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.exception.ErrorCode;
-import com.d105.loanplease.global.service.RedisService;
+import com.d105.loanplease.global.jwt.RedisService;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -36,13 +34,14 @@ public class AuthController {
     public ResponseEntity<? extends BaseResponseBody> regenerateAccessToken() {
         String headerValue = request.getHeader("Authorization");
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
-            String token = headerValue.substring(7);
-            String redisToken = redisService.getValues(token);
-            Optional<User> user = userRepository.findByEmail(redisToken);
+            String token = headerValue.substring(7); //refresh 토큰을 뗀다.
+
+            String userEmail = tokenProvider.extractEmail(token).orElseThrow();
+            Optional<User> user = userRepository.findByEmail(userEmail);
             if (user.isPresent()){
                 String email = user.orElseThrow().getEmail();
                 String accessToken = tokenProvider.createAccessJwt(email);
-                String refreshToken = tokenProvider.createRefreshJwt(accessToken);
+                String refreshToken = tokenProvider.createRefreshJwt(accessToken,email);
                 TokenResDto tokenResDto = TokenResDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
                 return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of("200", tokenResDto));
             }

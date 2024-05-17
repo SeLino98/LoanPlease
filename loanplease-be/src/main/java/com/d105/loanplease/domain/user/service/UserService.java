@@ -1,6 +1,6 @@
 package com.d105.loanplease.domain.user.service;
 
-import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.global.jwt.TokenProvider;
 import com.d105.loanplease.domain.store.adapter.out.ItemRepository;
 import com.d105.loanplease.domain.store.adapter.out.LoanRepository;
 import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
@@ -19,9 +19,9 @@ import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
 import com.d105.loanplease.global.exception.ErrorCode;
 import com.d105.loanplease.global.exception.Exceptions;
-import com.d105.loanplease.global.service.RedisService;
+import com.d105.loanplease.global.jwt.RedisService;
 import com.d105.loanplease.global.util.S3Image;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.jwt.SecurityUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -122,8 +122,10 @@ public class UserService {
 
         //엑세스 토큰을 준다.
         String accessToken = tokenProvider.createAccessJwt(userReq.getEmail());
-        String refreshToken = tokenProvider.createRefreshJwt(accessToken);
-        redisService.setValues(refreshToken, userReq.getEmail()); //refresh로 저장한다.
+
+        String refreshToken = tokenProvider.createRefreshJwt(accessToken,userReq.getEmail());
+
+//        redisService.setValues(refreshToken, userReq.getEmail()); //refresh로 저장한다.
         //토큰을 redis에 올린다.
 //        tokenProvider.updateTokenRepo(newUser.getEmail(), accessToken);
         Optional<String> tmpString= tokenProvider.extractEmail(refreshToken);

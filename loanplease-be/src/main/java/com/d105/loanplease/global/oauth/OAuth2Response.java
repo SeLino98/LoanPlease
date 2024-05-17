@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.auth.oauth;
+package com.d105.loanplease.global.oauth;
 
 public interface OAuth2Response {
 

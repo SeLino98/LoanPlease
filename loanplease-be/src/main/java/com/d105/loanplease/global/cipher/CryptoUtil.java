@@ -1,4 +1,4 @@
-package com.d105.loanplease.global.util;
+package com.d105.loanplease.global.cipher;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -65,4 +65,7 @@ public class CryptoUtil {
 
         return new String(decryptedValue, "utf-8");
     }
+
+
+
 }

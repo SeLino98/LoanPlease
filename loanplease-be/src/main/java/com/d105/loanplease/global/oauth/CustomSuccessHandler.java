@@ -1,10 +1,10 @@
-package com.d105.loanplease.domain.auth.oauth;
+package com.d105.loanplease.global.oauth;
 
-import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.global.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
-import com.d105.loanplease.global.service.RedisService;
+import com.d105.loanplease.global.jwt.RedisService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +48,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 //이메일이 DB에 존재하는 경우, 홈 페이지로 리다이렉트
                 //기존 유저이니까 refresh와 access를 둘 다 갱신해서 준다.
                 String accessToken = tokenProvider.createAccessJwt(email); // user의 auth 정보에 따른 access 갱신
-                String refreshToken = tokenProvider.createRefreshJwt(accessToken); //user의 이메일정보에 따른 refresh 토큰 갱신
+                String refreshToken = tokenProvider.createRefreshJwt(accessToken,email); //user의 이메일정보에 따른 refresh 토큰 갱신
                 //해당 토큰 값에 대해 키밸류 값으로 redis에 저장
                 //RefreshToken만 저장한다.
                 redisService.setValues(refreshToken,email);

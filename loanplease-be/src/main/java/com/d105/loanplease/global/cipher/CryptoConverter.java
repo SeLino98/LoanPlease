@@ -1,5 +1,6 @@
-package com.d105.loanplease.global.util;
+package com.d105.loanplease.global.cipher;
 
+import com.d105.loanplease.global.cipher.CryptoUtil;
 import jakarta.persistence.AttributeConverter;
 
 public class CryptoConverter implements AttributeConverter<String,String> {
@@ -23,4 +24,6 @@ public class CryptoConverter implements AttributeConverter<String,String> {
             throw new RuntimeException(e);
         }
     }
+
+
 }

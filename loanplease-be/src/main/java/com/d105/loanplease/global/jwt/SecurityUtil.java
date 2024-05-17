@@ -1,4 +1,4 @@
-package com.d105.loanplease.global.util;
+package com.d105.loanplease.global.jwt;
 
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;

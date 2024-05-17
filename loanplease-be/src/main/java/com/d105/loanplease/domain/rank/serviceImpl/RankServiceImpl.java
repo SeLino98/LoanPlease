@@ -7,7 +7,7 @@ import com.d105.loanplease.domain.rank.service.RankService;
 import com.d105.loanplease.domain.user.entity.Friendship;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.jwt.SecurityUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;

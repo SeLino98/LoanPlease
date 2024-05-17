@@ -1,8 +1,7 @@
-package com.d105.loanplease.domain.auth.jwt;
+package com.d105.loanplease.global.jwt;
 
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.service.RedisService;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.cipher.HashUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -83,15 +82,20 @@ public class TokenProvider {
         return Optional.ofNullable(request.getHeader(refreshHeader))
                 .map(accessToken -> accessToken.substring(7));
     }
-    public Optional<String> extractEmail(String refreshToken) { // 엑세스 토큰으로 refresh토큰을 생성한다. 후에 refresh 토큰을 redis에 저장된다.
-        logger.info(refreshToken+"refreshToken");
-        String extractRefreshToken = redisService.getValues(refreshToken);
-        logger.info(extractRefreshToken+"EMAIL");
-        if (!extractRefreshToken.isEmpty()) {
-            return Optional.of(extractRefreshToken); // 'Bearer' 다음부터 시작하는 토큰 추출
-        }
-        return Optional.empty(); // 헤더가 null이거나 'Bearer '로 시작하지 않는 경우
-    }
+
+//    public Optional<String> extractEmail(String refreshToken) { // 엑세스 토큰으로 refresh토큰을 생성한다. 후에 refresh 토큰을 redis에 저장된다.
+//        logger.info(refreshToken+"refreshToken");
+//        String userEmail = redisService.getValues(refreshToken);
+////        String getRedisToken = redisService.getValues()
+//        logger.info(userEmail+"EMAIL");
+//        logger.info(refreshToken+"RefreshToken");
+//        if (!userEmail.isEmpty()) {
+//            if (HashUtil.verify(refreshToken,userEmail)){ //해쉬값이 일치하면 이메일을 준다.
+//                return Optional.of(userEmail);
+//            } // 'Bearer' 다음부터 시작하는 토큰 추출
+//        }
+//        return Optional.empty(); // 헤더가 null이거나 'Bearer '로 시작하지 않는 경우
+//    }
 
     //토큰에서 사용자 정보 추출
     public String extractSubject(String accessToken){
@@ -125,25 +129,93 @@ public class TokenProvider {
                 .signWith(secretKey) //비밀키
                 .compact(); //
     }
-
-    //리프레쉬 토큰을 만들기
-    public String createRefreshJwt(String accessToken) {
-
-        // 리프레시 토큰은 액세스 토큰보다 정보가 적게 필요합니다.
-        // 여기서는 이메일만 포함하고 만료 시간을 길게 설정합니다.
-
+    public String createRefreshJwt(String accessToken, String email) {
         long now = (new Date()).getTime();
-        Date refreshTokenValidity = new Date(now + tokenValidityInMilliseconds *21);
-        return  Jwts.builder()
-                .claim("email",accessToken) //리프레시 토큰 주체의 식별 정보
-                .issuedAt(new Date(System.currentTimeMillis()))//토큰 발행 시간.
-                .expiration(refreshTokenValidity) //토큰 만료 시간.
-                .signWith(secretKey)
+        Date refreshTokenValidity = new Date(now + tokenValidityInMilliseconds * 21);
+
+        String refreshToken = Jwts.builder()
+                .claim("email", accessToken)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(refreshTokenValidity)
+                .signWith( secretKey)
                 .compact();
+
+        String hashedToken = HashUtil.hash(refreshToken);
+        redisService.setValues(hashedToken, email);
+        return refreshToken;
     }
 
-    // 정수진
+    public Optional<String> extractEmail(String refreshToken) {
+        logger.info(refreshToken + " refreshToken");
 
+        // Redis에서 저장된 모든 키를 검색하여 해시된 토큰을 찾기
+        Set<String> keys = redisService.getKeys("*");
+        for (String key : keys) {
+            if (HashUtil.verify(refreshToken, key)) {
+                String userEmail = redisService.getValues(key);
+                if (userEmail != null && !userEmail.isEmpty()) {
+                    return Optional.of(userEmail);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+//    public String createRefreshJwt(String accessToken,String email) {
+//
+//        // 리프레시 토큰은 액세스 토큰보다 정보가 적게 필요합니다.
+//        // 여기서는 이메일만 포함하고 만료 시간을 길게 설정합니다.
+//        // 레디스에 저장될 때 암호화하여 저장합니다.
+//
+//        long now = (new Date()).getTime();
+//        Date refreshTokenValidity = new Date(now + tokenValidityInMilliseconds *21);
+//        String refreshToken =Jwts.builder()
+//                .claim("email",accessToken) //리프레시 토큰 주체의 식별 정보
+//                .issuedAt(new Date(System.currentTimeMillis()))//토큰 발행 시간.
+//                .expiration(refreshTokenValidity) //토큰 만료 시간.
+//                .signWith(secretKey)
+//                .compact();
+//        String hashedToken = HashUtil.hash(refreshToken);
+//        redisService.setValues(hashedToken,email);
+//        return  refreshToken;
+//    }
+//    public String createRefreshJwt(String accessToken) {
+//
+//        // 리프레시 토큰은 액세스 토큰보다 정보가 적게 필요합니다.
+//        // 여기서는 이메일만 포함하고 만료 시간을 길게 설정합니다.
+//        // 레디스에 저장될 때 암호화하여 저장합니다.
+//
+//        long now = (new Date()).getTime();
+//        Date refreshTokenValidity = new Date(now + tokenValidityInMilliseconds *21);
+//        String refreshToken =
+//        String hashedToken = HashUtil.hash()
+//
+//        return  Jwts.builder()
+//                .claim("email",accessToken) //리프레시 토큰 주체의 식별 정보
+//                .issuedAt(new Date(System.currentTimeMillis()))//토큰 발행 시간.
+//                .expiration(refreshTokenValidity) //토큰 만료 시간.
+//                .signWith(secretKey)
+//                .compact();
+//    }
+
+    public boolean isValidRefreshToken(String refreshToken){
+//        String extractRefreshToken = redisService.getValues(refreshToken);
+//        if (HashUtil.verify(refreshToken,extractRefreshToken)){
+//            return extractRefreshToken;
+//        }
+        boolean isValid = false;
+        // Redis에서 저장된 모든 키를 검색하여 해시된 토큰을 찾기
+        Set<String> keys = redisService.getKeys("*");
+        for (String key : keys) {
+            if (HashUtil.verify(refreshToken, key)) {
+                String userEmail = redisService.getValues(key);
+                if (userEmail != null && !userEmail.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     // 토큰이 유효한지 검사한다.
     public boolean isTokenValid(String accessToken) {
         try {
@@ -164,31 +236,32 @@ public class TokenProvider {
         }
     }
 
-    //리프레쉬 토큰을 REdis에 업데이트한다.
-    public String updateTokenRepo(String email, String accessToken){
-//        String newRefreshToken = createRefreshJwt(extractSubject(accessToken));
-        String newRefreshToken = createRefreshJwt(accessToken);
-        redisService.setValues(email,newRefreshToken);
-        return newRefreshToken;
-    }
+//    //리프레쉬 토큰을 REdis에 업데이트한다.
+//    public String updateTokenRepo(String email, String accessToken){
+////        String newRefreshToken = createRefreshJwt(extractSubject(accessToken));
+//        String newRefreshToken = createRefreshJwt(accessToken);
+//        createRefreshJwt(accessToken,email);
+//
+//
+//        return newRefreshToken;
+//    }
 
     //프론트에서 보낸 리프레쉬 토큰의 정보를 통해 업데이트한다.
-    public void checkRefreshTokenAndReIssueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
-        String email = request.getHeader("RefreshToken");
-        //리프레쉬 토큰을 이용해서 엑세스 토큰을 새로 발급을 하고,
-        //리프레쉬 토큰을 redis에 재갱신한다.
-        String myRefreshToken = redisService.getValues(refreshToken);
-        if (!isExistsRefreshToken(myRefreshToken)){
-            //리프레쉬 토큰이 없는 경우이다. 재로그인 해야 된다.
-        }else{
-            //엑세스 토큰과 리프레쉬 토큰을 발급해준다.
-            String newAccessToken = createAccessJwt(email);
-            String newRefreshToken = updateTokenRepo(email,newAccessToken);
-            response.setHeader(accessHeader, newAccessToken);
-            response.setHeader(refreshHeader, newRefreshToken);
-        }
-    }
-    public boolean isExistsRefreshToken(String refreshToken) {
-        return redisService.getValues(refreshToken) != null;
-    }
+//    public void checkRefreshTokenAndReIssueAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+//        String email = request.getHeader("RefreshToken");
+//        //리프레쉬 토큰을 이용해서 엑세스 토큰을 새로 발급을 하고,
+//        //리프레쉬 토큰을 redis에 재갱신한다.
+////        String myRefreshToken = redisService.getValues(refreshToken);
+//        String myRefreshToken = getRefreshToken(refreshToken);
+//
+//        if (myRefreshToken.equals("InValid")){
+//            //리프레쉬 토큰이 없는 경우이다. 재로그인 해야 된다.
+//        }else{
+//            //엑세스 토큰과 리프레쉬 토큰을 발급해준다.
+//            String newAccessToken = createAccessJwt(email);
+//            String newRefreshToken = createRefreshJwt(newAccessToken, email);
+//            response.setHeader(accessHeader, newAccessToken);
+//            response.setHeader(refreshHeader, newRefreshToken);
+//        }
+//    }
 }

@@ -1,4 +1,4 @@
-package com.d105.loanplease.domain.auth.oauth;
+package com.d105.loanplease.global.oauth;
 
 import com.d105.loanplease.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
