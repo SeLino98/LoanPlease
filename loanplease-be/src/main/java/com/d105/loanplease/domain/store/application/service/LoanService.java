@@ -1,6 +1,7 @@
 package com.d105.loanplease.domain.store.application.service;
 
 
+import com.d105.loanplease.domain.store.adapter.out.SlotRepository;
 import com.d105.loanplease.domain.store.application.port.in.LoanUseCase;
 import com.d105.loanplease.domain.store.application.port.out.LoanPort;
 import com.d105.loanplease.domain.store.application.service.response.ChooseLoanResponse;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 @AllArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +31,9 @@ public class LoanService implements LoanUseCase {
 
     @Autowired
     private UserLoanRepository userLoanRepository;
+
+    @Autowired
+    private SlotRepository slotRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -60,16 +64,21 @@ public class LoanService implements LoanUseCase {
 
     @Override
     @Transactional
-    public ResponseEntity<ChooseLoanResponse> changeSlot(final Integer slot_1,
-                                                         final Integer slot_2,
-                                                         final Integer slot_3,
-                                                         final Integer slot_4,
-                                                         final Integer slot_5) {
+    public ResponseEntity<ChooseLoanResponse> changeSlot(final int slot_1,
+                                                         final int slot_2,
+                                                         final int slot_3,
+                                                         final int slot_4,
+                                                         final int slot_5) {
 
         User user = securityUtil.getCurrentUserDetails();
-        Slot slot = user.getSlot();
+        Slot slot = slotRepository.findById(user.getSlot().getSlotId())
+                .orElseThrow(() -> new IllegalArgumentException("없는 슬롯입니다."));
 
         slot.changeSlot(slot_1, slot_2, slot_3, slot_4, slot_5);
+
+
+        slotRepository.save(slot);
+
         ChooseLoanResponse response = new ChooseLoanResponse(user.getSlotNum(), slot);
 
         return ResponseEntity.ok(response);

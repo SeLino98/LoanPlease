@@ -24,13 +24,12 @@ public class UserInfoResponse {
     private Integer point;
 
     // Slot, UserLoan, UserItem 등 Entity는 꼭!!! Dto로 변환하고 response에 담아 보내자
-    private Integer slotNum;
-    private Integer slot_1;
-    private Integer slot_2;
-    private Integer slot_3;
-    private Integer slot_4;
-    private Integer slot_5;
-
+    private int slotNum;
+    private int slot_1;
+    private int slot_2;
+    private int slot_3;
+    private int slot_4;
+    private int slot_5;
 
     private List<UserLoanResDto> userLoanList;
     private List<UserItemResDto> userItemList;
