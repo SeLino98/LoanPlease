@@ -207,7 +207,7 @@ public class GameServiceImpl implements GameService {
             throw new AIException("AI 오류입니다");
         }
 
-        if(incomeTotal/100 > 8000 || reality.getKoreanName().equals("Y")) credit--;
+        if(incomeTotal/100 > 8000 || reality.getEnglishName().equals("Y")) credit--;
 
         if(incomeType.getKoreanName().equals("공기업") || occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
         || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
