@@ -24,20 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class AuthController {
-
     @Value("${spring.jwt.access.header}")
     private String accessHeader;
     @Value("${spring.jwt.refresh.header}")
     private String refreshHeader;
-
-
     private final TokenProvider tokenProvider;
     private final HttpServletRequest request;
-    private final HttpServletResponse response;
-
     private final RedisService redisService;
     private final UserRepository userRepository;
-
     @GetMapping("/auth/refresh")
     public ResponseEntity<? extends BaseResponseBody> regenerateAccessToken() {
         String headerValue = request.getHeader("Authorization");
@@ -59,5 +53,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.error(ErrorCode.NOT_VALID_REQUEST.getErrorCode(),ErrorCode.NOT_VALID_REQUEST.getMessage()));
         }
     }
-
 }

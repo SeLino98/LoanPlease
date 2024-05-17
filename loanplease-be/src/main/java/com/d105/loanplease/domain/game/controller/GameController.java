@@ -44,7 +44,6 @@ public class GameController {
         return gameService.getAwayCustomer(gameInfo);
     };
 
-
     @Operation(summary = "점수 획득하기", description = "적절한 점수를 리턴합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "(message : \"Success\", code : 200)",

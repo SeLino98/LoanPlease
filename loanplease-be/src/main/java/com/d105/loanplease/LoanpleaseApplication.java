@@ -24,12 +24,50 @@ public class LoanpleaseApplication {
 		config.setAllowCredentials(true);
 		config.addAllowedOriginPattern("http://loanplease.kr"); // 허용할 도메인을 명시
 		config.addAllowedOriginPattern("https://loanplease.kr");
-		config.addAllowedOriginPattern("http://localhost:8080");// 추가로 허용할 도메인
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
+		config.addAllowedOriginPattern("http://localhost:8080"); // 추가로 허용할 도메인
+		config.addAllowedHeader("Authorization"); // JWT 토큰 전송용
+		config.addAllowedHeader("Content-Type"); // 요청 데이터 유형
+		config.addAllowedHeader("Accept"); // 응답 데이터 유형
+		config.addAllowedHeader("Origin"); // 요청 출처
+		config.addAllowedHeader("X-Requested-With"); // AJAX 요청 확인
+		config.addAllowedMethod("GET");
+		config.addAllowedMethod("POST");
+		config.addAllowedMethod("PUT");
+		config.addAllowedMethod("DELETE");
+		config.addAllowedMethod("OPTIONS"); // 추가: OPTIONS 메서드 허용
 		source.registerCorsConfiguration("/**", config);
 		return new CorsFilter(source);
 	}
+//	@Bean
+//	public CorsFilter corsFilter() {
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.setAllowCredentials(true);
+//		config.addAllowedOriginPattern("http://loanplease.kr"); // 허용할 도메인을 명시
+//		config.addAllowedOriginPattern("https://loanplease.kr");
+//		config.addAllowedOriginPattern("http://localhost:8080");// 추가로 허용할 도메인
+//		config.addAllowedHeader("*");
+//		config.addAllowedMethod("GET");
+//		config.addAllowedMethod("POST");
+//		config.addAllowedMethod("PUT");
+//		config.addAllowedMethod("DELETE");
+//		source.registerCorsConfiguration("/**", config);
+//		return new CorsFilter(source);
+//	}
+
+//	@Bean
+//	public CorsFilter corsFilter() {
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.setAllowCredentials(true);
+//		config.addAllowedOriginPattern("http://loanplease.kr"); // 허용할 도메인을 명시
+//		config.addAllowedOriginPattern("https://loanplease.kr");
+//		config.addAllowedOriginPattern("http://localhost:8080");// 추가로 허용할 도메인
+//		config.addAllowedHeader("*");
+//		config.addAllowedMethod("*a");
+//		source.registerCorsConfiguration("/**", config);
+//		return new CorsFilter(source);
+//	}
 //	@Bean
 //	public WebMvcConfigurer corsConfigurer() {
 //		return new WebMvcConfigurer() {
