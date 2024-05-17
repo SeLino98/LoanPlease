@@ -81,6 +81,7 @@ public class GameServiceImpl implements GameService {
             childNum = 0;
         }
 
+        if(childNum<0) childNum=0;
 
         /**
         * 직업 유형
@@ -129,7 +130,8 @@ public class GameServiceImpl implements GameService {
 
         if(incomeType==IncomeType.STUDENT){
             eduType = EduType.HIGHER;
-            occypType = OccypType.STUDENT;
+            randomIndex = random.nextInt(occypTypes.length-9);
+            occypType = occypTypes[randomIndex];
         }
 
         // house_type
@@ -207,7 +209,11 @@ public class GameServiceImpl implements GameService {
             throw new AIException("AI 오류입니다");
         }
 
-        // 에러 처리
+        if(incomeTotal/100 > 8000 || incomeType.getKoreanName().equals("공기업")) credit--;
+        if(occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
+        || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
+        || occypType.getKoreanName().equals("부동산 중개인")) credit--;
+
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
 

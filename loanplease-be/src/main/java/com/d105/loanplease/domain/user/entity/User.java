@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_tb")
+@Slf4j
 public class User implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +58,7 @@ public class User implements UserDetails {
     // 유저가 해당 대출 상품을 가지고 있는지 확인
     public void hasLoan(Long loanId) {
         for(UserLoan userLoan: userLoanList) {
+            log.info(String.valueOf(userLoan.getLoan().getLoanId()));
             Assert.isTrue(userLoan.getLoan().getLoanId()!=loanId, "해당 대출 상품을 이미 가지고 있습니다.");
         }
     }

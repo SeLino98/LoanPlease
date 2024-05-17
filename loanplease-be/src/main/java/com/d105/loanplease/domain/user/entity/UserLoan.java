@@ -35,10 +35,10 @@ public class UserLoan {
 
     // 대출 상품 구매
     public static UserLoan purchaseLoan(Loan loan, User user) {
-        UserLoan userLoan = new UserLoan(loan, user);
 
         user.hasLoan(loan.getLoanId()); // 이미 보유한 대출 상품인지 체크
-        user.getUserLoanList().add(userLoan);
+
+        UserLoan userLoan = new UserLoan(loan, user);
         user.purchase(loan.getPrice()); // 포인트가 부족한지 체크
 
         return userLoan;
