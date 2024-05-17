@@ -16,32 +16,32 @@ public class LoanpleaseApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LoanpleaseApplication.class, args);
 	}
-
-	@Bean
-	public CorsFilter corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOriginPattern("http://loanplease.kr"); // 허용할 도메인을 명시
-		config.addAllowedOriginPattern("https://loanplease.kr");
-		config.addAllowedOriginPattern("http://localhost:8080");// 추가로 허용할 도메인
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
-	}
+//
 //	@Bean
-//	public WebMvcConfigurer corsConfigurer() {
-//		return new WebMvcConfigurer() {
-//			@Override
-//			public void addCorsMappings(CorsRegistry registry) {
-//				registry.addMapping("/**")
-//						.allowedOriginPatterns("*")
-//						.allowedMethods("GET", "POST", "PUT", "DELETE")
-//						.allowedHeaders("*")
-//						.allowCredentials(true)
-//						.maxAge(3000);
-//			}
-//		};
+//	public CorsFilter corsFilter() {
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.setAllowCredentials(true);
+//		config.addAllowedOriginPattern("http://loanplease.kr"); // 허용할 도메인을 명시
+//		config.addAllowedOriginPattern("https://loanplease.kr");
+//		config.addAllowedOriginPattern("http://localhost:8080");// 추가로 허용할 도메인
+//		config.addAllowedHeader("*");
+//		config.addAllowedMethod("*");
+//		source.registerCorsConfiguration("/**", config);
+//		return new CorsFilter(source);
 //	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOriginPatterns("*")
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*")
+						.allowCredentials(true)
+						.maxAge(3000);
+			}
+		};
+	}
 }
