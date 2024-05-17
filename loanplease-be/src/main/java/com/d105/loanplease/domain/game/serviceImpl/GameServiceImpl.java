@@ -413,9 +413,8 @@ public class GameServiceImpl implements GameService {
     }
 
     private int getCreditFromAI(GameModel gameModel) throws JsonProcessingException {
-        System.out.println("AI 불렸음");
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8000/model";
+        String url = "http://loanplease.kr:8000/model";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
