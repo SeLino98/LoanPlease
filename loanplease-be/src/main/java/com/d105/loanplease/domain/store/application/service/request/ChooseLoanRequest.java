@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 public class ChooseLoanRequest {
 
-    private Integer slot_1;
-    private Integer slot_2;
-    private Integer slot_3;
-    private Integer slot_4;
-    private Integer slot_5;
+    private int slot_1;
+    private int slot_2;
+    private int slot_3;
+    private int slot_4;
+    private int slot_5;
 }

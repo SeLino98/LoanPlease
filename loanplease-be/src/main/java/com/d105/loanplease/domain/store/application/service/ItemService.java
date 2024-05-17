@@ -12,6 +12,7 @@ import com.d105.loanplease.domain.user.repository.UserRepository;
 import com.d105.loanplease.global.util.Constant;
 import com.d105.loanplease.global.util.SecurityUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @Transactional(readOnly = true)
@@ -67,6 +69,7 @@ public class ItemService implements ItemUseCase {
         User user = securityUtil.getCurrentUserDetails();
 
         Long userItemId = user.hasItemHistory(itemId);
+        log.info("userItemID: "+String.valueOf(userItemId));
 
         UserItem userItem = userItemRepository.findById(userItemId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 보유 아이템은 없는 아이템입니다."));

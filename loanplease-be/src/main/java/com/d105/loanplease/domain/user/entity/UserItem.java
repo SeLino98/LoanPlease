@@ -48,7 +48,7 @@ public class UserItem {
 
     // 아이템 상품 구매 (기존 아이템이 있는 경우)
     public void purchaseItem(Integer price, Integer itemCount, User user) {
-        user.purchase(price);
+        user.purchase(price*itemCount);
         this.count+=itemCount;
     }
 

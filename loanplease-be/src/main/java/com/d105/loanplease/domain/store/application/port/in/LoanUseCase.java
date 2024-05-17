@@ -13,5 +13,5 @@ public interface LoanUseCase {
     List<Loan> inquiryAllLoans();
     Loan inquiryLoanById(Long id);
     ResponseEntity<PurchaseLoanResponse> purchaseLoan(Long loanId);
-    ResponseEntity<ChooseLoanResponse> changeSlot(Integer slot_1, Integer slot_2, Integer slot_3, Integer slot_4, Integer slot_5);
+    ResponseEntity<ChooseLoanResponse> changeSlot(int slot_1, int slot_2, int slot_3, int slot_4, int slot_5);
 }
