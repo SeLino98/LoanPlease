@@ -347,7 +347,7 @@ public class GameServiceImpl implements GameService {
             return new Score(score, "감사합니다!!", reason);
         }else if(num==6){
             // 저세상갓숭 대출
-            int score = (defaultScore-200)*(int)(1+loan.getInterest());
+            int score = (int)((defaultScore-200)*(1+loan.getInterest()));
 
             return new Score(score, "너무 금리가 높은거 아닌가요?! ㅡㅡ", "금리가 너무 높아 화가 나서 감점이 적용되었습니다.");
 
