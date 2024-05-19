@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum OccypType {
-
+    STUDENT("Student", "학생"),
+    IT("IT staff", "IT 개발자"),
     MANAGERS("Managers", "CEO"),
     DRIVERS("Drivers", "운전 기사"),
     MEDICINESTAFF("Medicine staff", "의료계"),
@@ -15,9 +16,7 @@ public enum OccypType {
     SECURITY("Security staff", "보안 직원"),
     COOKING("Cooking staff", "요식업"),
     HR("HR staff", "인사팀"),
-    IT("IT staff", "IT 개발자"),
     GONG("Servant", "공무원"),
-    STUDENT("Student", "학생"),
     CLEANING("Cleaning staff", "청소원"),
     SECRETARIES("Secretaries", "비서"),
     PRIVATE("Private service staff", "가정부"),

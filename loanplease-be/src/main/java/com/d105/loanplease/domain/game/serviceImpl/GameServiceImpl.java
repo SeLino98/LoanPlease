@@ -130,8 +130,11 @@ public class GameServiceImpl implements GameService {
 
         if(incomeType==IncomeType.STUDENT){
             eduType = EduType.HIGHER;
-            randomIndex = random.nextInt(occypTypes.length-9);
+            randomIndex = random.nextInt(2);
             occypType = occypTypes[randomIndex];
+        }
+        if(occypType==OccypType.LOWSKILL || occypType==OccypType.LABORERS){
+            incomeType = IncomeType.WORKING;
         }
 
         // house_type
@@ -162,12 +165,12 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(genders.length);
         GenderType gender = genders[randomIndex];
 
-        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오"};
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오", "조"};
         randomIndex = random.nextInt(lastNames.length);
         String name = lastNames[randomIndex];
 
         if(gender.getKoreanName().equals("남성")){
-            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직"};
+            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직", "남현"};
             randomIndex = random.nextInt(firstNames.length);
             if(firstNames[randomIndex].equals("중원")) name = "이";    // 이중원의 요청 ^_^
             name += firstNames[randomIndex];
