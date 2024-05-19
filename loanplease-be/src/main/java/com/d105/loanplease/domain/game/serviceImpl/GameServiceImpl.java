@@ -8,15 +8,11 @@ import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.dto.UserItemResDto;
 import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.repository.UserItemRepository;
-import com.d105.loanplease.global.util.BaseResponse;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
 import com.d105.loanplease.domain.game.response.ScoreResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.util.CookieUtils;
-import com.d105.loanplease.global.util.CryptoUtil;
 import com.d105.loanplease.global.util.SecurityUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
