@@ -100,7 +100,13 @@ public class GameServiceImpl implements GameService {
         max = 1575000;
         if(occypType==OccypType.LABORERS || occypType==OccypType.LOWSKILL) max = 600000;
 
+        if(occypType==OccypType.STUDENT){
+            min = 60000;
+            max = 150000;
+        }
+
         int incomeTotal = random.nextInt((max-min)+1)+min;
+
 
 
         // DAYS_BIRTH 7705 ~ 25152
