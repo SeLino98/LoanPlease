@@ -14,10 +14,7 @@ import com.d105.loanplease.domain.game.response.ResultResponse;
 import com.d105.loanplease.domain.game.response.ScoreResponse;
 import com.d105.loanplease.domain.game.service.GameService;
 import com.d105.loanplease.domain.user.entity.User;
-import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.util.CookieUtils;
-import com.d105.loanplease.global.util.CryptoUtil;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.jwt.SecurityUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +26,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -100,7 +96,13 @@ public class GameServiceImpl implements GameService {
         max = 1575000;
         if(occypType==OccypType.LABORERS || occypType==OccypType.LOWSKILL) max = 600000;
 
+        if(occypType==OccypType.STUDENT){
+            min = 60000;
+            max = 150000;
+        }
+
         int incomeTotal = random.nextInt((max-min)+1)+min;
+
 
 
         // DAYS_BIRTH 7705 ~ 25152
@@ -130,8 +132,11 @@ public class GameServiceImpl implements GameService {
 
         if(incomeType==IncomeType.STUDENT){
             eduType = EduType.HIGHER;
-            randomIndex = random.nextInt(occypTypes.length-9);
+            randomIndex = random.nextInt(2);
             occypType = occypTypes[randomIndex];
+        }
+        if(occypType==OccypType.LOWSKILL || occypType==OccypType.LABORERS){
+            incomeType = IncomeType.WORKING;
         }
 
         // house_type
@@ -162,12 +167,12 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(genders.length);
         GenderType gender = genders[randomIndex];
 
-        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오"};
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오", "조"};
         randomIndex = random.nextInt(lastNames.length);
         String name = lastNames[randomIndex];
 
         if(gender.getKoreanName().equals("남성")){
-            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직"};
+            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직", "남현"};
             randomIndex = random.nextInt(firstNames.length);
             if(firstNames[randomIndex].equals("중원")) name = "이";    // 이중원의 요청 ^_^
             name += firstNames[randomIndex];

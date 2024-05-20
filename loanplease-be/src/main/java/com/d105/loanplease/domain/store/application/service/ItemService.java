@@ -9,8 +9,7 @@ import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.repository.UserItemRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.util.Constant;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.jwt.SecurityUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

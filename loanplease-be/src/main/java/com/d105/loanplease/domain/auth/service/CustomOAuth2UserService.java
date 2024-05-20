@@ -1,8 +1,8 @@
 package com.d105.loanplease.domain.auth.service;
 
-import com.d105.loanplease.domain.auth.oauth.CustomOAuth2User;
-import com.d105.loanplease.domain.auth.oauth.GoogleResponse;
-import com.d105.loanplease.domain.auth.oauth.OAuth2Response;
+import com.d105.loanplease.global.oauth.CustomOAuth2User;
+import com.d105.loanplease.global.oauth.GoogleResponse;
+import com.d105.loanplease.global.oauth.OAuth2Response;
 import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;

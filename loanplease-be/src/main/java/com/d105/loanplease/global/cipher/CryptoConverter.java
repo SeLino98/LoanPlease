@@ -1,0 +1,29 @@
+package com.d105.loanplease.global.cipher;
+
+import com.d105.loanplease.global.cipher.CryptoUtil;
+import jakarta.persistence.AttributeConverter;
+
+public class CryptoConverter implements AttributeConverter<String,String> {
+
+
+    @Override
+    public String convertToDatabaseColumn(String attribute) {
+        if (attribute == null) return null;
+        try {
+            return CryptoUtil.encrypt(attribute);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public String convertToEntityAttribute(String attribute) {
+        if (attribute == null) return null;
+        try {
+            return CryptoUtil.decrypt(attribute);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+}

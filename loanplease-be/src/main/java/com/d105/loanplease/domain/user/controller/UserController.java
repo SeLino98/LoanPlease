@@ -1,11 +1,10 @@
 package com.d105.loanplease.domain.user.controller;
 
-import com.d105.loanplease.domain.auth.jwt.TokenProvider;
+import com.d105.loanplease.global.jwt.TokenProvider;
 import com.d105.loanplease.domain.user.dto.request.UserSignUpReq;
 import com.d105.loanplease.domain.user.dto.response.UserInfoResponse;
-import com.d105.loanplease.domain.user.dto.response.UserSignUpRes;
 import com.d105.loanplease.domain.user.service.UserService;
-import com.d105.loanplease.global.service.RedisService;
+import com.d105.loanplease.global.jwt.RedisService;
 import com.d105.loanplease.global.util.BaseResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;

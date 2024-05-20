@@ -1,5 +1,6 @@
 package com.d105.loanplease.domain.user.entity;
 
+import com.d105.loanplease.global.cipher.CryptoConverter;
 import com.d105.loanplease.global.util.Constant;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -30,11 +31,20 @@ public class User implements UserDetails {
     private Long userId;
 
     private String nickname;
+
+    @Convert(converter = CryptoConverter.class)
     private String email;
+
+    @Convert(converter = CryptoConverter.class)
     private String profileImg;
+
     private Integer score;
+
     private Integer slotNum;
+
     private Integer point;
+
+    @Convert(converter = CryptoConverter.class)
     private String role;
 
     @OneToMany(mappedBy = "user")

@@ -12,7 +12,7 @@ import com.d105.loanplease.domain.user.entity.User;
 import com.d105.loanplease.domain.user.entity.UserLoan;
 import com.d105.loanplease.domain.user.repository.UserLoanRepository;
 import com.d105.loanplease.domain.user.repository.UserRepository;
-import com.d105.loanplease.global.util.SecurityUtil;
+import com.d105.loanplease.global.jwt.SecurityUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
