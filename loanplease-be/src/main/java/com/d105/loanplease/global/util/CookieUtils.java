@@ -13,7 +13,7 @@ public class CookieUtils {
     }
 
     public static Cookie createHttpOnlyCookie(String key, String value, int maxAge) {
-        return createCookie(key, value, maxAge, true);
+        return createCookie(key, value, maxAge, false);
     }
 
 

@@ -8,6 +8,7 @@ import com.d105.loanplease.domain.store.domain.Loan;
 import com.d105.loanplease.domain.user.dto.UserItemResDto;
 import com.d105.loanplease.domain.user.entity.UserItem;
 import com.d105.loanplease.domain.user.repository.UserItemRepository;
+import com.d105.loanplease.global.util.BaseResponse;
 import com.d105.loanplease.domain.game.response.GameInfoResponse;
 import com.d105.loanplease.domain.game.response.ResultResponse;
 import com.d105.loanplease.domain.game.response.ScoreResponse;
@@ -95,7 +96,13 @@ public class GameServiceImpl implements GameService {
         max = 1575000;
         if(occypType==OccypType.LABORERS || occypType==OccypType.LOWSKILL) max = 600000;
 
+        if(occypType==OccypType.STUDENT){
+            min = 60000;
+            max = 150000;
+        }
+
         int incomeTotal = random.nextInt((max-min)+1)+min;
+
 
 
         // DAYS_BIRTH 7705 ~ 25152
@@ -125,16 +132,17 @@ public class GameServiceImpl implements GameService {
 
         if(incomeType==IncomeType.STUDENT){
             eduType = EduType.HIGHER;
-            randomIndex = random.nextInt(occypTypes.length-9);
+            randomIndex = random.nextInt(2);
             occypType = occypTypes[randomIndex];
+        }
+        if(occypType==OccypType.LOWSKILL || occypType==OccypType.LABORERS){
+            incomeType = IncomeType.WORKING;
         }
 
         // house_type
         HouseType[] houseTypes = HouseType.values();
         randomIndex = random.nextInt(houseTypes.length);
         HouseType houseType = houseTypes[randomIndex];
-
-
 
 
         // YN 여부
@@ -159,12 +167,12 @@ public class GameServiceImpl implements GameService {
         randomIndex = random.nextInt(genders.length);
         GenderType gender = genders[randomIndex];
 
-        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한"};
+        String[] lastNames = new String[]{"김", "이", "백", "정", "최", "남", "박", "홍", "우", "한", "금", "오", "조"};
         randomIndex = random.nextInt(lastNames.length);
         String name = lastNames[randomIndex];
 
         if(gender.getKoreanName().equals("남성")){
-            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직"};
+            String[] firstNames = new String[]{"민수", "인호", "민우", "중원", "창영", "수현", "유준", "하빈", "호성", "철주", "현직", "남현"};
             randomIndex = random.nextInt(firstNames.length);
             if(firstNames[randomIndex].equals("중원")) name = "이";    // 이중원의 요청 ^_^
             name += firstNames[randomIndex];
@@ -204,11 +212,13 @@ public class GameServiceImpl implements GameService {
             throw new AIException("AI 오류입니다");
         }
 
-        if(incomeTotal/100 > 8000 || incomeType.getKoreanName().equals("공기업")) credit--;
-        if(occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
-        || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
-        || occypType.getKoreanName().equals("부동산 중개인")) credit--;
+        if(incomeTotal/100 > 8000 || reality.getEnglishName().equals("Y")) credit--;
 
+        if(incomeType.getKoreanName().equals("공기업") || occypType.getKoreanName().equals("의료계") || occypType.getKoreanName().equals("CEO")
+        || occypType.getKoreanName().equals("고급 기술자") || occypType.getKoreanName().equals("회계사")
+        || occypType.getKoreanName().equals("부동산 중개인") || occypType.getKoreanName().equals("공무원")) credit--;
+
+        if(credit<0) credit = 0;
         GameInfo gameInfo = new GameInfo(loanRequest, customerInfo, financialInfo, nonFinancialInfo, credit);
         GameInfoResponse response = GameInfoResponse.createGameInfoResponse(HttpStatus.OK.value(), "게임 정보를 성공적으로 받아왔습니다.", gameInfo);
 
@@ -233,7 +243,7 @@ public class GameServiceImpl implements GameService {
     public ResponseEntity<ScoreResponse> gainScore(int num, GameInfo gameInfo) {
         Score score;
         if(gameInfo.getCustomerInfo().getCustomerMaterials().contains(false)){
-            score = new Score(0, "ㅋ 이걸 해주네", "준비물이 부족합니다.");
+            score = new Score(-200, "ㅋ 이걸 해주네", "준비물이 부족합니다.");
         }else{
             score = calculateScore(num, gameInfo);
         }
@@ -253,7 +263,7 @@ public class GameServiceImpl implements GameService {
             user.setScore(score);
         }
         int point = (int)(score*(0.1));
-        if(point<0) point=0;
+        if(score<5000) point=500;   // 기본 포인트
         user.setPoint(user.getPoint()+point);
 
 
@@ -300,16 +310,18 @@ public class GameServiceImpl implements GameService {
     private Score calculateScore(int num, GameInfo gameInfo){
         Loan loan = loanRepository.getReferenceById((long)num);
 
-        // 최소 신용 최대 신용과 차이가 적은걸 반영하기.
-//        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
-//        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
-//        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
-        if(!isContainsCredit(gameInfo.getCredit(), loan.getMinCredit(), loan.getMaxCredit())){
-            return new Score(-500, "후엥", "대출상품에 필요한 신용 등급과 일치하지 않습니다.");
-        }
+//         최소 신용 최대 신용과 차이가 적은걸 반영하기.
+        int diff = (Math.abs(gameInfo.getCredit()-loan.getMinCredit()));
+        diff = Math.min(diff, Math.abs(gameInfo.getCredit()-loan.getMaxCredit()));
 
-//        int defaultScore = 500 + (-100)*diff;
-        int defaultScore = 500;
+        if(loan.getMinCredit()==0 && loan.getMaxCredit()==2) diff = 0;
+
+//        if(!isContainsCredit(gameInfo.getCredit(), loan.getMinCredit(), loan.getMaxCredit())){
+//            return new Score(-500, "후엥", "대출상품에 필요한 신용 등급과 일치하지 않습니다.");
+//        }
+
+        int defaultScore = 500 + (-100)*diff;
+//        int defaultScore = 500;
 
 
         if(num==1 || num==2 || num==3){
@@ -340,7 +352,7 @@ public class GameServiceImpl implements GameService {
             return new Score(score, "감사합니다!!", reason);
         }else if(num==6){
             // 저세상갓숭 대출
-            int score = (defaultScore-200)*(int)(1+loan.getInterest());
+            int score = (int)((defaultScore-200)*(1+loan.getInterest()));
 
             return new Score(score, "너무 금리가 높은거 아닌가요?! ㅡㅡ", "금리가 너무 높아 화가 나서 감점이 적용되었습니다.");
 
