@@ -102,7 +102,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(604800);  // 여기서는 리프레시 토큰의 유효 기간을 설정
         cookie.setPath("/");
-        cookie.setHttpOnly(true);  // JS를 통한 접근 방지
+        cookie.setHttpOnly(false);  // JS를 통한 접근 방지
         return cookie;
     }
 }

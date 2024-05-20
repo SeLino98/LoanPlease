@@ -197,14 +197,14 @@ public class UserService {
         cookie.setMaxAge(60*60*60);
         //cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         return cookie;
     }
     private Cookie createHttpOnlyCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(604800);  // 여기서는 리프레시 토큰의 유효 기간을 설정
         cookie.setPath("/");
-        cookie.setHttpOnly(true);  // JS를 통한 접근 방지
+        cookie.setHttpOnly(false);  // JS를 통한 접근 방지
         return cookie;
     }
 
